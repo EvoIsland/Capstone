@@ -1,0 +1,44 @@
+# Instalaciones de Conexiones Kimal por Región y Comuna
+
+## Región Metropolitana
+- Lampa
+- Pudahuel
+- Til Til 
+
+## Región de Valparaíso
+- Cabildo
+- Catemu
+- La ligua 
+- LlayLlay
+- Panquehue
+- Petorca
+
+Region de coquimbo
+Andacollo
+Combarbalá
+Canela
+Illapel
+La Higuera
+La Serena
+Los Vilos
+Ovalle
+Punitaqui
+Río Hurtado
+Vicuña
+
+Atacama
+Diego de Almagro
+Tierra Amarilla
+Vallenar
+Copiapó
+
+Antofagasta
+
+Antofagasta
+María Elena
+Sierra Gorda
+Taltal
+
+---
+
+Este listado agrupa las instalaciones de Conexiones Kimal por región y comuna, según la información pública disponible en su sitio web. Las ubicaciones no son exactas, pero servirán para simular la conexión entre instalaciones en el mapa y para asignar logos y líneas de conexión en la visualización futura.
