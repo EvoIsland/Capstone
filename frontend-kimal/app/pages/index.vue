@@ -1,84 +1,66 @@
-<!-- filepath: c:\conexiones-kimal\frontend-kimal\pages\index.vue -->
 <template>
-  <div class="layout-principal">
-    <Navbar />
-    <div class="mapa-contenedor">
-      <!-- El cuadro verde irá aquí, superpuesto -->
-      <!-- <CuadroLateral /> -->
-      <MapaLeaflet />
+  <div class="mapa-wrapper">
+    <MapaLeaflet @seleccionar-instalacion="seleccionarInstalacion" />
+    <div v-if="instalacionSeleccionada" class="sidebar-posts">
+      <h2 class="sidebar-title">{{ instalacionSeleccionada.nombre }}</h2>
+      <UiPostList :posts="instalacionSeleccionada.posts" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import MapaLeaflet from '~/components/MapaLeaflet.vue'
-import Navbar from '~/components/ui/navbar.vue';
-// import CuadroLateral from '~/components/CuadroLateral.vue' // Cuando lo tengas listo
+
+// Ejemplo de datos de instalaciones y posts
+const instalaciones = [
+  {
+    nombre: 'Pudahuel', // Cambiado para coincidir con el nombre del mapa
+    posts: [
+      { title: 'Post 1', body: 'Contenido del post 1', image: '' },
+      { title: 'Post 2', body: 'Contenido del post 2', image: '' }
+    ]
+  },
+  // ...otras instalaciones
+]
+
+const instalacionSeleccionada = ref(null)
+
+function seleccionarInstalacion(nombre) {
+  instalacionSeleccionada.value = instalaciones.find(i => i.nombre === nombre)
+}
 </script>
 
 <style lang="sass" scoped>
-@use '../../sass/base' as *
+.mapa-wrapper
+  position: relative
+  width: 100vw
+  height: 100vh
 
-.layout-principal
-  min-height: 100vh
+#map
+  width: 100vw
+  height: 100vh
+
+.sidebar-posts
+  position: absolute
+  top: 32px
+  left: 16px
+  width: 400px
+  min-height: 300px
+  max-height: 85vh
+  background: linear-gradient(135deg, #6fd37e 0%, #3a8d5d 100%)
+  border-radius: 2rem
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12)
+  padding: 2rem 1.5rem 1.5rem 1.5rem
+  z-index: 2000
   display: flex
   flex-direction: column
-
-.navbar
-  @extend .navbar
-  justify-content: space-between
-  position: relative
-  z-index: 10
-
-.logo
-  height: 60px
-  margin-left: 24px
-
-.nav-links
-  display: flex
-  gap: 48px
-  margin-right: 48px
-  a
-    font-size: 2rem
-    font-weight: 700
-    color: var(--blanco)
-    transition: opacity .2s
-    &:hover
-      opacity: .7
-
-.mapa-contenedor
-  position: relative
-  flex: 1
-  width: 100%
-  height: calc(100vh - var(--navbar-height))
+  align-items: center
   overflow: hidden
 
-  // El cuadro verde lateral debe ir aquí con position: absolute o fixed
-  // .cuadro-lateral
-  //   position: absolute
-  //   top: 32px
-  //   left: 32px
-  //   z-index: 20
-
-  // El mapa ocupa todo el fondo
-  :deep(.leaflet-container)
-    width: 100% !important
-    height: 100% !important
-    min-height: 500px
-
-@media (max-width: 900px)
-  .navbar
-    flex-direction: column
-    align-items: flex-start
-    .logo
-      margin-left: 0
-    .nav-links
-      margin-right: 0
-      gap: 24px
-  .mapa-contenedor
-    height: calc(100vh - var(--navbar-height))
-
-@media (max-width: 600px)
-  .mapa-contenedor
-    height: calc(100vh - var(--navbar-height))
+.sidebar-title
+  color: #fff
+  font-size: 2rem
+  font-weight: bold
+  margin-bottom: 1.5rem
 </style>

@@ -1,17 +1,18 @@
 <template>
-  <div style="position: relative;">
-    <button @click="centrarEnMiUbicacion" style="position: absolute; z-index: 1000; top: 10px; left: 10px; background: #d32f2f; color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer;">
+  <div class="mapa-leaflet-wrapper">
+    <button class="btn-ubicacion" @click="centrarEnMiUbicacion">
       Mi ubicación actual
     </button>
     <div style="position: absolute; z-index: 1000; top: 60px; left: 10px;">
       <BuscadorInstalaciones @buscar="filtrarInstalaciones" />
     </div>
-    <div id="map" style="height: 600px;"></div>
+    <div id="map"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineEmits } from 'vue'
+const emit = defineEmits(['seleccionar-instalacion'])
 import BuscadorInstalaciones from './buscadorInstalaciones.vue'
 
 const instalaciones = [
@@ -116,6 +117,9 @@ function filtrarInstalaciones(filtro) {
     const marker = window.L.marker(instalacion.coords, { icon: customIcon })
       .addTo(mapRef.value)
       .bindPopup(instalacion.nombre)
+    marker.on('click', () => {
+      emit('seleccionar-instalacion', instalacion.nombre)
+    })
     marcadores.value.push(marker)
     puntos.push(instalacion.coords)
   })
@@ -143,8 +147,36 @@ onMounted(async () => {
 </script>
 
 <style>
+.mapa-leaflet-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
+}
 #map {
-  width: 100%;
-  height: 600px;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+.btn-ubicacion {
+  position: absolute;
+  z-index: 1000;
+  right: 24px;
+  bottom: 24px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-ubicacion:hover {
+  background: #b71c1c;
 }
 </style>
