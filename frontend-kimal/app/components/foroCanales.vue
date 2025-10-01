@@ -5,7 +5,7 @@
             <div class="lado lado-izquierdo">
                 <div class="tarjeta-foro">
                     <h2 class="titulo-tarjeta">Foro Comunitario</h2>
-                    <button class="btn-ver-mas">Ver más</button>
+                    <button class="btn-ver-mas" @click="verForoComunitario">Ver más</button>
                 </div>
             </div>
             
@@ -13,7 +13,7 @@
             <div class="lado lado-derecho">
                 <div class="tarjeta-canal">
                     <h2 class="titulo-tarjeta">Canal Formales</h2>
-                    <button class="btn-ver-mas">Ver más</button>
+                    <button class="btn-ver-mas" @click="verCanalFormales">Ver más</button>
                 </div>
             </div>
         </div>
@@ -24,7 +24,7 @@
 // Funciones para manejar clicks si es necesario
 function verForoComunitario() {
     // Lógica para navegar al foro comunitario
-    console.log('Navegando a Foro Comunitario')
+    navigateTo('/foro')
 }
 
 function verCanalFormales() {
