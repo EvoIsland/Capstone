@@ -48,8 +48,15 @@
     <main class="main-content">
       <slot />
     </main>
+
+    <!-- Chatbot flotante -->
+    <ChatbotFloating />
   </div>
 </template>
+
+<script setup>
+import ChatbotFloating from '~/components/chatbotFloating.vue'
+</script>
 
 <style lang="sass">
 @use '@sass/base' as *
