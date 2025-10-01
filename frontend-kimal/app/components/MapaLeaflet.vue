@@ -1,11 +1,27 @@
 <template>
   <div class="mapa-leaflet-wrapper">
-    <button class="btn-ubicacion" @click="centrarEnMiUbicacion">
-      Mi ubicación actual
-    </button>
-    <div style="position: absolute; z-index: 1000; top: 60px; left: 10px;">
-      <BuscadorInstalaciones @buscar="filtrarInstalaciones" />
+    <!-- Controles del mapa -->
+    <ControlesMapa 
+      @toggle-linea="toggleLinea"
+      @centrar-ubicacion="centrarEnMiUbicacion"
+    />
+    
+    <!-- Filtro de instalaciones -->
+    <div class="filtro-container">
+      <FiltroInstalaciones 
+        :data="data"
+        @filtrar="aplicarFiltros" 
+      />
     </div>
+    
+    <!-- Tarjeta de instalación -->
+    <TarjetaInstalacion 
+      :instalacion="instalacionSeleccionada"
+      @cerrar="cerrarTarjeta"
+      @ver-noticia="verNoticia"
+      @ver-reporte="verReporte"
+    />
+    
     <div id="map"></div>
   </div>
 </template>
@@ -13,43 +29,21 @@
 <script setup>
 import { onMounted, ref, defineEmits } from 'vue'
 const emit = defineEmits(['seleccionar-instalacion'])
-import BuscadorInstalaciones from './buscadorInstalaciones.vue'
+import FiltroInstalaciones from './filtroInstalaciones.vue'
+import ControlesMapa from './controlesMapa.vue'
+import TarjetaInstalacion from './tarjetaInstalacion.vue'
 
-const instalaciones = [
-  { nombre: 'Lampa', coords: [-33.2857, -70.8756], region: 'Región Metropolitana' },
-  { nombre: 'Pudahuel', coords: [-33.4333, -70.7667], region: 'Región Metropolitana' },
-  { nombre: 'Til Til', coords: [-33.0833, -70.9333], region: 'Región Metropolitana' },
-  { nombre: 'Cabildo', coords: [-32.4333, -71.0167], region: 'Región de Valparaíso' },
-  { nombre: 'Catemu', coords: [-32.7833, -70.9667], region: 'Región de Valparaíso' },
-  { nombre: 'La Ligua', coords: [-32.4500, -71.2333], region: 'Región de Valparaíso' },
-  { nombre: 'LlayLlay', coords: [-32.8167, -70.9667], region: 'Región de Valparaíso' },
-  { nombre: 'Panquehue', coords: [-32.8000, -70.8333], region: 'Región de Valparaíso' },
-  { nombre: 'Petorca', coords: [-32.2500, -70.9333], region: 'Región de Valparaíso' },
-  { nombre: 'Andacollo', coords: [-29.6167, -71.1833], region: 'Región de Coquimbo' },
-  { nombre: 'Combarbalá', coords: [-31.1792, -71.0583], region: 'Región de Coquimbo' },
-  { nombre: 'Canela', coords: [-31.4000, -71.4500], region: 'Región de Coquimbo' },
-  { nombre: 'Illapel', coords: [-31.6333, -71.1667], region: 'Región de Coquimbo' },
-  { nombre: 'La Higuera', coords: [-29.5000, -71.2500], region: 'Región de Coquimbo' },
-  { nombre: 'La Serena', coords: [-29.9045, -71.2489], region: 'Región de Coquimbo' },
-  { nombre: 'Los Vilos', coords: [-31.9097, -71.5072], region: 'Región de Coquimbo' },
-  { nombre: 'Ovalle', coords: [-30.6016, -71.2000], region: 'Región de Coquimbo' },
-  { nombre: 'Punitaqui', coords: [-31.0500, -71.2500], region: 'Región de Coquimbo' },
-  { nombre: 'Río Hurtado', coords: [-30.2667, -71.0833], region: 'Región de Coquimbo' },
-  { nombre: 'Vicuña', coords: [-30.0333, -70.7083], region: 'Región de Coquimbo' },
-  { nombre: 'Diego de Almagro', coords: [-26.3922, -70.0456], region: 'Atacama' },
-  { nombre: 'Tierra Amarilla', coords: [-27.9833, -70.2500], region: 'Atacama' },
-  { nombre: 'Vallenar', coords: [-28.5750, -70.7583], region: 'Atacama' },
-  { nombre: 'Copiapó', coords: [-27.3667, -70.3333], region: 'Atacama' },
-  { nombre: 'Antofagasta', coords: [-23.6500, -70.4000], region: 'Antofagasta' },
-  { nombre: 'María Elena', coords: [-22.3500, -69.6667], region: 'Antofagasta' },
-  { nombre: 'Sierra Gorda', coords: [-22.9500, -69.3167], region: 'Antofagasta' },
-  { nombre: 'Taltal', coords: [-25.4000, -70.4833], region: 'Antofagasta' }
-]
+// Datos iniciales
+const data = ref({ regiones: [] })
+
+const instalacionesActuales = ref([])
 
 const mapRef = ref(null)
 const miUbicacionMarker = ref(null)
 const marcadores = ref([])
 const polylineRef = ref(null)
+const mostrarLinea = ref(true)
+const instalacionSeleccionada = ref(null)
 
 function centrarEnMiUbicacion() {
   if (!mapRef.value) return
@@ -83,7 +77,43 @@ function centrarEnMiUbicacion() {
   )
 }
 
-function filtrarInstalaciones(filtro) {
+function toggleLinea(mostrar) {
+  mostrarLinea.value = mostrar
+  if (polylineRef.value) {
+    if (mostrar) {
+      polylineRef.value.addTo(mapRef.value)
+    } else {
+      polylineRef.value.remove()
+    }
+  }
+}
+
+function seleccionarInstalacion(nombre) {
+  const instalacion = instalacionesActuales.value.find(inst => inst.nombre === nombre)
+  instalacionSeleccionada.value = instalacion
+  emit('seleccionar-instalacion', nombre)
+}
+
+function cerrarTarjeta() {
+  instalacionSeleccionada.value = null
+}
+
+function verNoticia(noticia) {
+  console.log('Ver noticia:', noticia)
+  // Aquí puedes navegar a la página de la noticia o abrir un modal
+}
+
+function verReporte(reporte) {
+  console.log('Ver reporte:', reporte)
+  // Aquí puedes navegar a la página del reporte o abrir un modal
+}
+
+function aplicarFiltros(instalacionesFiltradas) {
+  // Verificar que Leaflet esté disponible
+  if (!window.L || !mapRef.value) {
+    return
+  }
+
   // Limpia marcadores y línea anterior
   marcadores.value.forEach(marker => marker.remove())
   marcadores.value = []
@@ -92,17 +122,8 @@ function filtrarInstalaciones(filtro) {
     polylineRef.value = null
   }
 
-  // Filtra por nombre, región y comuna
-  let filtradas = instalaciones
-  if (filtro.nombre) {
-    filtradas = filtradas.filter(inst => inst.nombre.toLowerCase().includes(filtro.nombre.toLowerCase()))
-  }
-  if (filtro.region) {
-    filtradas = filtradas.filter(inst => inst.region === filtro.region)
-  }
-  if (filtro.comuna) {
-    filtradas = filtradas.filter(inst => inst.nombre === filtro.comuna)
-  }
+  // Actualiza instalaciones actuales
+  instalacionesActuales.value = instalacionesFiltradas
 
   // Icono personalizado
   const customIcon = window.L.icon({
@@ -113,23 +134,38 @@ function filtrarInstalaciones(filtro) {
 
   // Agrega marcadores filtrados y la línea
   const puntos = []
-  filtradas.forEach(instalacion => {
+  instalacionesFiltradas.forEach(instalacion => {
     const marker = window.L.marker(instalacion.coords, { icon: customIcon })
       .addTo(mapRef.value)
       .bindPopup(instalacion.nombre)
     marker.on('click', () => {
-      emit('seleccionar-instalacion', instalacion.nombre)
+      seleccionarInstalacion(instalacion.nombre)
     })
     marcadores.value.push(marker)
     puntos.push(instalacion.coords)
   })
 
-  if (puntos.length > 1) {
+  if (puntos.length > 1 && mostrarLinea.value) {
     polylineRef.value = window.L.polyline(puntos, { color: 'blue', weight: 3 }).addTo(mapRef.value)
+  }
+
+  // Ajustar vista del mapa si hay instalaciones
+  if (puntos.length > 0) {
+    const group = new window.L.featureGroup(marcadores.value)
+    mapRef.value.fitBounds(group.getBounds().pad(0.1))
   }
 }
 
 onMounted(async () => {
+  // Cargar datos del JSON
+  try {
+    const response = await fetch('/data.json')
+    const jsonData = await response.json()
+    data.value = jsonData
+  } catch (error) {
+    console.error('Error cargando datos:', error)
+  }
+
   const L = await import('leaflet')
   await import('leaflet/dist/leaflet.css')
 
@@ -141,8 +177,6 @@ onMounted(async () => {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map)
-
-  filtrarInstalaciones({ nombre: '', region: '', comuna: '' })
 })
 </script>
 
@@ -154,29 +188,34 @@ onMounted(async () => {
   min-height: 100vh;
   min-width: 100vw;
 }
+
 #map {
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
   min-width: 100vw;
 }
-.btn-ubicacion {
+
+.filtro-container {
   position: absolute;
   z-index: 1000;
-  right: 24px;
-  bottom: 24px;
-  background: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  font-weight: bold;
-  font-size: 1rem;
-  transition: background 0.2s;
+  top: 100px;
+  left: 16px;
 }
-.btn-ubicacion:hover {
-  background: #b71c1c;
+
+@media screen and (max-width: 768px) {
+  .filtro-container {
+    top: 90px;
+    left: 10px;
+    right: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .filtro-container {
+    top: 80px;
+    left: 8px;
+    right: 8px;
+  }
 }
 </style>
