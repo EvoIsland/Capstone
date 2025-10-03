@@ -8,6 +8,7 @@
                 <!-- Mapa de Chile con torres -->
                 <div class="mapa-container">
                     <div class="mapa-chile">
+                        <img src="/images/mapa.svg" alt="Mapa de Chile" class="mapa-imagen">
                         <div class="torre-marker">
                             <div class="torre-icon">
                                 <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
@@ -18,17 +19,8 @@
                     </div>
                 </div>
                 
-                <!-- Tarjetas informativas -->
-                <div class="tarjetas-info gap2rem">
-                    <div class="tarjeta info-verde">
-                        <h3 class="text-xl bold mb1rem text-white">Comunas de Carga Sobredimensionada</h3>
-                        <p class="text-md text-white">Melillones, Calama, San Antonio, Cartagena, Casablanca, El Tabo y Curacaví.</p>
-                    </div>
-                    
-                    <div class="tarjeta torre-imagen">
-                        <img src="#" alt="Torre eléctrica" class="w100 h100 object-cover">
-                    </div>
-                </div>
+                <!-- Tarjetas informativas con swipe -->
+                <TarjetaIntro />
             </div>
             
             <!-- Contenido derecho -->
@@ -80,11 +72,13 @@
 .mapa-chile
 	width: 100%
 	height: 100%
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 400'%3E%3Cpath d='M20 50 L30 20 L35 0 L40 20 L45 40 L50 80 L45 120 L40 160 L35 200 L30 240 L25 280 L20 320 L15 360 L10 400 L5 380 L10 340 L15 300 L20 260 L15 220 L20 180 L25 140 L30 100 L25 60 Z' fill='white' opacity='0.3'/%3E%3C/svg%3E")
-	background-repeat: no-repeat
-	background-position: center
-	background-size: contain
 	position: relative
+
+.mapa-imagen
+	width: 100%
+	height: 100%
+	object-fit: contain
+	opacity: 0.3
 
 .torre-marker
 	position: absolute
@@ -100,25 +94,6 @@
 	width: 2.4rem
 	height: 2.4rem
 	fill: #6B46C1
-
-.tarjetas-info
-	display: flex
-	gap: 2rem
-
-.tarjeta
-	border-radius: 2rem
-	padding: 2rem
-	flex: 1
-
-.info-verde
-	background: linear-gradient(135deg, #10B981 0%, #059669 100%)
-	color: white
-
-.torre-imagen
-	padding: 0
-	overflow: hidden
-	background: #f3f4f6
-	min-height: 200px
 
 .ubicacion-tiempo
 	background: white
@@ -150,9 +125,6 @@
 
 // Responsive
 @media screen and (max-width: 900px)
-	.tarjetas-info
-		flex-direction: column
-		
 	.mapa-container
 		min-height: 300px
 		
@@ -165,7 +137,4 @@
 		
 	.mapa-container, .ubicacion-tiempo
 		padding: 2rem
-		
-	.tarjeta
-		padding: 1.5rem
 </style>

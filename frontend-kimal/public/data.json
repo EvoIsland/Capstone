@@ -1,4 +1,30 @@
 {
+  "tarjetas": [
+    {
+      "id": 1,
+      "titulo": "Comunas de Carga Sobredimensionada",
+      "texto": "Melillones, Calama, San Antonio, Cartagena, Casablanca, El Tabo y Curacaví.",
+      "color": "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+      "imagen": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "alt": "Torre de alta tensión con un cielo azul"
+    },
+    {
+      "id": 2,
+      "titulo": "Próximo mantenimiento",
+      "texto": "Revisión general de la línea de alta tensión en la Región de Atacama.",
+      "color": "linear-gradient(135deg, #6B46C1 0%, #8B5CF6 100%)",
+      "imagen": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "alt": "Técnico en una torre realizando mantenimiento"
+    },
+    {
+      "id": 3,
+      "titulo": "Avances en la construcción",
+      "texto": "Se ha completado el 75% de la instalación de las torres de alta tensión en la región de Coquimbo.",
+      "color": "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
+      "imagen": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      "alt": "Grúa instalando una torre de alta tensión"
+    }
+  ],
   "regiones": [
     {
       "nombre": "Región Metropolitana",
