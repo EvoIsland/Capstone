@@ -1,37 +1,51 @@
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import cors from '@fastify/cors'
+import { connectDB } from './config/database'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
-
+  // Puedes agregar opciones personalizadas aquí
 }
-// Pass --options via CLI arguments in command to enable these options.
+
+// Opciones por defecto
 const options: AppOptions = {
+  logger: true
 }
 
 const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts
 ): Promise<void> => {
-  // Place here your custom code!
+  // Conectar a la base de datos
+  await connectDB()
 
-  // Do not touch the following lines
+  // Configurar TypeBox para validación de tipos
+  fastify.withTypeProvider<TypeBoxTypeProvider>()
 
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  // eslint-disable-next-line no-void
+  // Configurar CORS
+  await fastify.register(cors, {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+  })
+
+  // Cargar plugins automáticamente
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
     options: opts
   })
 
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  // eslint-disable-next-line no-void
+  // Cargar rutas automáticamente
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'routes'),
     options: opts
+  })
+
+  // Manejo de errores no capturados
+  process.on('unhandledRejection', (err: Error) => {
+    fastify.log.error('Error no manejado: ' + err.message)
+    process.exit(1)
   })
 }
 
