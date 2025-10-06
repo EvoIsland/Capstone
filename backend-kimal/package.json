@@ -25,12 +25,15 @@
     "@fastify/type-provider-typebox": "^6.0.0",
     "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^7.0.2",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.0",
     "fastify-plugin": "^5.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.0",
+    "nodemailer": "^7.0.7",
     "zod": "^4.1.11"
   },
   "devDependencies": {

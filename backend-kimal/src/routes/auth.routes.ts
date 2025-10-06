@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import { 
     userRegistrationSchema, 
     loginSchema, 
@@ -17,7 +17,7 @@ import jwt from 'jsonwebtoken';
 import { sendVerificationEmail } from '../services/email.service';
 import crypto from 'crypto';
 
-export default async function authRoutes(fastify: FastifyInstance) {
+const authRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     // Registro de usuario
     fastify.post<{ Body: UserRegistration }>('/register', async (request, reply) => {
         try {
@@ -61,6 +61,38 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
     });
 
+
+    // Ruta para verificar cuenta (asegurar parámetro dinámico)
+    fastify.get('/verify/:token', async (request, reply) => {
+        try {
+            const { token } = request.params as { token: string };
+            // Buscar usuario con el token de verificación
+            const user = await UserModel.findOne({ tokenVerificacion: token });
+            if (!user) {
+                return reply.status(400).send({ 
+                    error: 'Token de verificación inválido o expirado' 
+                });
+            }
+            // Actualizar usuario como verificado
+            await UserModel.updateOne(
+                { _id: user._id },
+                { 
+                    $set: { verificado: true },
+                    $unset: { tokenVerificacion: 1 }
+                }
+            );
+            return reply.send({ 
+                message: 'Cuenta verificada exitosamente. Ahora puedes iniciar sesión.' 
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                return reply.status(400).send({ error: error.message });
+            }
+            return reply.status(500).send({ error: 'Error interno del servidor' });
+        }
+    });
+
+
     // Login
     fastify.post<{ Body: UserLogin }>('/login', async (request, reply) => {
         try {
@@ -86,39 +118,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
             if (!isValidPassword) {
                 return reply.status(401).send({ error: 'Credenciales inválidas' });
             }
-    // Ruta para verificar cuenta
-    fastify.get('/verify/:token', async (request, reply) => {
-        try {
-            const { token } = request.params as { token: string };
 
-            // Buscar usuario con el token de verificación
-            const user = await UserModel.findOne({ tokenVerificacion: token });
-            if (!user) {
-                return reply.status(400).send({ 
-                    error: 'Token de verificación inválido o expirado' 
-                });
-            }
-
-            // Actualizar usuario como verificado
-            await UserModel.updateOne(
-                { _id: user._id },
-                { 
-                    $set: { verificado: true },
-                    $unset: { tokenVerificacion: 1 }
-                }
-            );
-
-            return reply.send({ 
-                message: 'Cuenta verificada exitosamente. Ahora puedes iniciar sesión.' 
-            });
-
-        } catch (error) {
-            if (error instanceof Error) {
-                return reply.status(400).send({ error: error.message });
-            }
-            return reply.status(500).send({ error: 'Error interno del servidor' });
-        }
-    });
 
             // Generar token inicial
             const token = jwt.sign(
@@ -217,3 +217,4 @@ export default async function authRoutes(fastify: FastifyInstance) {
         }
     });
 }
+export default authRoutes;
