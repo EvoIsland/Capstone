@@ -9,10 +9,13 @@ import {
     type ChangePassword,
     type RequestPasswordChange
 } from '../schemas/auth.schema';
+
 import { UserModel } from '../models/user.model';
 import { authenticateToken } from '../middlewares/auth.middleware';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { sendVerificationEmail } from '../services/email.service';
+import crypto from 'crypto';
 
 export default async function authRoutes(fastify: FastifyInstance) {
     // Registro de usuario
@@ -29,16 +32,25 @@ export default async function authRoutes(fastify: FastifyInstance) {
             // Hash de la contraseña
             const hashedPassword = await bcrypt.hash(userData.contraseña, 10);
 
-            // Crear nuevo usuario
+
+            // Generar token de verificación
+            const verificationToken = crypto.randomBytes(32).toString('hex');
+
+            // Crear nuevo usuario con verificado: false y tokenVerificacion
             const newUser = new UserModel({
                 ...userData,
-                contraseña: hashedPassword
+                contraseña: hashedPassword,
+                verificado: false,
+                tokenVerificacion: verificationToken
             });
 
             await newUser.save();
 
+            // Enviar correo de verificación
+            await sendVerificationEmail(userData.correo, verificationToken);
+
             return reply.status(201).send({ 
-                message: 'Usuario registrado exitosamente'
+                message: 'Usuario registrado exitosamente. Por favor verifica tu correo electrónico.'
             });
 
         } catch (error) {
@@ -61,11 +73,52 @@ export default async function authRoutes(fastify: FastifyInstance) {
                 return reply.status(401).send({ error: 'Credenciales inválidas' });
             }
 
+
+            // Verificar si el usuario está verificado
+            if (!user.verificado) {
+                return reply.status(401).send({ 
+                    error: 'Por favor verifica tu cuenta antes de iniciar sesión. Revisa tu correo electrónico.'
+                });
+            }
+
             // Verificar contraseña
             const isValidPassword = await bcrypt.compare(loginData.contraseña, user.contraseña);
             if (!isValidPassword) {
                 return reply.status(401).send({ error: 'Credenciales inválidas' });
             }
+    // Ruta para verificar cuenta
+    fastify.get('/verify/:token', async (request, reply) => {
+        try {
+            const { token } = request.params as { token: string };
+
+            // Buscar usuario con el token de verificación
+            const user = await UserModel.findOne({ tokenVerificacion: token });
+            if (!user) {
+                return reply.status(400).send({ 
+                    error: 'Token de verificación inválido o expirado' 
+                });
+            }
+
+            // Actualizar usuario como verificado
+            await UserModel.updateOne(
+                { _id: user._id },
+                { 
+                    $set: { verificado: true },
+                    $unset: { tokenVerificacion: 1 }
+                }
+            );
+
+            return reply.send({ 
+                message: 'Cuenta verificada exitosamente. Ahora puedes iniciar sesión.' 
+            });
+
+        } catch (error) {
+            if (error instanceof Error) {
+                return reply.status(400).send({ error: error.message });
+            }
+            return reply.status(500).send({ error: 'Error interno del servidor' });
+        }
+    });
 
             // Generar token inicial
             const token = jwt.sign(
