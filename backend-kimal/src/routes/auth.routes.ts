@@ -52,6 +52,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
     // Login
     fastify.post<{ Body: UserLogin }>('/login', async (request, reply) => {
         try {
+            console.log('Request body:', request.body); // Debugging
             const loginData = loginSchema.parse(request.body);
 
             // Buscar usuario
@@ -74,13 +75,16 @@ export default async function authRoutes(fastify: FastifyInstance) {
             );
 
             // Configurar cookie segura con el token
-            reply.setCookie('refreshToken', token, {
+            const cookieOptions = {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'lax' as const,  // Cambiado a 'lax' para desarrollo
                 path: '/',
                 maxAge: 24 * 60 * 60 * 1000 // 24 horas
-            });
+            };
+            
+            console.log('Setting cookie with options:', cookieOptions); // Debugging
+            reply.setCookie('refreshToken', token, cookieOptions);
 
             return reply.send({ 
                 token,
