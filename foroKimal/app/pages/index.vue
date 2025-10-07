@@ -68,7 +68,7 @@ const handleLogin = async () => {
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.error || 'Error de autenticación')
-    localStorage.setItem('token', data.token)
+    localStorage.setItem('accessToken', data.token)
     // Redirigir a foroMain
     router.push('/foroMain')
   } catch (e: any) {

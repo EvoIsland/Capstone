@@ -52,6 +52,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
   })
 
 
+
   // Mostrar todas las rutas registradas al iniciar
   fastify.ready().then(() => {
     fastify.printRoutes();

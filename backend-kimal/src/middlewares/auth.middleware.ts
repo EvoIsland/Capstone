@@ -10,8 +10,13 @@ interface TokenPayload {
 
 export async function authenticateToken(request: FastifyRequest, reply: FastifyReply) {
     try {
+        let token: string | undefined;
         const authHeader = request.headers.authorization;
-        const token = authHeader?.split(' ')[1]; // Bearer TOKEN
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        } else if (request.cookies && request.cookies.refreshToken) {
+            token = request.cookies.refreshToken;
+        }
 
         if (!token) {
             throw new Error('No token provided');
@@ -30,7 +35,7 @@ export async function authenticateToken(request: FastifyRequest, reply: FastifyR
 
         // Añadir el usuario a la request para uso posterior
         request.user = {
-            id: user._id.toString(),
+            _id: user._id.toString(),
             nombre: user.nombre,
             apellido: user.apellido,
             correo: user.correo
@@ -63,7 +68,7 @@ export function generateRefreshToken(userId: string): string {
 declare module 'fastify' {
     interface FastifyRequest {
         user?: {
-            id: string;
+            _id: string;
             nombre: string;
             apellido: string;
             correo: string;

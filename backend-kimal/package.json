@@ -21,6 +21,7 @@
     "@fastify/autoload": "^6.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
+    "@fastify/multipart": "^9.2.1",
     "@fastify/sensible": "^6.0.0",
     "@fastify/type-provider-typebox": "^6.0.0",
     "@types/bcrypt": "^6.0.0",
