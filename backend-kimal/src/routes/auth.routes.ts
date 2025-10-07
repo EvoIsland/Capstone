@@ -1,17 +1,12 @@
 import { FastifyPluginAsync } from 'fastify';
 import { 
     userRegistrationSchema, 
-    loginSchema, 
-    changePasswordSchema, 
-    requestPasswordChangeSchema,
+    loginSchema,
     type UserRegistration,
-    type UserLogin,
-    type ChangePassword,
-    type RequestPasswordChange
+    type UserLogin
 } from '../schemas/auth.schema';
 
 import { UserModel } from '../models/user.model';
-import { authenticateToken } from '../middlewares/auth.middleware';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { sendVerificationEmail } from '../services/email.service';
@@ -157,64 +152,6 @@ const authRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         }
     });
 
-    // Solicitar cambio de contraseña
-    fastify.post<{ Body: RequestPasswordChange }>('/request-password-change', async (request, reply) => {
-        try {
-            const { correo } = requestPasswordChangeSchema.parse(request.body);
 
-            const user = await UserModel.findOne({ correo });
-            if (!user) {
-                // Por seguridad, no revelamos si el correo existe o no
-                return reply.send({ 
-                    message: 'Si el correo existe, recibirás instrucciones para cambiar tu contraseña' 
-                });
-            }
-
-            // Aquí iría la lógica para enviar el correo con el link de cambio de contraseña
-            // Por ahora solo simulamos el proceso
-
-            return reply.send({ 
-                message: 'Si el correo existe, recibirás instrucciones para cambiar tu contraseña' 
-            });
-
-        } catch (error) {
-            if (error instanceof Error) {
-                return reply.status(400).send({ error: error.message });
-            }
-            return reply.status(500).send({ error: 'Error interno del servidor' });
-        }
-    });
-
-    // Cambiar contraseña (ruta protegida)
-    fastify.post<{ Body: ChangePassword }>(
-        '/change-password',
-        { onRequest: [authenticateToken] },
-        async (request, reply) => {
-        try {
-            const { correo, nuevaContraseña } = changePasswordSchema.parse(request.body);
-
-            const user = await UserModel.findOne({ correo });
-            if (!user) {
-                return reply.status(404).send({ error: 'Usuario no encontrado' });
-            }
-
-            // Hash de la nueva contraseña
-            const hashedPassword = await bcrypt.hash(nuevaContraseña, 10);
-            
-            // Actualizar contraseña
-            await UserModel.updateOne(
-                { _id: user._id },
-                { $set: { contraseña: hashedPassword }}
-            );
-
-            return reply.send({ message: 'Contraseña actualizada exitosamente' });
-
-        } catch (error) {
-            if (error instanceof Error) {
-                return reply.status(400).send({ error: error.message });
-            }
-            return reply.status(500).send({ error: 'Error interno del servidor' });
-        }
-    });
 }
 export default authRoutes;

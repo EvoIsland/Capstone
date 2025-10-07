@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+
 // Plantilla para el correo de verificación
 const verificationEmailTemplate = (token: string) => ({
   subject: 'Verifica tu cuenta - Kimal',
@@ -33,6 +34,44 @@ const verificationEmailTemplate = (token: string) => ({
     </div>
   `
 });
+
+// Plantilla para el correo de recuperación de contraseña
+const passwordResetEmailTemplate = (token: string) => ({
+  subject: 'Recupera tu contraseña - Kimal',
+  html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h1 style="color: #333; margin-bottom: 20px;">Recupera tu contraseña</h1>
+      <p style="color: #666; margin-bottom: 30px;">
+        Recibimos una solicitud para cambiar tu contraseña. Haz clic en el siguiente enlace para restablecerla:
+      </p>
+      <a href="${process.env.FRONTEND_URL}/password-reset/${token}" 
+         style="background-color: #2d8cf0; color: white; padding: 12px 25px; 
+                text-decoration: none; border-radius: 5px; display: inline-block; 
+                margin: 20px 0;">
+        Restablecer contraseña
+      </a>
+      <p style="color: #999; font-size: 12px; margin-top: 30px;">
+        Si no solicitaste este cambio, puedes ignorar este correo.
+      </p>
+    </div>
+  `
+});
+
+export const sendPasswordResetEmail = async (to: string, token: string): Promise<boolean> => {
+  try {
+    const template = passwordResetEmailTemplate(token);
+    await transporter.sendMail({
+      from: `"Kimal App" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: template.subject,
+      html: template.html
+    });
+    return true;
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    return false;
+  }
+};
 
 export const sendVerificationEmail = async (to: string, token: string): Promise<boolean> => {
   try {
