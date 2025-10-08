@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Story Map Gráfico: ConexionesKimal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 95%;
+            margin: auto;
+            overflow-x: auto; /* Permite scroll horizontal si es necesario */
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+        }
+        .story-map-grid {
+            display: grid;
+            /* Se definen 6 columnas, una para cada Epic */
+            grid-template-columns: repeat(6, minmax(180px, 1fr));
+            gap: 15px;
+            align-items: start;
+        }
+        .epic-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1em;
+            position: sticky; /* Fija los encabezados al hacer scroll vertical */
+            top: 0;
+            z-index: 10;
+        }
+        .story-card {
+            background-color: #ffc;
+            padding: 12px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.9em;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-left: 5px solid;
+        }
+        /* Colores por prioridad */
+        .priority-high { border-color: #dc3545; }
+        .priority-medium { border-color: #ffc107; }
+        .sprint-divider {
+            grid-column: 1 / -1; /* Ocupa todas las columnas */
+            text-align: center;
+            margin: 20px 0;
+            border-bottom: 2px dashed #007bff;
+            position: relative;
+        }
+        .sprint-divider span {
+            background-color: #f4f7f9;
+            padding: 0 15px;
+            font-weight: bold;
+            color: #0056b3;
+            position: relative;
+            top: 12px;
+        }
+        /* Contenedores para las historias para mantener el orden */
+        .stories-container {
+            display: grid;
+            grid-column: span 1;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ User Story Map Gráfico — ConexionesKimal</h1>
+        <div class="story-map-grid">
+            <!-- Fila 1: Backbone con los Epics -->
+            <div class="epic-header">1. Acceso e Info (Landing)</div>
+            <div class="epic-header">2. Exploración (Mapa)</div>
+            <div class="epic-header">3. Participación (Foro)</div>
+            <div class="epic-header">4. Administración (Backoffice)</div>
+            <div class="epic-header">5. Notificaciones y Transparencia</div>
+            <div class="epic-header">6. UX/UI y Accesibilidad</div>
+
+            <!-- Contenedores para las historias de cada Epic -->
+            <div class="stories-container" id="epic1-stories"></div>
+            <div class="stories-container" id="epic2-stories"></div>
+            <div class="stories-container" id="epic3-stories"></div>
+            <div class="stories-container" id="epic4-stories"></div>
+            <div class="stories-container" id="epic5-stories"></div>
+            <div class="stories-container" id="epic6-stories"></div>
+
+            <!-- Divisor de Sprints -->
+             <div class="sprint-divider"><span></span></div>
+            
+             <!-- Contenedores para las historias del siguiente sprint -->
+            <div class="stories-container" id="epic1-sprint2"></div>
+            <div class="stories-container" id="epic2-sprint2"></div>
+            <div class="stories-container" id="epic3-sprint2"></div>
+            <div class="stories-container" id="epic4-sprint2"></div>
+            <div class="stories-container" id="epic5-sprint2"></div>
+            <div class="stories-container" id="epic6-sprint2"></div>
+
+             <div class="sprint-divider"><span></span></div>
+            
+            <div class="stories-container" id="epic1-sprint3"></div>
+            <div class="stories-container" id="epic2-sprint3"></div>
+            <div class="stories-container" id="epic3-sprint3"></div>
+            <div class="stories-container" id="epic4-sprint3"></div>
+            <div class="stories-container" id="epic5-sprint3"></div>
+            <div class="stories-container" id="epic6-sprint3"></div>
+
+            <div class="sprint-divider"><span></span></div>
+            
+            <div class="stories-container" id="epic1-sprint4"></div>
+            <div class="stories-container" id="epic2-sprint4"></div>
+            <div class="stories-container" id="epic3-sprint4"></div>
+            <div class="stories-container" id="epic4-sprint4"></div>
+            <div class="stories-container" id="epic5-sprint4"></div>
+            <div class="stories-container" id="epic6-sprint4"></div>
+
+            <div class="sprint-divider"><span></span></div>
+
+        </div>
+    </div>
+
+    <script>
+        // Datos del User Story Map (extraídos de tu tabla)
+        const storyData = {
+            sprint1: [
+                { epic: 1, text: "Visualizar info corporativa", priority: "high" },
+                { epic: 1, text: "Acceder a canales oficiales", priority: "high" },
+                { epic: 1, text: "Conocer ubicaciones de instalaciones", priority: "high" },
+            ],
+            sprint2: [
+                { epic: 2, text: "Ver instalaciones en mapa interactivo", priority: "high" },
+                { epic: 2, text: "Filtrar instalaciones por región/comuna", priority: "high" },
+                { epic: 2, text: "Acceder a noticias y reportes de instalación", priority: "high" },
+            ],
+            sprint3: [
+                 { epic: 3, text: "Publicar preguntas o reportes", priority: "high" },
+                 { epic: 3, text: "Responder a otros usuarios", priority: "high" },
+                 { epic: 3, text: "Representante de Kimal responde públicamente", priority: "high" },
+                 { epic: 4, text: "Admin: Publicar contenido en landing", priority: "medium" },
+                 { epic: 4, text: "Admin: Gestionar usuarios y roles", priority: "medium" },
+                 { epic: 4, text: "Admin: Moderar publicaciones del foro", priority: "medium" },
+            ],
+            sprint4: [
+                { epic: 5, text: "Recibir notificaciones de respuesta", priority: "medium" },
+                { epic: 5, text: "Generar reportes de interacción", priority: "medium" },
+            ],
+            transversal: [
+                { epic: 6, text: "Interfaz clara, intuitiva y responsive", priority: "high" },
+                { epic: 6, text: "Navegación fluida entre sistemas", priority: "high" },
+            ]
+        };
+
+        function renderStoryCard(story) {
+            const card = document.createElement('div');
+            card.className = `story-card priority-${story.priority}`;
+            card.textContent = story.text;
+            return card;
+        }
+
+        // Renderizar historias de Sprint 1
+        storyData.sprint1.forEach(story => {
+            document.getElementById(`epic${story.epic}-stories`).appendChild(renderStoryCard(story));
+        });
+        
+        // Renderizar historias de Sprint 2
+        storyData.sprint2.forEach(story => {
+             document.getElementById(`epic${story.epic}-sprint2`).appendChild(renderStoryCard(story));
+        });
+
+        // Renderizar historias de Sprint 3
+        storyData.sprint3.forEach(story => {
+             document.getElementById(`epic${story.epic}-sprint3`).appendChild(renderStoryCard(story));
+        });
+
+         // Renderizar historias de Sprint 4
+         storyData.sprint4.forEach(story => {
+             document.getElementById(`epic${story.epic}-sprint4`).appendChild(renderStoryCard(story));
+        });
+
+        // Las historias transversales se pueden poner en todos los sprints o en uno específico.
+        // Aquí las añadimos al primer contenedor como referencia.
+        storyData.transversal.forEach(story => {
+            document.getElementById(`epic${story.epic}-stories`).appendChild(renderStoryCard(story));
+        });
+
+    </script>
+</body>
+</html>
