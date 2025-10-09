@@ -11,24 +11,18 @@
       <div class="login-content flex">
         <div class="login-left">
           <h1 class="titulo bold mb2rem">
-            Bienvenido al<br>
-            <span class="secundario">Inicio de sesión</span>
+            Recupera tu<br>
+            <span class="secundario">contraseña</span>
           </h1>
         </div>
         <div class="login-right flex ffcn aic w100">
-          <input v-model="email" type="email" placeholder="Correo" class="login-input mb1rem" required />
-          <input v-model="password" type="password" placeholder="Contraseña" class="login-input mb1rem" required />
+          <input v-model="correo" type="email" placeholder="Correo electrónico" class="login-input mb1rem" required />
           <div class="flex jcsb aic w100 mt1rem">
-            <span class="text-sm pointer" @click="goToPasswordReset">¿Olvidaste tu contraseña?</span>
-            <button class="login-btn" @click="handleLogin" :disabled="loading">
-              <span v-if="loading">Ingresando...</span>
-              <span v-else>Siguiente</span>
+            <button class="login-btn" @click="handleSubmit">
+              Solicitar cambio de contraseña
             </button>
-        <div class="flex jcsb aic w100 mt1rem">
-          <span class="text-sm pointer" @click="goToRegister">¿No tienes cuenta? Regístrate</span>
-        </div>
           </div>
-          <div v-if="error" class="text-red-800 text-sm" style="margin-top:1rem;">{{ error }}</div>
+          <div v-if="mensaje" class="text-red-800 text-sm" style="margin-top:1rem;">{{ mensaje }}</div>
         </div>
       </div>
     </div>
@@ -49,41 +43,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
-import { useRouter } from 'vue-router'
 
-const email = ref('')
-const password = ref('')
-const loading = ref(false)
-const error = ref('')
-const router = useRouter()
+const correo = ref('')
+const mensaje = ref('')
 
-const handleLogin = async () => {
-  error.value = ''
-  loading.value = true
+const handleSubmit = async () => {
+  mensaje.value = ''
   try {
-    const res = await fetch('http://localhost:5000/login', {
+    const res = await fetch('http://localhost:5000/request-password-change', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo: email.value, contraseña: password.value })
+      body: JSON.stringify({ correo: correo.value })
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Error de autenticación')
-    localStorage.setItem('accessToken', data.token)
-    // Redirigir a foroMain
-    router.push('/foroMain')
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+    mensaje.value = data.message || 'Solicitud enviada.'
+  } catch (e) {
+    mensaje.value = 'Error de red'
   }
-}
-
-const goToPasswordReset = () => {
-  router.push('/request-password-reset')
-}
-
-const goToRegister = () => {
-  router.push('/registro')
 }
 </script>
 
@@ -216,7 +192,7 @@ const goToRegister = () => {
 .login-flag
   width: 2.2rem
   height: 1.5rem
-  background: linear-gradient(180deg, #fff 50%, #d52b1e 50%)
+  background: linear-gradient(180deg, #fff 50%, #d52b1e 50% )
   border: 1.5px solid #222
   border-radius: 0.2rem
   position: relative

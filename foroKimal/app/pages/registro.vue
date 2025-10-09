@@ -1,104 +1,38 @@
 <template>
-  <div class="flex min-h-screen justify-center items-center bg-gray-100">
-    <div class="w-full max-w-md p-8 bg-white rounded-lg shadow">
-      <h2 class="text-2xl font-bold mb-6 text-center">Registro</h2>
-      
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <!-- Nombre -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Nombre</label>
-          <input 
-            v-model="formData.nombre"
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
+  <div class="registro-bg flex jcc aic w100 min-h100">
+    <div class="registro-card bg-white p4rem radioComun flex ffcn aic w100" style="max-width: 420px;">
+      <div class="registro-avatar flex jcc aic mb3rem">
+        <div class="icono circle flex jcc aic" style="background: #fff; border: 2px solid #CFD2D7; width: 8rem; height: 8rem;">
+          <Icon icon="mdi:account-circle" width="64" height="64" style="color: #b388f5;" />
         </div>
-
-        <!-- Apellido -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Apellido</label>
-          <input 
-            v-model="formData.apellido"
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-        </div>
-
-        <!-- Correo -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Correo</label>
-          <input 
-            v-model="formData.correo"
-            type="email"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-        </div>
-
-        <!-- Contraseña -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input 
-            v-model="formData.contraseña"
-            type="password"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            required
-          >
-        </div>
-
+      </div>
+      <h2 class="tac text-2xl bold mb2rem">Registro</h2>
+      <form @submit.prevent="handleSubmit" class="flex ffcn gap2rem w100">
+        <input v-model="formData.nombre" type="text" placeholder="Nombre" class="registro-input" required>
+        <input v-model="formData.apellido" type="text" placeholder="Apellidos" class="registro-input" required>
+        <input v-model="formData.correo" type="email" placeholder="Correo" class="registro-input" required>
+        <input v-model="formData.contraseña" type="password" placeholder="Contraseña" class="registro-input" required>
         <!-- Pueblo Originario -->
-        <div class="flex items-center">
-          <input 
-            v-model="formData.puebloOriginario"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          >
-          <label class="ml-2 block text-sm text-gray-900">Pertenezco a un pueblo originario</label>
+        <div class="flex aic gap1rem w100">
+          <input v-model="formData.puebloOriginario" type="checkbox" id="puebloOriginario" class="registro-checkbox">
+          <label for="puebloOriginario" class="text-md">Pertenezco a un pueblo originario</label>
         </div>
-
-        <!-- Nombre del Pueblo (condicional) -->
         <div v-if="formData.puebloOriginario">
-          <label class="block text-sm font-medium text-gray-700">Nombre del Pueblo</label>
-          <input 
-            v-model="formData.nombrePueblo"
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
+          <select v-model="formData.nombrePueblo" class="registro-input" required>
+            <option value="" disabled>Selecciona tu pueblo originario</option>
+            <option v-for="pueblo in pueblosOriginariosChile" :key="pueblo" :value="pueblo">{{ pueblo }}</option>
+          </select>
         </div>
-
         <!-- Recibir Cartas -->
-        <div class="flex items-center">
-          <input 
-            v-model="formData.recibirCartas"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          >
-          <label class="ml-2 block text-sm text-gray-900">Deseo recibir cartas</label>
+        <div class="flex aic gap1rem w100">
+          <input v-model="formData.recibirCartas" type="checkbox" id="recibirCartas" class="registro-checkbox">
+          <label for="recibirCartas" class="text-md">Deseo recibir cartas</label>
         </div>
-
-        <!-- Dirección (condicional) -->
         <div v-if="formData.recibirCartas">
-          <label class="block text-sm font-medium text-gray-700">Dirección</label>
-          <input 
-            v-model="formData.direccion"
-            type="text"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
+          <input v-model="formData.direccion" type="text" placeholder="Dirección" class="registro-input">
         </div>
-
-        <!-- Error message -->
-        <div v-if="error" class="text-red-600 text-sm">
-          {{ error }}
-        </div>
-
-        <!-- Submit button -->
-        <button 
-          type="submit"
-          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          :disabled="loading"
-        >
+        <div v-if="error" class="text-red-800 text-sm">{{ error }}</div>
+        <button type="submit" class="registro-btn" :disabled="loading">
           <span v-if="loading">Registrando...</span>
           <span v-else>Registrar</span>
         </button>
@@ -109,7 +43,22 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuth } from '../../composables/useAuth'
+import { Icon } from '@iconify/vue'
+import { useAuth } from '../composables/useAuth'
+
+const pueblosOriginariosChile = [
+  'Aymara',
+  'Quechua',
+  'Atacameño (Likan Antai)',
+  'Colla',
+  'Diaguita',
+  'Mapuche',
+  'Rapa Nui',
+  'Kawésqar',
+  'Yagán',
+  'Chango',
+  'Otros'
+]
 
 const { register, loading, error } = useAuth()
 
@@ -145,4 +94,64 @@ const handleSubmit = async () => {
     console.error('Error en el registro:', e)
   }
 }
+
 </script>
+
+<style lang="sass" scoped>
+.registro-bg
+  min-height: 100vh
+  background: #fff
+
+.registro-card
+  box-shadow: 0 4px 32px 0 #cfd2d7aa
+  margin: 4rem 0
+
+.registro-avatar
+  width: 100%
+  justify-content: center
+
+.registro-input
+  width: 100%
+  padding: 1.2rem 1rem
+  border-radius: var(--radio-input)
+  border: none
+  background: #b388f5
+  color: #fff
+  font-size: 1.2rem
+  outline: none
+  transition: box-shadow 0.2s
+  &::placeholder
+    color: #fff
+    opacity: 0.8
+  &:focus
+    box-shadow: 0 0 0 2px #b388f5cc
+
+.registro-checkbox
+  width: 2rem
+  height: 2rem
+  border-radius: 0.5rem
+  border: 1.5px solid #cfd2d7
+  accent-color: #b388f5
+  margin-right: 0.5rem
+
+.registro-btn
+  width: 100%
+  background: #ff3388
+  color: #fff
+  border: none
+  border-radius: 1.5rem
+  padding: 1.2rem 0
+  font-size: 1.3rem
+  font-weight: 500
+  margin-top: 1.5rem
+  cursor: pointer
+  transition: background 0.2s
+  &:hover:not(:disabled)
+    background: #e6006d
+  &:disabled
+    opacity: 0.7
+    cursor: not-allowed
+
+.text-red-800
+  color: var(--color-error)
+</style>

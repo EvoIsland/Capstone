@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@iconify/vue": "^5.0.0",
     "@vueuse/core": "^13.9.0",
     "nuxt": "^4.1.2",
     "vue": "^3.5.22",

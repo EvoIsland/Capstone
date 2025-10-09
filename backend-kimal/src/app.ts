@@ -18,17 +18,19 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts
 ): Promise<void> => {
+
+  // Configurar CORS para cualquier origen (debe ir antes de todo)
+  await fastify.register(cors, {
+    origin: true,
+    credentials: true
+  })
+
   // Conectar a la base de datos
   await connectDB()
 
   // Configurar TypeBox para validación de tipos
   fastify.withTypeProvider<TypeBoxTypeProvider>()
 
-  // Configurar CORS
-  await fastify.register(cors, {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true
-  })
 
   // Cargar plugins automáticamente
   void fastify.register(AutoLoad, {
@@ -36,11 +38,25 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: opts
   })
 
+  // Log de archivos de rutas
+  const fs = require('fs');
+  const routesDir = join(__dirname, 'routes');
+  const routeFiles = fs.readdirSync(routesDir);
+  fastify.log.info('Archivos de rutas encontrados:');
+  routeFiles.forEach((file: string) => fastify.log.info(file));
+
   // Cargar rutas automáticamente
   void fastify.register(AutoLoad, {
-    dir: join(__dirname, 'routes'),
+    dir: routesDir,
     options: opts
   })
+
+
+
+  // Mostrar todas las rutas registradas al iniciar
+  fastify.ready().then(() => {
+    fastify.printRoutes();
+  });
 
   // Manejo de errores no capturados
   process.on('unhandledRejection', (err: Error) => {

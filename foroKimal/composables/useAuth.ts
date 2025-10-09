@@ -77,9 +77,9 @@ export const useAuth = () => {
         throw new Error(data.error || 'Error en el inicio de sesión')
       }
 
-      const data: AuthResponse = await response.json()
-      user.value = data.user
-      accessToken.value = data.accessToken
+  const data = await response.json()
+  user.value = data.user
+  accessToken.value = data.token
 
       return true
     } catch (e) {
@@ -179,6 +179,7 @@ export const useAuth = () => {
     user,
     loading,
     error,
+    accessToken,
     register,
     login,
     logout,

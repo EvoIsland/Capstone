@@ -11,6 +11,8 @@ export interface IUser {
   puebloOriginario: boolean;
   nombrePueblo?: string;
   direccion?: string;
+  verificado: boolean;
+  tokenVerificacion?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +26,9 @@ const userSchema = new mongoose.Schema<IUser>({
   recibirCartas: { type: Boolean, default: false },
   puebloOriginario: { type: Boolean, default: false },
   nombrePueblo: { type: String },
-  direccion: { type: String }
+  direccion: { type: String },
+  verificado: { type: Boolean, default: false },
+  tokenVerificacion: { type: String }
 }, {
   timestamps: true
 });
