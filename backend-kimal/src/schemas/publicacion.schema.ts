@@ -7,8 +7,9 @@ export const crearPublicacionSchema = z.object({
 
 
     //Validacion para que solo sea de ese tipo de publicacion
-    tipo: z.enum(['pregunta','reporte','noticia']),
-        errorMap:() => ({message: "El tipo de publicacion no es valido."}),
+    tipo: z.enum(['pregunta', 'reporte', 'noticia'], {
+         message: "El tipo de publicacion no es valido"
+    }),
 
 
     //Validacion para subir imagenes
