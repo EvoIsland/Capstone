@@ -12,14 +12,14 @@ export interface PublicacionDocument extends Document {
 }
 
 const PublicacionSchema = new Schema<PublicacionDocument>({
-    publicadorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+    publicadorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     texto: { type: String, required: true },
     tipo: { type: String, enum: ['pregunta','reporte','noticia'], required: true},
     imagenes: { type: [String], default: [],maxLength:3 },
     fecha: {type: Date, default: Date.now},
-    instalacionId: { type: Schema.Types.ObjectId, ref: 'instalacion'},
-    comunaId: { type: Schema.Types.ObjectId, ref: 'comuna'},
-    regionId: { type: Schema.Types.ObjectId, ref: 'region'},
+    instalacionId: { type: Schema.Types.ObjectId, ref: 'Instalacion'},
+    comunaId: { type: Schema.Types.ObjectId, ref: 'Comuna'},
+    regionId: { type: Schema.Types.ObjectId, ref: 'Region'},
 });
 
 export const PublicacionModel = mongoose.model<PublicacionDocument>('Publicacion', PublicacionSchema);

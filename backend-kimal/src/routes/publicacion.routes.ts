@@ -3,25 +3,23 @@ import { PublicacionModel } from "../models/publicacion.model";
 import { InstalacionModel } from "../models/instalacion.model"
 import { crearPublicacionSchema } from "../schemas/publicacion.schema";
 import { authenticateToken } from '../middlewares/auth.middleware'; // Asumo que tienes este middleware
+import { UserModel } from '../models/user.model';
 
 const PublicacionRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
  
   fastify.post('/publicacion', { preHandler: authenticateToken }, async (request, reply) => {
     try {
-      // 1 Validar los datos con zod
       const validationResult = crearPublicacionSchema.safeParse(request.body);
       
       if(!validationResult.success) {
-        //Si los datos no cumplesn las reglas, rechazamos la peticion con un error 400
         return reply.status(400).send({
           error: "Datos invalidos",
           details: validationResult.error.flatten(),
         });
       }
 
-      //Si llega aqui, los datos son validos y seguros
       const datosValidados= validationResult.data;
-      const userId = request.user?._id; //Obtenemos el id del usuario del token
+      const userId = request.user?._id;
 
 
       //Ejecutar logica de negocio
@@ -30,18 +28,15 @@ const PublicacionRoutes: FastifyPluginAsync = async (fastify, opts): Promise<voi
 
 
       if (datosValidados.tipo === 'reporte') {
-        // la instalación es obligatoria en los reportes 
         if (!datosValidados.instalacionId) {
             return reply.status(400).send({ error: 'La ID de instalacion especificada no fue encontrada.' });
         }
 
-        // la instalación debe de existir
         const instalacion = await InstalacionModel.findById(datosValidados.instalacionId);
         if (!instalacion) {
             return reply.status(404).send({ error: 'La instalacion especifica no fue encontrada' });
         }
 
-        // usamos la comuna y región de la instalación
         finalComunaId = datosValidados.comunaId?.toString();
         finalRegionId = datosValidados.regionId?.toString();
       }
@@ -63,6 +58,22 @@ const PublicacionRoutes: FastifyPluginAsync = async (fastify, opts): Promise<voi
         return reply.status(500).send({error: 'Error al crear publicacion.' });
       }
     });
+
+  fastify.get('/publicaciones', async (request, reply)=> {
+    try{
+      const publicaciones = await PublicacionModel.find()
+        .sort({fecha:-1})
+        .populate('publicadorId', 'nombre')
+        .populate('instalacionId', 'nombre')
+        .populate('comunaId', 'nombre')
+        .populate('regionId', 'nombre')
+        .lean()
+    reply.send(publicaciones)
+    }catch (error){
+      console.error('Error en GET /publicaciones:', error)
+      reply.status(500).send({ error: 'error al obtener la publicacion'})
+    }
+  })
 
 }
 

@@ -1,197 +1,66 @@
 <template>
-  <div class="foro-main-bg flex jcc aic w100 min-h100">
-    <div class="foro-main-card">
-      <h1 class="titulo tac mb2rem">¡Bienvenido al Foro Kimal!</h1>
-      <p class="text-md tac">Aquí pronto verás las publicaciones y debates de la comunidad.</p>
-      <form @submit.prevent="handleSubmit" class="mt4rem tac">
-        <div class="mb2rem">
-          <label for="tipo" class="text-md">Tipo de publicación:</label>
-          <select v-model="form.tipo" id="tipo" class="registro-input">
-            <option value="pregunta">Pregunta</option>
-            <option value="reporte">Reporte</option>
-            <option value="noticia">Noticia</option>
-          </select>
-        </div>
-        <div v-if="form.tipo === 'pregunta' || form.tipo === 'noticia'" class="mb2rem">
-          <label for="region" class="text-md">Región:</label>
-          <select v-model="form.regionId" id="region" class="registro-input">
-            <option value="">Sin filtro</option>
-            <option v-for="region in regiones" :key="region._id" :value="region._id">{{ region.nombre }}</option>
-          </select>
-        </div>
-        <div v-if="form.tipo === 'pregunta' || form.tipo === 'noticia'" class="mb2rem">
-          <label for="comuna" class="text-md">Comuna:</label>
-          <select v-model="form.comunaId" id="comuna" class="registro-input">
-            <option value="">Sin filtro</option>
-            <option v-for="comuna in comunasFiltradas" :key="comuna._id" :value="comuna._id">{{ comuna.nombre }}</option>
-          </select>
-        </div>
-        <div v-if="form.tipo === 'pregunta' || form.tipo === 'noticia'" class="mb2rem">
-          <label for="instalacion" class="text-md">Instalación:</label>
-          <select v-model="form.instalacionId" id="instalacion" class="registro-input">
-            <option value="">Sin filtro</option>
-            <option v-for="inst in instalacionesFiltradas" :key="inst._id" :value="inst._id">{{ inst.nombre }}</option>
-          </select>
-        </div>
-        <div v-if="form.tipo === 'reporte'" class="mb2rem">
-          <label for="instalacion" class="text-md">Instalación (obligatorio):</label>
-          <select v-model="form.instalacionId" id="instalacion" class="registro-input" required>
-            <option value="">Selecciona una instalación</option>
-            <option v-for="inst in instalacionesFiltradas" :key="inst._id" :value="inst._id">{{ inst.nombre }}</option>
-          </select>
-        </div>
-        <div v-if="form.tipo === 'reporte'" class="mb2rem">
-          <label class="text-md">Comuna:</label>
-          <input :value="comunaAuto" class="registro-input" readonly />
-        </div>
-        <div v-if="form.tipo === 'reporte'" class="mb2rem">
-          <label class="text-md">Región:</label>
-          <input :value="regionAuto" class="registro-input" readonly />
-        </div>
-        <div class="mb2rem">
-          <label for="texto" class="text-md">Texto:</label>
-          <textarea v-model="form.texto" id="texto" rows="3" class="registro-input" required></textarea>
-        </div>
-        <div class="mb2rem">
-          <label for="imagenes" class="text-md">Imágenes (máx 3, JPG/PNG, 1-2MB c/u):</label>
-          <input id="imagenes" type="file" class="registro-input" multiple accept="image/png,image/jpeg" @change="handleFileChange" />
-        </div>
-        <button type="submit" class="registro-btn">Publicar</button>
-        <div v-if="error" class="text-red-800 text-md mt2rem">{{ error }}</div>
-        <div v-if="success" class="text-green-700 text-md mt2rem">{{ success }}</div>
-      </form>
-      <div class="foro-main-placeholder mt4rem tac">
-        <Icon icon="mdi:forum-outline" width="80" height="80" style="color: #b388f5;" />
-        <p class="text-lg mt2rem">Funcionalidad en construcción...</p>
+  <div class="foro-main-lista">
+    <h1 class="titulo tac mb2rem">¡Bienvenido al Foro Kimal!</h1>
+    <div v-if="cargandoPublicaciones" class="tac mt4rem">Cargando publicaciones...</div>
+    <div v-else-if="errorPublicaciones" class="text-red-800 tac mt4rem">{{ errorPublicaciones }}</div>
+    <div v-else>
+      <div v-if="publicaciones.length === 0" class="tac mt4rem">
+        No hay publicaciones aún.
       </div>
+      <ul>
+        <li v-for="pub in publicaciones" :key="pub._id" class="publicacion-list-item">
+          <span class="pub-tipo">[{{ pub.tipo.toUpperCase() }}]</span>
+          <span class="pub-texto">{{ pub.texto }}</span>
+          <span class="pub-meta">
+            <template v-if="pub.regionId"> | Región: {{ pub.regionId.nombre }}</template>
+            <template v-if="pub.comunaId"> | Comuna: {{ pub.comunaId.nombre }}</template>
+            <template v-if="pub.instalacionId"> | Instalación: {{ pub.instalacionId.nombre }}</template>
+          </span>
+          <span class="pub-fecha">({{ new Date(pub.fecha).toLocaleString() }})</span>
+          <div v-if="pub.imagenes && pub.imagenes.length" class="pub-imagenes">
+            <img v-for="img in pub.imagenes" :key="img" :src="img" class="pub-img" />
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import { Icon } from '@iconify/vue'
-import { useAuth } from '../../composables/useAuth'
 
-interface Region { _id: string; nombre: string; }
-interface Comuna { _id: string; nombre: string; regionId: string; }
-interface Instalacion { _id: string; nombre: string; comunaId: string; regionId: string; }
+import { onMounted, ref } from 'vue'
 
-const { accessToken } = useAuth()
-const form = ref({
-  tipo: 'pregunta',
-  texto: '',
-  imagenes: [],
-  instalacionId: '',
-  comunaId: '',
-  regionId: ''
-})
-const error = ref('')
-const success = ref('')
-const regiones = ref<Region[]>([])
-const comunas = ref<Comuna[]>([])
-const instalaciones = ref<Instalacion[]>([])
-const imagenFiles = ref<File[]>([])
-
-const comunasFiltradas = computed(() => {
-  if (!form.value.regionId) return comunas.value
-  return comunas.value.filter(c => c.regionId === form.value.regionId)
-})
-const instalacionesFiltradas = computed(() => {
-  if (!form.value.comunaId) return instalaciones.value
-  return instalaciones.value.filter(i => i.comunaId === form.value.comunaId)
-})
-const comunaAuto = computed(() => {
-  const inst = instalaciones.value.find(i => i._id === form.value.instalacionId)
-  const comuna = comunas.value.find(c => c._id === inst?.comunaId)
-  return comuna ? comuna.nombre : ''
-})
-const regionAuto = computed(() => {
-  const inst = instalaciones.value.find(i => i._id === form.value.instalacionId)
-  const region = regiones.value.find(r => r._id === inst?.regionId)
-  return region ? region.nombre : ''
-})
-
-const handleFileChange = (e: Event) => {
-  const files = (e.target as HTMLInputElement).files
-  if (!files) return
-  imagenFiles.value = Array.from(files).slice(0, 3)
+interface Publicacion {
+  _id: string
+  tipo: string
+  texto: string
+  fecha: string
+  imagenes?: string[]
+  instalacionId?: { nombre: string }
+  comunaId?: { nombre: string }
+  regionId?: { nombre: string }
+  publicadorId?: { nombre?: string }
 }
+
+const publicaciones = ref<Publicacion[]>([])
+const cargandoPublicaciones = ref(true)
+const errorPublicaciones = ref('')
 
 onMounted(async () => {
-  // Obtener regiones, comunas, instalaciones
-  const [regRes, comRes, instRes] = await Promise.all([
-    fetch('http://localhost:5000/regiones'),
-    fetch('http://localhost:5000/comunas'),
-    fetch('http://localhost:5000/instalaciones')
-  ])
-  regiones.value = await regRes.json()
-  comunas.value = await comRes.json()
-  instalaciones.value = await instRes.json()
+  try{
+    cargandoPublicaciones.value = true
+    const res = await fetch('http://localhost:5000/publicaciones')
+    if(!res.ok) throw new Error('No se pudieron obtener publicaciones')
+    publicaciones.value = await res.json()
+  } catch (err) {
+    errorPublicaciones.value = 'Error al cargar publicaciones'
+  } finally {
+    cargandoPublicaciones.value = false
+  }
+
 })
 
-watch(() => form.value.instalacionId, (newId) => {
-  if (form.value.tipo === 'reporte' && newId) {
-    const inst = instalaciones.value.find(i => i._id === newId)
-    form.value.comunaId = inst?.comunaId || ''
-    form.value.regionId = inst?.regionId || ''
-  }
-})
 
-const handleSubmit = async () => {
-  error.value = ''
-  success.value = ''
-  // Validaciones
-  if (!form.value.texto) {
-    error.value = 'El texto es obligatorio.'
-    return
-  }
-  if (form.value.tipo === 'reporte' && !form.value.instalacionId) {
-    error.value = 'Debes seleccionar una instalación.'
-    return
-  }
-  if (imagenFiles.value.length > 3) {
-    error.value = 'Máximo 3 imágenes.'
-    return
-  }
-  // Validar tamaño y formato
-  for (const file of imagenFiles.value) {
-    if (file.size > 2 * 1024 * 1024) {
-      error.value = 'Cada imagen debe pesar máximo 2MB.'
-      return
-    }
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      error.value = 'Solo se permiten imágenes JPG o PNG.'
-      return
-    }
-  }
-  // Construir FormData
-  const fd = new FormData()
-  fd.append('tipo', form.value.tipo)
-  fd.append('texto', form.value.texto)
-  if (form.value.instalacionId) fd.append('instalacionId', form.value.instalacionId)
-  if (form.value.comunaId) fd.append('comunaId', form.value.comunaId)
-  if (form.value.regionId) fd.append('regionId', form.value.regionId)
-  imagenFiles.value.forEach((file, idx) => fd.append('imagenes', file))
-  const res = await fetch('http://localhost:5000/publicacion', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${accessToken.value}`
-    },
-    body: fd
-  })
-  const data = await res.json()
-  if (!res.ok) {
-    error.value = data.error || 'Error al publicar'
-    return
-  }
-  success.value = '¡Publicación creada!'
-  form.value.texto = ''
-  form.value.instalacionId = ''
-  form.value.comunaId = ''
-  form.value.regionId = ''
-  imagenFiles.value = []
-}
 </script>
 
 <style lang="sass" scoped>
