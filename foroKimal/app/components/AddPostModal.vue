@@ -52,6 +52,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import type { Region, Comuna, Instalacion } from '~/types';
+import { useAuth } from '../../composables/useAuth';
 
 // --- PROPS Y EMITS PARA EL MODAL ---
 const props = defineProps<{ modelValue: boolean }>();
@@ -60,7 +61,9 @@ const closeModal = () => {
   emit('update:modelValue', false);
 };
 
-// --- ESTADO DEL FORMULARIO ---
+const { accessToken } = useAuth()
+
+
 const form = ref({
   tipo: 'pregunta',
   texto: '',
@@ -113,9 +116,9 @@ watch(() => form.value.regionId, () => {
 onMounted(async () => {
   try {
     const [regionesData, comunasData, instalacionesData] = await Promise.all([
-      $fetch<Region[]>('/api/regiones'),
-      $fetch<Comuna[]>('/api/comunas'),
-      $fetch<Instalacion[]>('/api/instalaciones')
+      $fetch<Region[]>('http://localhost:5000/regiones'),
+      $fetch<Comuna[]>('http://localhost:5000/comunas'),
+      $fetch<Instalacion[]>('http://localhost:5000/instalaciones')
     ]);
     regiones.value = regionesData;
     comunas.value = comunasData;
@@ -149,11 +152,11 @@ const handleSubmit = async () => {
       body.instalacionId = form.value.instalacionId;
     }
 
-    await $fetch('/api/publicacion', {
+    await $fetch('http://localhost:5000/publicacion', {
       method: 'POST',
       body: body,
-      // No olvides incluir el token de autenticación si es necesario
-      // headers: { 'Authorization': `Bearer ${token}` }
+
+      headers: { 'Authorization': `Bearer ${accessToken.value}` }
     });
 
     success.value = '¡Publicación creada con éxito!';

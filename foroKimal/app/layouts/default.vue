@@ -15,7 +15,7 @@
           </button>
         </div>
         <div class="feed-actions">
-          <button class="feed-add-btn" @click="abrirModalPublicacion">
+          <button class="feed-add-btn" @click="openAddPostModal">
             <Icon icon="mdi:plus" width="28" height="28" />
           </button>
           <div class="feed-user-circle">
@@ -27,6 +27,7 @@
     <div class="feed-content" :style="{ marginTop: isSticky ? '110px' : '90px' }">
       <slot />
     </div>
+    <AddPostModal v-if="showAddPostModal" v-model="showAddPostModal" />
   </div>
 </template>
 
@@ -34,11 +35,13 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
 
-const user = ref({ nombre: 'Usuario' })
-const userInitial = computed(() => user.value.nombre.charAt(0).toUpperCase())
+
+const showAddPostModal = ref(false) //Se asigna de manera predeterimanda que el postModal este cerrado
 const activeTab = ref('general')
-function abrirModalPublicacion() {
-  // Aquí abres el modal de publicación
+
+
+function openAddPostModal(){
+  showAddPostModal.value = true
 }
 
 const isSticky = ref(false)
