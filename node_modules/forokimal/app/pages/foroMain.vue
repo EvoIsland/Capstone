@@ -7,21 +7,22 @@
       <div v-if="publicaciones.length === 0" class="tac mt4rem">
         No hay publicaciones aún.
       </div>
-      <ul>
-        <li v-for="pub in publicaciones" :key="pub._id" class="publicacion-list-item">
-          <span class="pub-tipo">[{{ pub.tipo.toUpperCase() }}]</span>
-          <span class="pub-texto">{{ pub.texto }}</span>
-          <span class="pub-meta">
-            <template v-if="pub.regionId"> | Región: {{ pub.regionId.nombre }}</template>
-            <template v-if="pub.comunaId"> | Comuna: {{ pub.comunaId.nombre }}</template>
-            <template v-if="pub.instalacionId"> | Instalación: {{ pub.instalacionId.nombre }}</template>
-          </span>
-          <span class="pub-fecha">({{ new Date(pub.fecha).toLocaleString() }})</span>
-          <div v-if="pub.imagenes && pub.imagenes.length" class="pub-imagenes">
-            <img v-for="img in pub.imagenes" :key="img" :src="img" class="pub-img" />
-          </div>
-        </li>
-      </ul>
+      <div>
+        <PostBoxFeed
+          v-for="pub in publicaciones"
+          :key="pub._id"
+          :username="pub.publicadorId?.nombre || 'Usuario'"
+          :tipo="pub.tipo"
+          :fecha="new Date(pub.fecha).toLocaleString()"
+          :texto="pub.texto"
+          :imagenes="pub.imagenes"
+          :region="pub.regionId?.nombre"
+          :comuna="pub.comunaId?.nombre"
+          :instalacion="pub.instalacionId?.nombre"
+          :likes="210"
+          :comentarios="15"
+        />
+      </div>
     </div>
   </div>
 </template>
