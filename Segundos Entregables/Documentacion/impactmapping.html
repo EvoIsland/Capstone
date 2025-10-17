@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Completa de Impact Mapping: ConexionesKimal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            max-width: 1600px;
+            width: 100%;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+        .explanation-column, .map-column {
+            padding: 20px;
+        }
+        .explanation-column {
+            border-right: 1px solid #e9ecef;
+        }
+        h1, h2, h3 {
+            color: #212529;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 2em;
+        }
+        h2 {
+            font-size: 1.5em;
+        }
+        p, li {
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        .part {
+            margin-bottom: 20px;
+        }
+        .part-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #0056b3;
+        }
+        .mermaid {
+            width: 100%;
+            height: 100%;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .explanation-column {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+                padding-bottom: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="explanation-column">
+            <h1>Guía de Impact Mapping</h1>
+            
+            <h2>¿Qué es?</h2>
+            <p>El Impact Mapping es una técnica de planificación estratégica visual. Su objetivo es asegurar que cada producto o funcionalidad que se construye esté directamente conectado con un objetivo de negocio claro, evitando desperdiciar recursos en ideas que no generan un valor real.</p>
+            
+            <h3>¿Cómo debería verse?</h3>
+            <p>Se visualiza como un **mapa mental** que se expande de izquierda a derecha, respondiendo a 4 preguntas clave en orden:</p>
+            
+            <div class="part">
+                <p class="part-title">1. OBJETIVO (El POR QUÉ)</p>
+                <p>Es la meta de negocio que queremos alcanzar. Debe ser medible y clara. Es el centro del mapa.</p>
+            </div>
+            
+            <div class="part">
+                <p class="part-title">2. ACTORES (El QUIÉN)</p>
+                <p>Son las personas o grupos que pueden ayudarnos a lograr el objetivo. Son las primeras ramas del mapa.</p>
+            </div>
+            
+            <div class="part">
+                <p class="part-title">3. IMPACTOS (El CÓMO)</p>
+                <p>Son los cambios de comportamiento que buscamos en nuestros actores para que nos ayuden a alcanzar el objetivo.</p>
+            </div>
+            
+            <div class="part">
+                <p class="part-title">4. ENTREGABLES (El QUÉ)</p>
+                <p>Son las funcionalidades, acciones o productos que nuestro equipo puede crear para generar esos impactos. Son las hojas finales del mapa.</p>
+            </div>
+        </div>
+
+        <div class="map-column">
+            <h2>Impact Map: Proyecto ConexionesKimal</h2>
+            <!-- 
+              NOTA: Se ha simplificado el código del diagrama eliminando iconos y saltos de línea
+              para mejorar el espaciado automático y evitar que los nodos se superpongan.
+            -->
+            <div class="mermaid">
+            mindmap
+              root((Mejorar Comunicación y Transparencia))
+                (Vecinos y Residentes)
+                  (Que usen la plataforma como canal oficial)
+                    (Foro Comunitario)
+                    (Mapa Interactivo)
+                    (Creación fácil de Reportes)
+                  (Que se sientan escuchados)
+                    (Notificaciones por email)
+                    (Estados de reporte)
+                    (Perfiles verificados de Kimal)
+                  (Que perciban transparencia)
+                    (Sección "Noticias" en Mapa)
+                    (Landing Page clara)
+                    (Historial público de preguntas)
+                (Líderes Comunitarios)
+                  (Que centralicen inquietudes)
+                    (Función "Seguir" instalación)
+                    (Botón para compartir respuestas)
+                (Equipo Kimal)
+                  (Que respondan más rápido)
+                    (Dashboard de gestión)
+                    (Integración con Strapi)
+                    (Chatbot para FAQ)
+                  (Que identifiquen problemas)
+                    (Módulo de reportería)
+                (Gerencia Kimal)
+                  (Que visualicen el impacto)
+                    (Dashboard con KPIs)
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+
+</body>
+</html>
