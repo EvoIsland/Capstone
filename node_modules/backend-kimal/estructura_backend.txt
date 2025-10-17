@@ -1,0 +1,25 @@
+backend-kimal - Descripción de carpetas
+========================================
+
+src/                Código fuente principal del backend.
+  config/           Configuración de la base de datos y parámetros globales.
+  middlewares/      Middlewares personalizados (ej: autenticación).
+  models/           Modelos de datos y lógica de acceso a la base de datos.
+  plugins/          Plugins para extender funcionalidades (ej: auth, soporte).
+  routes/           Definición de rutas de la API.
+  schemas/          Esquemas de validación de datos (ej: usuarios, auth).
+  app.ts            Archivo principal de arranque de la app.
+
+test/               Pruebas unitarias y helpers para testear middlewares, plugins y rutas.
+
+package.json, tsconfig.json: Configuración del proyecto y dependencias.
+README.md, TAREAS_BACKEND.md: Documentación y tareas del backend.
+
+
+Comunicación entre carpetas
+===========================
+- app.ts importa la configuración (config/), inicializa middlewares (middlewares/), define rutas (routes/) y conecta modelos (models/).
+- routes/ utiliza middlewares/ para proteger rutas y schemas/ para validar datos.
+- models/ define la estructura de los datos que usan las rutas y los plugins.
+- plugins/ proveen funciones auxiliares que pueden ser usadas en middlewares, rutas o modelos.
+- test/ importa módulos de src/ para probar su funcionamiento.

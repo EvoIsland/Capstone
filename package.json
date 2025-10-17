@@ -1,5 +1,31 @@
 {
-  "dependencies": {
-    "swiper": "^12.0.2"
-  }
+  "name": "capstone",
+  "private": true,
+  "workspaces": [
+    "frontend-kimal",
+    "backend-kimal",
+    "forokimal",
+    "cms-conexiones-kimal"
+  ],
+  "scripts": {
+    "dev": "yarn dev:frontend & yarn dev:backend & yarn dev:foro & yarn dev:cms",
+    "dev:frontend": "yarn workspace frontend-kimal dev",
+    "dev:backend": "yarn workspace backend-kimal dev",
+    "dev:foro": "yarn workspace forokimal dev",
+    "dev:cms": "yarn workspace cms-conexiones-kimal develop",
+    "build": "yarn build:frontend && yarn build:backend && yarn build:foro && yarn build:cms",
+    "build:frontend": "yarn workspace frontend-kimal build",
+    "build:backend": "yarn workspace backend-kimal build",
+    "build:foro": "yarn workspace forokimal build",
+    "build:cms": "yarn workspace cms-conexiones-kimal build",
+    "start:frontend": "yarn workspace frontend-kimal start",
+    "start:backend": "yarn workspace backend-kimal start",
+    "start:foro": "yarn workspace forokimal start",
+    "start:cms": "yarn workspace cms-conexiones-kimal start",
+    "clean": "yarn workspace frontend-kimal clean && yarn workspace backend-kimal clean && yarn workspace forokimal clean && yarn workspace cms-conexiones-kimal clean && rm -rf node_modules && yarn cache clean"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "packageManager": "yarn@4.10.3"
 }
