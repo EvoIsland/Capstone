@@ -75,21 +75,15 @@ import { useAuth } from '../../../composables/useAuth';
 import { useRouter } from 'vue-router';
 import type { Region, Comuna, Instalacion } from '~/types';
 
-
-definePageMeta({
-  middleware: 'admin' 
-});
-
-
 const { accessToken, user } = useAuth();
 const router = useRouter();
 
 // --- Protección de Página ---
-if (user.value?.rol !== 'admin') {
-  if (process.client) {
+onMounted(() => {
+  if (!user.value || user.value.rol !== 'admin') {
     router.replace('/');
   }
-}
+});
 
 // --- Estado del Formulario ---
 const form = ref({
@@ -99,7 +93,7 @@ const form = ref({
   comunaId: '',
   instalacionId: '',
 });
-const imagenFiles = ref<File[]>([]); // Para guardar los archivos de imagen
+const imagenFiles = ref<File[]>([]);
 const error = ref('');
 const success = ref('');
 const isLoading = ref(false);
@@ -151,16 +145,15 @@ const handleFileChange = (e: Event) => {
   const files = (e.target as HTMLInputElement).files;
   if (!files) return;
   imagenFiles.value = Array.from(files).slice(0, 3);
-  
-  // Validaciones de archivos (como en tu original)
+
   for (const file of imagenFiles.value) {
     if (file.size > 2 * 1024 * 1024) {
       error.value = 'Cada imagen debe pesar máximo 2MB.';
-      (e.target as HTMLInputElement).value = ''; // Limpiar input
+      (e.target as HTMLInputElement).value = '';
       return;
     }
   }
-  error.value = ''; // Limpiar error si todo está bien
+  error.value = '';
 };
 
 // --- Lógica de Envío con FormData ---
@@ -170,29 +163,23 @@ const handleSubmit = async () => {
   isLoading.value = true;
 
   try {
-    // 1. Construir FormData
     const fd = new FormData();
     fd.append('tipo', 'noticia');
     fd.append('titulo', form.value.titulo);
     fd.append('texto', form.value.texto);
-    
-    // Añadir campos opcionales solo si tienen valor
+
     if (form.value.regionId) fd.append('regionId', form.value.regionId);
     if (form.value.comunaId) fd.append('comunaId', form.value.comunaId);
     if (form.value.instalacionId) fd.append('instalacionId', form.value.instalacionId);
-    
-    // Añadir las imágenes
+
     imagenFiles.value.forEach((file) => {
       fd.append('imagenes', file, file.name);
     });
 
-    // 2. Enviar FormData
-    // $fetch detectará FormData y NO enviará 'Content-Type: application/json'
     await $fetch('http://localhost:5000/noticia', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`,
-        // NO agregues 'Content-Type' aquí
       },
       body: fd,
     });

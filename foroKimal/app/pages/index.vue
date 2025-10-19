@@ -50,31 +50,22 @@
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRouter } from 'vue-router'
+import { useAuth } from '../../composables/useAuth' // Importa el composable
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
 const router = useRouter()
+const { login, error: authError, loading: authLoading } = useAuth() // Usa el composable
 
 const handleLogin = async () => {
   error.value = ''
   loading.value = true
-  try {
-    const res = await fetch('http://localhost:5000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo: email.value, contraseña: password.value })
-    })
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Error de autenticación')
-    localStorage.setItem('accessToken', data.token)
-    // Redirigir a foroMain
-    router.push('/foroMain')
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+  const success = await login({ correo: email.value, contraseña: password.value })
+  loading.value = false
+  if (!success) {
+    error.value = authError.value || 'Error de autenticación'
   }
 }
 
