@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 
 interface User {
@@ -15,12 +14,15 @@ interface AuthResponse {
 }
 
 export const useAuth = () => {
+
   const user = useState<User | null>('user', () => null)
   const accessToken = useLocalStorage('accessToken', '')
   const loading = useState('auth-loading', () => false)
   const error = useState<string | null>('auth error', () => null)
 
   const API_URL = 'http://localhost:5000'
+
+  const router = useRouter();
 
   const register = async (userData: {
     nombre: string
@@ -78,17 +80,26 @@ export const useAuth = () => {
         throw new Error(data.error || 'Error en el inicio de sesión')
       }
 
-  const data = await response.json()
-  user.value = data.user
-  accessToken.value = data.token
+      const data = await response.json()
 
-      return true
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Error en el inicio de sesión'
-      return false
-    } finally {
-      loading.value = false
-    }
+      console.log('DATOS RECIBIDOS DEL LOGIN: ', data)
+
+      user.value = data.user
+      accessToken.value = data.token
+
+
+      if (data.user.rol === 'admin') {
+        await router.push('/admin/crear-noticia')
+      } else {
+        await router.push('/foroMain')
+      }
+        return true
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Error en el inicio de sesión'
+        return false
+      } finally {
+        loading.value = false
+      }
   }
 
   const logout = async () => {
