@@ -6,6 +6,7 @@ interface User {
   nombre: string
   apellido: string
   correo: string
+  rol: 'usuario' | 'admin';
 }
 
 interface AuthResponse {
@@ -14,10 +15,10 @@ interface AuthResponse {
 }
 
 export const useAuth = () => {
-  const user = ref<User | null>(null)
+  const user = useState<User | null>('user', () => null)
   const accessToken = useLocalStorage('accessToken', '')
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const loading = useState('auth-loading', () => false)
+  const error = useState<string | null>('auth error', () => null)
 
   const API_URL = 'http://localhost:5000'
 

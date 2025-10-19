@@ -1,6 +1,5 @@
 <template>
   <div class="foro-main-lista">
-    <h1 class="titulo tac mb2rem">¡Bienvenido al Foro Kimal!</h1>
     <div v-if="cargandoPublicaciones" class="tac mt4rem">Cargando publicaciones...</div>
     <div v-else-if="errorPublicaciones" class="text-red-800 tac mt4rem">{{ errorPublicaciones }}</div>
     <div v-else>

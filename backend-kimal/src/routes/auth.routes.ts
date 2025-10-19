@@ -140,7 +140,8 @@ const authRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
                     id: user._id.toString(),
                     nombre: user.nombre,
                     apellido: user.apellido,
-                    correo: user.correo
+                    correo: user.correo,
+                    rol: user.rol
                 }
             });
 

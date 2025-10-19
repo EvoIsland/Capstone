@@ -38,7 +38,8 @@ export async function authenticateToken(request: FastifyRequest, reply: FastifyR
             _id: user._id.toString(),
             nombre: user.nombre,
             apellido: user.apellido,
-            correo: user.correo
+            correo: user.correo,
+            rol: user.rol,
         };
 
         // Verificar si el token está próximo a expirar (menos de 1 hora)
@@ -72,6 +73,7 @@ declare module 'fastify' {
             nombre: string;
             apellido: string;
             correo: string;
+            rol:string;
         };
     }
 }
