@@ -37,6 +37,18 @@
           <input :value="comunaAuto" class="post-input" placeholder="Comuna (automático)" readonly />
         </template>
 
+        <div class="form-group">
+          <label for="imagenes">Imágenes (Máx 3)</label>
+          <input
+            id="imagenes"
+            type="file"
+            class="form-input"
+            multiple
+            accept="image/png,image/jpeg"
+            @change="handleFileChange"
+          />
+        </div>      
+
         <div class="form-actions">
           <button type="button" @click="closeModal" class="post-btn post-btn-cancel">Cancelar</button>
           <button type="submit" class="post-btn">Publicar</button>
@@ -63,6 +75,22 @@ const closeModal = () => {
 
 const { accessToken } = useAuth()
 
+const imagenFiles = ref<File[]>([]);
+
+const handleFileChange = (e: Event) => {
+  const files = (e.target as HTMLInputElement).files;
+  if (!files) return;
+  imagenFiles.value = Array.from(files).slice(0, 3);
+
+  for (const file of imagenFiles.value) {
+    if (file.size > 2 * 1024 * 1024) {
+      error.value = 'Cada imagen debe pesar máximo 2MB.';
+      (e.target as HTMLInputElement).value = '';
+      return;
+    }
+  }
+  error.value = '';
+};
 
 const form = ref({
   tipo: 'pregunta',
@@ -129,41 +157,42 @@ onMounted(async () => {
   }
 });
 
-// --- ENVÍO DEL FORMULARIO ---
 const handleSubmit = async () => {
   error.value = '';
   success.value = '';
 
-  // Aquí iría tu lógica de envío con $fetch a /api/publicacion
   try {
-    const body: any = {
-      tipo: form.value.tipo,
-      texto: form.value.texto,
-    };
-    
+    const fd = new FormData();
+    fd.append('tipo', form.value.tipo);
+    fd.append('texto', form.value.texto);
+
     if (form.value.tipo === 'pregunta') {
-      if (form.value.regionId) body.regionId = form.value.regionId;
-      if (form.value.comunaId) body.comunaId = form.value.comunaId;
+      if (form.value.regionId) fd.append('regionId', form.value.regionId);
+      if (form.value.comunaId) fd.append('comunaId', form.value.comunaId);
     } else if (form.value.tipo === 'reporte') {
       if (!form.value.instalacionId) {
         error.value = 'Debes seleccionar una instalación para el reporte.';
         return;
       }
-      body.instalacionId = form.value.instalacionId;
+      fd.append('instalacionId', form.value.instalacionId);
     }
+
+    imagenFiles.value.forEach((file) => {
+      fd.append('imagenes', file, file.name);
+    });
 
     await $fetch('http://localhost:5000/publicacion', {
       method: 'POST',
-      body: body,
-
+      body: fd,
       headers: { 'Authorization': `Bearer ${accessToken.value}` }
+      // NO agregues 'Content-Type'
     });
 
     success.value = '¡Publicación creada con éxito!';
-    // Limpiar formulario y cerrar modal después de un momento
     setTimeout(() => {
       form.value.texto = '';
       form.value.tipo = 'pregunta';
+      imagenFiles.value = [];
       closeModal();
     }, 1500);
 

@@ -7,6 +7,7 @@ export interface IUser {
   apellido: string;
   correo: string;
   contraseña: string;
+  rol: 'usuario' | 'admin'
   recibirCartas: boolean;
   puebloOriginario: boolean;
   nombrePueblo?: string;
@@ -23,6 +24,10 @@ const userSchema = new mongoose.Schema<IUser>({
   apellido: { type: String, required: true },
   correo: { type: String, required: true, unique: true },
   contraseña: { type: String, required: true },
+  rol: { type: String,
+         enum: ['usuario', 'admin'],
+         default: 'usuario'
+  },
   recibirCartas: { type: Boolean, default: false },
   puebloOriginario: { type: Boolean, default: false },
   nombrePueblo: { type: String },
