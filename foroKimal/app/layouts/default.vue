@@ -34,10 +34,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
+import { useAuth } from '../../composables/useAuth';
 
+const { user, getProfile } = useAuth()
 
 const showAddPostModal = ref(false) //Se asigna de manera predeterimanda que el postModal este cerrado
 const activeTab = ref('general')
+
 
 
 function openAddPostModal(){
@@ -50,10 +53,20 @@ function handleScroll() {
 }
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  getProfile()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
+
+const userInitial = computed(() =>{
+  if (user.value && user.value.nombre) {
+    return user.value.nombre.charAt(0).toUpperCase()
+  }
+  return ''
+})
+
 </script>
 
 <style scoped lang="sass">
