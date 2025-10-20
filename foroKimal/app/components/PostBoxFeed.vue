@@ -1,5 +1,5 @@
 <template>
-  <div class="post-box" @click="$emit('abrirDetalle', publicacionId)">
+  <div class="post-box">
     <div class="post-header">
       <div class="avatar" :style="{ background: avatarColor }">{{ userInitials }}</div>
       <div class="post-info">
@@ -9,9 +9,11 @@
         </div>
         <span class="time">{{ fecha }}</span>
       </div>
-      <div class="post-options">...</div>
+      <div class="post-options">
+        <IconifyIcon icon="mdi:dots-horizontal" width="24" height="24" />
+      </div>
     </div>
-    <div class="post-content">
+    <div class="post-content" @click="$emit('abrirDetalle', publicacionId)">
       <span class="username-bold">{{ username }}</span>
       <span>{{ texto }}</span>
       <span v-if="region"> | Región: {{ region }}</span>
@@ -23,11 +25,18 @@
     </div>
     <div class="post-actions">
       <button @click="toggleLike">
-        <span v-if="userLiked">❤️ Quitar Me gusta</span>
-        <span v-else>🤍 Me gusta</span>
+        <IconifyIcon :icon="userLiked ? 'mdi:heart' : 'mdi:heart-outline'" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+        <span v-if="userLiked">Quitar Me gusta</span>
+        <span v-else>Me gusta</span>
       </button>
-      <span>💬 Comentar</span>
-      <span>🔗 Compartir</span>
+      <button @click="$emit('abrirDetalle', publicacionId)">
+        <IconifyIcon icon="mdi:comment-outline" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+        Comentar
+      </button>
+      <button @click="compartir">
+        <IconifyIcon icon="mdi:share-variant" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+        Compartir
+      </button>
     </div>
 
     <div class="post-likes" v-if="likesTotal > 0">
@@ -38,46 +47,14 @@
         </span>
       </div>
     </div>
-
-      <div class="comentarios-section">
-    <h4>Comentarios</h4>
-    <div v-if="cargandoComentarios">Cargando...</div>
-    <div v-else>
-      <ComentarioItem
-        v-for="comentario in comentarios"
-        :key="comentario._id"
-        :comentario="comentario"
-        @responder="responderAComentario"
-      />
-    </div>
-
-    <div class="comentario-form">
-      <textarea v-model="nuevoComentario" placeholder="Escribe un comentario..."></textarea>
-      <div v-if="respuestaA">
-        <span>Respondiendo a un comentario</span>
-        <button @click="cancelarRespuesta">Cancelar</button>
-      </div>
-      <button @click="enviarComentario">Comentar</button>
-    </div>
-  </div>
-
-     <!-- <div class="post-likes">
-      <b>A {{ likes }} personas les gusta esto</b>
-    </div> -->
-    <!-- <div class="post-comments">
-      Ver los {{ comentarios }} comentarios
-    </div>
-    <div class="post-add-comment">
-      <div class="avatar small">YO</div>
-      <input type="text" placeholder="Añade un comentario..." />
-      <button>Publicar</button>
-    </div>  -->
   </div>
 </template>
 
 <script setup lang="ts">
+
 import { ref, computed, onMounted } from 'vue'
 import { useAuth } from '../../composables/useAuth'
+import { Icon as IconifyIcon } from '@iconify/vue'
 
 interface LikesResponse {
   total: number;
@@ -109,12 +86,14 @@ const nuevoComentario = ref('');
 const respuestaA = ref<string | null>(null);
 const cargandoComentarios = ref(false);
 
+
 const fetchLikes = async () => {
   const res = await $fetch<LikesResponse>(`http://localhost:5000/publicacion/${props.publicacionId}/likes`);
   likesTotal.value = res.total;
   likesUsuarios.value = res.usuarios;
-  userLiked.value = res.usuarios.some((u: any) => u._id === user.value?._id);
+  userLiked.value = res.usuarios.some((u: any) => u._id === (user.value && (user.value._id || user.value.id)));
 };
+
 
 const toggleLike = async () => {
   await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/like`, {
@@ -124,37 +103,14 @@ const toggleLike = async () => {
   fetchLikes();
 };
 
-const fetchComentarios = async () =>{
-  cargandoComentarios.value = true;
-  comentarios.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentarios`);
-  cargandoComentarios.value = false;
-};
 
-const enviarComentario = async () => {
-  if (!nuevoComentario.value.trim()) return;
-  await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentario`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken.value}` },
-    body: {
-      texto: nuevoComentario.value,
-      respuestaA: respuestaA.value || undefined
-    }
-  });
-  nuevoComentario.value = '';
-  respuestaA.value = null;
-  fetchComentarios();
+const compartir = () => {
+  const url = `${window.location.origin}/publicacion/${props.publicacionId}`;
+  navigator.clipboard.writeText(url);
+  alert('¡Enlace copiado al portapapeles!');
 };
-
-const responderAComentario = (comentarioId: string) => {
-  respuestaA.value = comentarioId;
-};
-const cancelarRespuesta = () => {
-  respuestaA.value = null;
-};
-
 
 onMounted(fetchLikes);
-onMounted(fetchComentarios);
 
 const userInitials = computed(() => props.username?.split('_').map(n => n[0]).join('').toUpperCase() || 'US')
 const typeClass = computed(() => props.tipo === 'Reporte' ? 'report' : 'question')
