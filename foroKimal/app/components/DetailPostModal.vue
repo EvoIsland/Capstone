@@ -17,11 +17,18 @@
         <!-- Acciones -->
         <div class="post-actions">
           <button @click="toggleLike">
-            <span v-if="userLiked">❤️ Quitar Me gusta</span>
-            <span v-else>🤍 Me gusta</span>
+            <IconifyIcon :icon="userLiked ? 'mdi:heart' : 'mdi:heart-outline'" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+            <span v-if="userLiked">Quitar Me gusta</span>
+            <span v-else>Me gusta</span>
           </button>
-          <span>{{ likesTotal }} Me gusta</span>
-          <button @click="compartir">🔗 Compartir</button>
+          <span class="likes-count">
+            <IconifyIcon icon="mdi:account-heart" width="18" height="18" style="vertical-align: middle; margin-right: 4px;" />
+            {{ likesTotal }} Me gusta
+          </span>
+          <button @click="compartir">
+            <IconifyIcon icon="mdi:share-variant" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+            Compartir
+          </button>
         </div>
         <div v-if="likesUsuarios.length" class="likes-list">
           <span v-for="usuario in likesUsuarios" :key="usuario._id" class="like-user">
@@ -48,7 +55,10 @@
               <span>Respondiendo a un comentario</span>
               <button @click="cancelarRespuesta">Cancelar</button>
             </div>
-            <button @click="enviarComentario">Publicar Respuesta</button>
+            <button @click="enviarComentario">
+              <IconifyIcon icon="mdi:send" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
+              Publicar Respuesta
+            </button>
           </div>
         </div>
       </div>
@@ -60,8 +70,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useAuth } from '../../composables/useAuth'
-
-// Componente recursivo para comentarios y respuestas
+import { Icon as IconifyIcon } from '@iconify/vue'
 import ComentarioItem from '../components/ComentarioItem.vue'
 
 const props = defineProps<{ publicacionId: string }>()
@@ -228,9 +237,18 @@ onMounted(() => {
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  display: flex;
+  align-items: center;
 }
 .post-actions button:hover {
   background: #e6006d;
+}
+.likes-count {
+  display: flex;
+  align-items: center;
+  color: #555;
+  font-size: 1rem;
+  font-weight: 500;
 }
 .likes-list {
   margin-bottom: 1rem;
