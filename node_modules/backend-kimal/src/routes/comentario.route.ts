@@ -1,7 +1,8 @@
 import { FastifyPluginAsync } from 'fastify';
-import { ComentarioModel } from '../models/comentario.model';
+import { ComentarioModel } from '../models/comentarios.model';
 import { crearComentarioSchema } from '../schemas/comentario.schema';
 import { authenticateToken } from '../middlewares/auth.middleware';
+import '../models/user.model';
 
 const ComentarioRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
 
@@ -42,9 +43,12 @@ const ComentarioRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void
     const comentariosRaiz = comentarios.filter(c => !c.respuestaA);
     const respuestas = comentarios.filter(c => c.respuestaA);
 
-    const mapRespuestas = (comentario: any) => ({
+    //CAMBIAR A FUTURO
+    const mapRespuestas = (comentario: any): any => ({
       ...comentario,
-      respuestas: respuestas.filter(r => r.respuestaA?.toString() === comentario._id.toString()).map(mapRespuestas)
+      respuestas: respuestas
+        .filter((r: any) => r.respuestaA?.toString() === comentario._id.toString())
+        .map(mapRespuestas)
     });
 
     const comentariosConRespuestas = comentariosRaiz.map(mapRespuestas);

@@ -11,7 +11,7 @@ export interface ComentarioDocument extends Document {
 
 const ComentariosSchema = new Schema<ComentarioDocument>({
     publicacionId: {type: Schema.Types.ObjectId, ref: 'Publicacion', required: true},
-    usuarioId: { type: Schema.Types.ObjectId, ref: 'user', required: true},
+    usuarioId: { type: Schema.Types.ObjectId, ref: 'User', required: true},
     texto: { type: String, required: true},
     respuestaA: {type: Schema.Types.ObjectId, ref: 'Comentario', default: null },
     fecha: {type: Date, default: Date.now}

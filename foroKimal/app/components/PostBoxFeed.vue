@@ -39,6 +39,28 @@
       </div>
     </div>
 
+      <div class="comentarios-section">
+    <h4>Comentarios</h4>
+    <div v-if="cargandoComentarios">Cargando...</div>
+    <div v-else>
+      <ComentarioItem
+        v-for="comentario in comentarios"
+        :key="comentario._id"
+        :comentario="comentario"
+        @responder="responderAComentario"
+      />
+    </div>
+
+    <div class="comentario-form">
+      <textarea v-model="nuevoComentario" placeholder="Escribe un comentario..."></textarea>
+      <div v-if="respuestaA">
+        <span>Respondiendo a un comentario</span>
+        <button @click="cancelarRespuesta">Cancelar</button>
+      </div>
+      <button @click="enviarComentario">Comentar</button>
+    </div>
+  </div>
+
      <!-- <div class="post-likes">
       <b>A {{ likes }} personas les gusta esto</b>
     </div> -->
@@ -77,9 +99,15 @@ const props = defineProps({
 
 const { user, accessToken } = useAuth();
 
+
 const likesTotal = ref(0);
 const likesUsuarios = ref<{ _id: string; nombre: string }[]>([]);
 const userLiked = ref(false);
+
+const comentarios = ref<any[]>([]);
+const nuevoComentario = ref('');
+const respuestaA = ref<string | null>(null);
+const cargandoComentarios = ref(false);
 
 const fetchLikes = async () => {
   const res = await $fetch<LikesResponse>(`http://localhost:5000/publicacion/${props.publicacionId}/likes`);
@@ -96,7 +124,37 @@ const toggleLike = async () => {
   fetchLikes();
 };
 
+const fetchComentarios = async () =>{
+  cargandoComentarios.value = true;
+  comentarios.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentarios`);
+  cargandoComentarios.value = false;
+};
+
+const enviarComentario = async () => {
+  if (!nuevoComentario.value.trim()) return;
+  await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentario`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken.value}` },
+    body: {
+      texto: nuevoComentario.value,
+      respuestaA: respuestaA.value || undefined
+    }
+  });
+  nuevoComentario.value = '';
+  respuestaA.value = null;
+  fetchComentarios();
+};
+
+const responderAComentario = (comentarioId: string) => {
+  respuestaA.value = comentarioId;
+};
+const cancelarRespuesta = () => {
+  respuestaA.value = null;
+};
+
+
 onMounted(fetchLikes);
+onMounted(fetchComentarios);
 
 const userInitials = computed(() => props.username?.split('_').map(n => n[0]).join('').toUpperCase() || 'US')
 const typeClass = computed(() => props.tipo === 'Reporte' ? 'report' : 'question')
