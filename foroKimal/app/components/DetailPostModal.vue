@@ -52,12 +52,12 @@
           <div class="comentario-form">
             <textarea v-model="nuevoComentario" placeholder="Escribe tu respuesta..."></textarea>
             <div v-if="respuestaA">
-              <span>Respondiendo a un comentario</span>
+              <span>Escribe tu respuesta...</span>
               <button @click="cancelarRespuesta">Cancelar</button>
             </div>
             <button @click="enviarComentario">
               <IconifyIcon icon="mdi:send" width="20" height="20" style="vertical-align: middle; margin-right: 6px;" />
-              Publicar Respuesta
+              Publicar Comentario
             </button>
           </div>
         </div>

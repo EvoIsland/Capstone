@@ -10,37 +10,6 @@
             <p class="brand-subtitle">Línea Kimal - Lo Aguirre</p>
           </div>
         </div>
-
-        <!-- Menú central -->
-        <div class="navbar-menu">
-          <div class="menu-icon">
-            <span class="menu-line"></span>
-            <span class="menu-line"></span>
-            <span class="menu-line"></span>
-          </div>
-          <div class="menu-plus">
-            <span class="plus-icon">+</span>
-          </div>
-        </div>
-
-        <!-- Elementos derecha -->
-        <div class="navbar-right">
-          <!-- Bandera Chile -->
-          <div class="flag-chile">
-            <div class="flag-blue">
-              <span class="flag-star">★</span>
-            </div>
-            <div class="flag-white"></div>
-            <div class="flag-red"></div>
-          </div>
-
-          <!-- Avatar usuario -->
-          <div class="user-avatar">
-            <div class="avatar-circle">
-              <span class="avatar-icon">👤</span>
-            </div>
-          </div>
-        </div>
       </div>
     </nav>
 

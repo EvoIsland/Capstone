@@ -40,25 +40,25 @@
             </div>
             
             <!-- Lado derecho - Panel Verde -->
-            <div class="lado lado-derecho">
+            <!-- <div class="lado lado-derecho">
                 <div class="panel-noticias-proyecto">
                     <h2 class="titulo-panel">Noticias sobre proyecto</h2>
                     
                     <!-- Mapa pequeño -->
-                    <div class="mapa-pequeno">
+                    <!-- <div class="mapa-pequeno">
                         <img src="#" alt="Mapa pequeño" class="imagen-mapa-pequeno">
-                    </div>
+                    </div> -->
                     
                     <!-- Texto informativo -->
-                    <div class="texto-informativo">
+                    <!-- <div class="texto-informativo">
                         <h3 class="titulo-informacion">Información sobre noticias</h3>
                         <p class="descripcion-informacion">
                             Mantente informado sobre los últimos avances del proyecto HVDC Kimal-Lo Aguirre, 
                             incluyendo actualizaciones de construcción y beneficios para las comunidades.
                         </p>
-                    </div>
-                </div>
-            </div>
+                    </div> -->
+                <!-- </div>
+            </div>  -->
         </div>
     </section>
 </template>
