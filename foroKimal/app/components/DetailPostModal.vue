@@ -146,91 +146,168 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 1000;
+  align-items: flex-start;
+  z-index: 2000;
+  padding-top: 90px; /* Altura del navbar + margen extra */
+  box-sizing: border-box;
 }
 .modal-content {
-  background: #fff;
-  border-radius: 16px;
+  width: 90vw;
   max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 2rem;
+  background: #f7f7f7;
+  border-radius: 2.5rem;
+  box-shadow: 0 4px 32px 0 #0000004a;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
   position: relative;
+  max-height: calc(90vh - 90px);
+  overflow-y: auto;
 }
 .close-btn {
   position: absolute;
-  top: 1rem; right: 1rem;
+  top: 1.5rem;
+  right: 1.5rem;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  color: #ff3388;
   cursor: pointer;
+  transition: color 0.2s;
+}
+.close-btn:hover {
+  color: #e6006d;
 }
 .post-header {
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 .post-type {
   background: #ffe082;
   color: #333;
-  border-radius: 8px;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.9rem;
-  font-weight: bold;
+  border-radius: 1.2rem;
+  padding: 0.3rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
 }
 .post-author {
-  font-weight: bold;
+  font-weight: 500;
+  color: #6d6d6d;
 }
 .post-date {
   color: #888;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  margin-left: auto;
 }
 .post-actions {
   display: flex;
-  gap: 1rem;
+  gap: 1.2rem;
   align-items: center;
-  margin: 1rem 0;
+  margin: 1.2rem 0;
+}
+.post-actions button {
+  background: #ff3388;
+  color: #fff;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.post-actions button:hover {
+  background: #e6006d;
 }
 .likes-list {
   margin-bottom: 1rem;
   font-size: 0.95rem;
   color: #555;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 .like-user {
-  margin-right: 8px;
+  background: #e9e2f5;
+  border-radius: 1rem;
+  padding: 0.2rem 0.8rem;
+  font-size: 0.95rem;
+  color: #333;
 }
 .comentarios-section {
-  margin-top: 2rem;
+  margin-top: 2.2rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 4px #0001;
+  padding: 1.5rem;
+}
+.comentarios-section h4 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 1rem;
 }
 .comentario-form {
-  margin-top: 1rem;
+  margin-top: 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.7rem;
 }
 .comentario-form textarea {
   width: 100%;
   min-height: 60px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 0.5rem;
+  border-radius: 2rem;
+  border: none;
+  background: #e9e2f5;
+  color: #333;
+  font-size: 1.05rem;
+  padding: 1rem 1.5rem;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+.comentario-form textarea::placeholder {
+  color: #6d6d6d;
+  opacity: 0.8;
+}
+.comentario-form textarea:focus {
+  box-shadow: 0 0 0 2px #b388f5cc;
 }
 .comentario-form button {
   align-self: flex-end;
-  background: #1976d2;
+  background: #ff3388;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1.2rem;
+  border-radius: 1.5rem;
+  padding: 0.5rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
+}
+.comentario-form button:hover {
+  background: #e6006d;
+}
+.comentario-form > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffe0e9;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  color: #d8000c;
 }
 </style>
