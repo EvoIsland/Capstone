@@ -50,14 +50,14 @@
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../../composables/useAuth' // Importa el composable
+import { useAuth } from '../../composables/useAuth' 
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
 const router = useRouter()
-const { login, error: authError, loading: authLoading } = useAuth() // Usa el composable
+const { login, error: authError, loading: authLoading } = useAuth()
 
 const handleLogin = async () => {
   error.value = ''

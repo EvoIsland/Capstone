@@ -8,18 +8,17 @@
       </div>
       <div>
         <PostBoxFeed
-          v-for="pub in publicaciones"
-          :key="pub._id"
-          :username="pub.publicadorId?.nombre || 'Usuario'"
-          :tipo="pub.tipo"
-          :fecha="new Date(pub.fecha).toLocaleString()"
-          :texto="pub.texto"
-          :imagenes="pub.imagenes"
-          :region="pub.regionId?.nombre"
-          :comuna="pub.comunaId?.nombre"
-          :instalacion="pub.instalacionId?.nombre"
-          :likes="210"
-          :comentarios="15"
+          v-for="publicacion in publicaciones"
+          :key="publicacion._id"
+          :publicacionId="publicacion._id"
+          :username="publicacion.publicadorId?.nombre || 'Usuario'"
+          :tipo="publicacion.tipo"
+          :fecha="new Date(publicacion.fecha).toLocaleString()"
+          :texto="publicacion.texto"
+          :imagenes="publicacion.imagenes"
+          :region="publicacion.regionId?.nombre"
+          :comuna="publicacion.comunaId?.nombre"
+          :instalacion="publicacion.instalacionId?.nombre"
         />
       </div>
     </div>

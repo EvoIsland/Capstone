@@ -135,7 +135,6 @@ export const useAuth = () => {
       accessToken.value = data.accessToken
     } catch (e) {
       console.error('Error al renovar el token:', e)
-      // Si falla la renovación, cerrar sesión
       logout()
     }
   }

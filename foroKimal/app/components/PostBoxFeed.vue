@@ -22,28 +22,48 @@
       <img :src="imagenes[0]" alt="Imagen de Publicación" />
     </div>
     <div class="post-actions">
-      <span>🤍 Me gusta</span>
+      <button @click="toggleLike">
+        <span v-if="userLiked">❤️ Quitar Me gusta</span>
+        <span v-else>🤍 Me gusta</span>
+      </button>
       <span>💬 Comentar</span>
       <span>🔗 Compartir</span>
     </div>
-    <!-- <div class="post-likes">
-      <b>A {{ likes }} personas les gusta esto</b>
+
+    <div class="post-likes" v-if="likesTotal > 0">
+      <b>{{ likesTotal }} personas les gusta esto</b>
+      <div>
+        <span v-for="usuario in likesUsuarios" :key="usuario._id" style="margin-right: 8px;">
+          {{ usuario.nombre }}
+        </span>
+      </div>
     </div>
-    <div class="post-comments">
+
+     <!-- <div class="post-likes">
+      <b>A {{ likes }} personas les gusta esto</b>
+    </div> -->
+    <!-- <div class="post-comments">
       Ver los {{ comentarios }} comentarios
     </div>
     <div class="post-add-comment">
       <div class="avatar small">YO</div>
       <input type="text" placeholder="Añade un comentario..." />
       <button>Publicar</button>
-    </div> -->
+    </div>  -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useAuth } from '../../composables/useAuth'
+
+interface LikesResponse {
+  total: number;
+  usuarios: { _id: string; nombre: string }[];
+}
 
 const props = defineProps({
+  publicacionId: { type: String, required: true },
   username: { type: String, default: 'Usuario' },
   tipo: { type: String, required: true },
   fecha: { type: String, required: true },
@@ -52,10 +72,31 @@ const props = defineProps({
   region: String,
   comuna: String,
   instalacion: String,
-  likes: { type: Number, default: 0 },
-  comentarios: { type: Number, default: 0 },
   avatarColor: { type: String, default: '#FFD600' }
 })
+
+const { user, accessToken } = useAuth();
+
+const likesTotal = ref(0);
+const likesUsuarios = ref<{ _id: string; nombre: string }[]>([]);
+const userLiked = ref(false);
+
+const fetchLikes = async () => {
+  const res = await $fetch<LikesResponse>(`http://localhost:5000/publicacion/${props.publicacionId}/likes`);
+  likesTotal.value = res.total;
+  likesUsuarios.value = res.usuarios;
+  userLiked.value = res.usuarios.some((u: any) => u._id === user.value?._id);
+};
+
+const toggleLike = async () => {
+  await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/like`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken.value}` }
+  });
+  fetchLikes();
+};
+
+onMounted(fetchLikes);
 
 const userInitials = computed(() => props.username?.split('_').map(n => n[0]).join('').toUpperCase() || 'US')
 const typeClass = computed(() => props.tipo === 'Reporte' ? 'report' : 'question')
