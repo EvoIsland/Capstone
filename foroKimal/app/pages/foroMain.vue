@@ -11,6 +11,7 @@
           v-for="publicacion in publicaciones"
           :key="publicacion._id"
           :publicacionId="publicacion._id"
+          @abrirDetalle="abrirDetalle(publicacion._id)"
           :username="publicacion.publicadorId?.nombre || 'Usuario'"
           :tipo="publicacion.tipo"
           :fecha="new Date(publicacion.fecha).toLocaleString()"
@@ -20,6 +21,11 @@
           :comuna="publicacion.comunaId?.nombre"
           :instalacion="publicacion.instalacionId?.nombre"
         />
+        <DetailPostModal
+        v-if="showPostDetail"
+        :publicacionId="selectedPublicacionId!"
+        @close="showPostDetail = false"
+      />
       </div>
     </div>
   </div>
@@ -59,6 +65,14 @@ onMounted(async () => {
 
 })
 
+
+const showPostDetail = ref(false)
+const selectedPublicacionId = ref<string | null>(null)
+
+function abrirDetalle(id: string) {
+  selectedPublicacionId.value = id
+  showPostDetail.value = true
+}
 
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="post-box">
+  <div class="post-box" @click="$emit('abrirDetalle', publicacionId)">
     <div class="post-header">
       <div class="avatar" :style="{ background: avatarColor }">{{ userInitials }}</div>
       <div class="post-info">

@@ -75,6 +75,26 @@ fastify.get('/publicaciones', async (request, reply)=> {
   }
 })
 
+fastify.get('/publicacion/:id', async (request, reply) => {
+  try {
+    const { id: publicacionId } = request.params as { id: string };
+    const publicacion = await PublicacionModel.findById(publicacionId)
+      .populate('publicadorId', 'nombre')
+      .populate('instalacionId', 'nombre')
+      .populate('comunaId', 'nombre')
+      .populate('regionId', 'nombre')
+      .lean();
+
+    if (!publicacion) {
+      return reply.status(404).send({ error: 'Publicación no encontrada' });
+    }
+
+    reply.send(publicacion);
+  } catch (error) {
+    reply.status(500).send({ error: 'Error al obtener la publicación' });
+  }
+});
+
 fastify.post('/publicacion/:id/like', { preHandler: authenticateToken }, async (request, reply) => {
   try {
     const { id: publicacionId } = request.params as { id: string };
