@@ -85,6 +85,7 @@ const fechaFormateada = computed(() =>
 const fetchPublicacion = async () => {
   publicacion.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}`)
 }
+
 const fetchLikes = async () => {
   const res = await $fetch<{ total: number; usuarios: { _id: string; nombre: string }[] }>(
     `http://localhost:5000/publicacion/${props.publicacionId}/likes`
@@ -93,11 +94,13 @@ const fetchLikes = async () => {
   likesUsuarios.value = res.usuarios
   userLiked.value = res.usuarios.some((u) => u._id === user.value?._id)
 }
+
 const fetchComentarios = async () => {
   cargandoComentarios.value = true
   comentarios.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentarios`)
   cargandoComentarios.value = false
 }
+
 const toggleLike = async () => {
   await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/like`, {
     method: 'POST',
@@ -105,6 +108,7 @@ const toggleLike = async () => {
   })
   fetchLikes()
 }
+
 const enviarComentario = async () => {
   if (!nuevoComentario.value.trim()) return
   await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentario`, {
@@ -119,12 +123,15 @@ const enviarComentario = async () => {
   respuestaA.value = null
   fetchComentarios()
 }
+
 const responderAComentario = (comentarioId: string) => {
   respuestaA.value = comentarioId
 }
+
 const cancelarRespuesta = () => {
   respuestaA.value = null
 }
+
 const compartir = () => {
   const url = `${window.location.origin}/publicacion/${props.publicacionId}`
   navigator.clipboard.writeText(url)

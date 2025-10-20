@@ -11,6 +11,18 @@ export interface SharedMedia extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedNoticiasCards extends Struct.ComponentSchema {
+  collectionName: 'components_shared_noticias_cards';
+  info: {
+    displayName: 'noticiasCards';
+  };
+  attributes: {
+    descripcion: Schema.Attribute.Text;
+    foto: Schema.Attribute.Media<'images' | 'files'>;
+    titulo: Schema.Attribute.String;
+  };
+}
+
 export interface SharedQuote extends Struct.ComponentSchema {
   collectionName: 'components_shared_quotes';
   info: {
@@ -66,6 +78,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'shared.media': SharedMedia;
+      'shared.noticias-cards': SharedNoticiasCards;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;
       'shared.seo': SharedSeo;

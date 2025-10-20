@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_shared_noticias_cards",
+  "info": {
+    "displayName": "noticiasCards"
+  },
+  "options": {},
+  "attributes": {
+    "titulo": {
+      "type": "string"
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "foto": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    }
+  },
+  "config": {}
+}
