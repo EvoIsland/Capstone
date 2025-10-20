@@ -95,7 +95,8 @@ export const useAuth = () => {
       }
         return true
       } catch (e) {
-        error.value = e instanceof Error ? e.message : 'Error en el inicio de sesión'
+        error.value = e instanceof Error ? e.message : 'Error en el inicio de sesion'
+        console.error('error en el login:' ,e)
         return false
       } finally {
         loading.value = false
@@ -139,7 +140,7 @@ export const useAuth = () => {
     }
   }
 
-  // Función para obtener el perfil del usuario
+
   const getProfile = async () => {
     try {
       const response = await fetch(`${API_URL}/profile`, {
@@ -160,7 +161,7 @@ export const useAuth = () => {
     }
   }
 
-  // Interceptor para renovar el token
+
   const fetchWithToken = async (url: string, options: RequestInit = {}) => {
     if (accessToken.value) {
       options.headers = {
