@@ -13,4 +13,5 @@ export const crearPublicacionSchema = z.object({
     instalacionId: z.string().optional(),
     comunaId: z.string().optional(),
     regionId: z.string().optional(),
+    likes: z.array(z.string()).optional(),
 });

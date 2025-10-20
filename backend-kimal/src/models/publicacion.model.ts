@@ -9,6 +9,7 @@ export interface PublicacionDocument extends Document {
     instalacionId?: Types.ObjectId;
     comunaId?: Types.ObjectId;
     regionId?: Types.ObjectId;
+    likes: Types.ObjectId[]; 
 }
 
 const PublicacionSchema = new Schema<PublicacionDocument>({
@@ -20,6 +21,7 @@ const PublicacionSchema = new Schema<PublicacionDocument>({
     instalacionId: { type: Schema.Types.ObjectId, ref: 'Instalacion'},
     comunaId: { type: Schema.Types.ObjectId, ref: 'Comuna'},
     regionId: { type: Schema.Types.ObjectId, ref: 'Region'},
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User', default: []}],
 });
 
 export const PublicacionModel = mongoose.model<PublicacionDocument>('Publicacion', PublicacionSchema);
