@@ -9,8 +9,8 @@
                     class="filtro-select"
                 >
                     <option value="">Todas las regiones</option>
-                    <option v-for="region in regiones" :key="region" :value="region">
-                        {{ region }}
+                    <option v-for="region in regiones" :key="region._id" :value="region._id">
+                        {{ region.nombre }}
                     </option>
                 </select>
             </div>
@@ -24,8 +24,8 @@
                     :disabled="!filtros.region"
                 >
                     <option value="">Todas las comunas</option>
-                    <option v-for="comuna in comunasFiltradas" :key="comuna" :value="comuna">
-                        {{ comuna }}
+                    <option v-for="comuna in comunasFiltradas" :key="comuna._id" :value="comuna._id">
+                        {{ comuna.nombre }}
                     </option>
                 </select>
             </div>
@@ -48,113 +48,55 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 
-interface Sucursal {
-    nombre: string
-    coords: number[]
-}
-
-interface Comuna {
-    nombre: string
-    sucursales: Sucursal[]
-}
-
-interface Region {
-    nombre: string
-    comunas: Comuna[]
-}
-
-interface InstalacionFlat {
-    nombre: string
-    coords: number[]
-    region: string
-    comuna: string
-}
-
 const props = defineProps<{
-    data: { regiones: Region[] }
+  data: {
+    regiones: Array<{ _id: string, nombre: string }>,
+    comunas: Array<{ _id: string, nombre: string, regionId: string }>,
+    instalaciones: Array<{ nombre: string, location: { type: string, coordinates: number[] }, regionId: string, comunaId: string }>
+  }
 }>()
 
-const emit = defineEmits<{
-    filtrar: [instalaciones: InstalacionFlat[]]
-}>()
+const emit = defineEmits<{ filtrar: [instalaciones: any[]] }>()
 
-const filtros = ref({
-    region: '',
-    comuna: ''
-})
-
+const filtros = ref({ region: '', comuna: '' })
 const mostrarResultados = ref(false)
 
-// Aplanar datos para facilitar el filtrado
-const instalacionesPlanas = computed((): InstalacionFlat[] => {
-    const result: InstalacionFlat[] = []
-    
-    props.data.regiones.forEach(region => {
-        region.comunas.forEach(comuna => {
-            comuna.sucursales.forEach(sucursal => {
-                result.push({
-                    nombre: sucursal.nombre,
-                    coords: sucursal.coords,
-                    region: region.nombre,
-                    comuna: comuna.nombre
-                })
-            })
-        })
-    })
-    
-    return result
-})
+const regiones = computed(() => props.data.regiones)
 
-// Obtener regiones únicas
-const regiones = computed(() => {
-    return props.data.regiones.map(r => r.nombre).sort()
-})
-
-// Obtener comunas filtradas por región
 const comunasFiltradas = computed(() => {
-    if (!filtros.value.region) return []
-    
-    const regionSeleccionada = props.data.regiones.find(r => r.nombre === filtros.value.region)
-    if (!regionSeleccionada) return []
-    
-    return regionSeleccionada.comunas.map(c => c.nombre).sort()
+  if (!filtros.value.region) return []
+  return props.data.comunas.filter(c => c.regionId === filtros.value.region)
 })
 
-// Instalaciones filtradas
 const instalacionesFiltradas = computed(() => {
-    let resultado = instalacionesPlanas.value
-    
-    if (filtros.value.region) {
-        resultado = resultado.filter(inst => inst.region === filtros.value.region)
-    }
-    
-    if (filtros.value.comuna) {
-        resultado = resultado.filter(inst => inst.comuna === filtros.value.comuna)
-    }
-    
-    return resultado
+  let resultado = props.data.instalaciones
+  if (filtros.value.region) {
+    resultado = resultado.filter(inst => inst.regionId === filtros.value.region)
+  }
+  if (filtros.value.comuna) {
+    resultado = resultado.filter(inst => inst.comunaId === filtros.value.comuna)
+  }
+  return resultado
 })
 
-// Limpiar filtro de comuna cuando cambia la región
 watch(() => filtros.value.region, () => {
-    filtros.value.comuna = ''
+  filtros.value.comuna = ''
 })
 
 function aplicarFiltros() {
-    mostrarResultados.value = true
-    emit('filtrar', instalacionesFiltradas.value)
+  mostrarResultados.value = true
+  emit('filtrar', instalacionesFiltradas.value)
 }
 
 function limpiarFiltros() {
-    filtros.value.region = ''
-    filtros.value.comuna = ''
-    mostrarResultados.value = false
-    emit('filtrar', instalacionesPlanas.value)
+  filtros.value.region = ''
+  filtros.value.comuna = ''
+  mostrarResultados.value = false
+  emit('filtrar', props.data.instalaciones)
 }
 
-// Emitir todas las instalaciones al inicio
 onMounted(() => {
-    emit('filtrar', instalacionesPlanas.value)
+  emit('filtrar', props.data.instalaciones)
 })
 </script>
 

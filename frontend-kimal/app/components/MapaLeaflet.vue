@@ -27,14 +27,16 @@
 </template>
 
 <script setup>
+
 import { onMounted, ref, defineEmits } from 'vue'
+import axios from 'axios'
 const emit = defineEmits(['seleccionar-instalacion'])
 import FiltroInstalaciones from './filtroInstalaciones.vue'
 import ControlesMapa from './controlesMapa.vue'
 import TarjetaInstalacion from './tarjetaInstalacion.vue'
 
 // Datos iniciales
-const data = ref({ regiones: [] })
+const data = ref({ regiones: [], instalaciones: [] })
 
 const instalacionesActuales = ref([])
 
@@ -125,6 +127,7 @@ function aplicarFiltros(instalacionesFiltradas) {
   // Actualiza instalaciones actuales
   instalacionesActuales.value = instalacionesFiltradas
 
+
   // Icono personalizado
   const customIcon = window.L.icon({
     iconUrl: '/images/logo-antena.svg',
@@ -135,14 +138,21 @@ function aplicarFiltros(instalacionesFiltradas) {
   // Agrega marcadores filtrados y la línea
   const puntos = []
   instalacionesFiltradas.forEach(instalacion => {
-    const marker = window.L.marker(instalacion.coords, { icon: customIcon })
-      .addTo(mapRef.value)
-      .bindPopup(instalacion.nombre)
-    marker.on('click', () => {
-      seleccionarInstalacion(instalacion.nombre)
-    })
-    marcadores.value.push(marker)
-    puntos.push(instalacion.coords)
+    if (
+      instalacion.location &&
+      Array.isArray(instalacion.location.coordinates) &&
+      instalacion.location.coordinates.length === 2
+    ) {
+      const [lng, lat] = instalacion.location.coordinates
+      const marker = window.L.marker([lat, lng], { icon: customIcon })
+        .addTo(mapRef.value)
+        .bindPopup(instalacion.nombre)
+      marker.on('click', () => {
+        seleccionarInstalacion(instalacion.nombre)
+      })
+      marcadores.value.push(marker)
+      puntos.push([lat, lng])
+    }
   })
 
   if (puntos.length > 1 && mostrarLinea.value) {
@@ -157,11 +167,20 @@ function aplicarFiltros(instalacionesFiltradas) {
 }
 
 onMounted(async () => {
-  // Cargar datos del JSON
+
+
+  // Cargar instalaciones, regiones y comunas desde el backend
   try {
-    const response = await fetch('/data.json')
-    const jsonData = await response.json()
-    data.value = jsonData
+    const [instRes, regRes, comRes] = await Promise.all([
+      axios.get('http://localhost:5000/instalaciones'),
+      axios.get('http://localhost:5000/regiones'),
+      axios.get('http://localhost:5000/comunas')
+    ])
+    data.value.instalaciones = instRes.data
+    data.value.regiones = regRes.data
+    data.value.comunas = comRes.data
+    instalacionesActuales.value = instRes.data
+    aplicarFiltros(instRes.data)
   } catch (error) {
     console.error('Error cargando datos:', error)
   }
