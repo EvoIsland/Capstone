@@ -24,6 +24,7 @@ fastify.post('/publicacion', { preHandler: authenticateToken }, async (request, 
     //Ejecutar logica de negocio
     let finalComunaId = datosValidados.comunaId;
     let finalRegionId = datosValidados.regionId;
+    let finalInstalacionId = datosValidados.instalacionId;
 
 
     if (datosValidados.tipo === 'reporte') {
@@ -38,6 +39,7 @@ fastify.post('/publicacion', { preHandler: authenticateToken }, async (request, 
 
       finalComunaId = datosValidados.comunaId?.toString();
       finalRegionId = datosValidados.regionId?.toString();
+      finalInstalacionId = datosValidados.instalacionId?.toString();
     }
 
     const nuevaPublicacion = await PublicacionModel.create({
@@ -59,21 +61,26 @@ fastify.post('/publicacion', { preHandler: authenticateToken }, async (request, 
     }
   });
 
-fastify.get('/publicaciones', async (request, reply)=> {
-  try{
-    const publicaciones = await PublicacionModel.find()
-      .sort({fecha:-1})
+fastify.get('/publicaciones', async (request, reply) => {
+  try {
+    const { instalacionId } = request.query as { instalacionId?: string };
+    const filter: any = {};
+    if (instalacionId) {
+      filter.instalacionId = instalacionId;
+    }
+    const publicaciones = await PublicacionModel.find(filter)
+      .sort({ fecha: -1 })
       .populate('publicadorId', 'nombre')
       .populate('instalacionId', 'nombre')
       .populate('comunaId', 'nombre')
       .populate('regionId', 'nombre')
-      .lean()
-  reply.send(publicaciones)
-  }catch (error){
-    console.error('Error en GET /publicaciones:', error)
-    reply.status(500).send({ error: 'error al obtener la publicacion'})
+      .lean();
+    reply.send(publicaciones);
+  } catch (error) {
+    console.error('Error en GET /publicaciones:', error);
+    reply.status(500).send({ error: 'error al obtener la publicacion' });
   }
-})
+});
 
 fastify.get('/publicacion/:id', async (request, reply) => {
   try {

@@ -19,12 +19,12 @@
 
         <template v-if="form.tipo === 'pregunta'">
           <select v-model="form.regionId" class="post-input select-style">
-            <option value="">Selecciona una Región (Opcional)</option>
+            <option value="">Selecciona una Región</option>
             <option v-for="region in regiones" :key="region._id" :value="region._id">{{ region.nombre }}</option>
           </select>
-          <select v-model="form.comunaId" class="post-input select-style" :disabled="!form.regionId">
-            <option value="">Selecciona una Comuna (Opcional)</option>
-            <option v-for="comuna in comunasFiltradas" :key="comuna._id" :value="comuna._id">{{ comuna.nombre }}</option>
+          <select v-model="form.instalacionId" class="post-input select-style" :disabled="!form.regionId">
+            <option value="">Selecciona una Instalación</option>
+            <option v-for="inst in instalacionesFiltradas" :key="inst._id" :value="inst._id">{{ inst.nombre }}</option>
           </select>
         </template>
 
@@ -80,22 +80,22 @@ const comunas = ref<Comuna[]>([]);
 const instalaciones = ref<Instalacion[]>([]);
 
 // --- PROPIEDADES COMPUTADAS PARA FILTROS ---
-const comunasFiltradas = computed(() => {
+const instalacionesFiltradas = computed(() => {
   if (!form.value.regionId) return [];
-  return comunas.value.filter(c => c.regionId === form.value.regionId);
+  return instalaciones.value.filter((inst: any) => inst.regionId === form.value.regionId);
 });
 
 const regionAuto = computed(() => {
   if (form.value.tipo !== 'reporte' || !form.value.instalacionId) return '';
-  const inst = instalaciones.value.find(i => i._id === form.value.instalacionId);
-  const region = regiones.value.find(r => r._id === inst?.regionId);
+  const inst = instalaciones.value.find((i: any) => i._id === form.value.instalacionId);
+  const region = regiones.value.find((r: any) => r._id === inst?.regionId);
   return region ? region.nombre : 'Calculando...';
 });
 
 const comunaAuto = computed(() => {
   if (form.value.tipo !== 'reporte' || !form.value.instalacionId) return '';
-  const inst = instalaciones.value.find(i => i._id === form.value.instalacionId);
-  const comuna = comunas.value.find(c => c._id === inst?.comunaId);
+  const inst = instalaciones.value.find((i: any) => i._id === form.value.instalacionId);
+  const comuna = comunas.value.find((c: any) => c._id === inst?.comunaId);
   return comuna ? comuna.nombre : 'Calculando...';
 });
 
@@ -103,13 +103,12 @@ const comunaAuto = computed(() => {
 watch(() => form.value.tipo, () => {
   // Limpia los campos al cambiar de tipo para evitar inconsistencias
   form.value.regionId = '';
-  form.value.comunaId = '';
   form.value.instalacionId = '';
 });
 
 watch(() => form.value.regionId, () => {
-  // Limpia la comuna si la región cambia
-  form.value.comunaId = '';
+  // Limpia la instalación si la región cambia
+  form.value.instalacionId = '';
 });
 
 // --- CARGA DE DATOS INICIAL ---
@@ -142,8 +141,8 @@ const handleSubmit = async () => {
     };
     
     if (form.value.tipo === 'pregunta') {
+      if (form.value.instalacionId) body.instalacionId = form.value.instalacionId;
       if (form.value.regionId) body.regionId = form.value.regionId;
-      if (form.value.comunaId) body.comunaId = form.value.comunaId;
     } else if (form.value.tipo === 'reporte') {
       if (!form.value.instalacionId) {
         error.value = 'Debes seleccionar una instalación para el reporte.';

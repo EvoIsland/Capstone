@@ -85,6 +85,7 @@ interface Publicacion {
     fecha: string
     imagenes?: string[]
     publicadorId?: { nombre: string }
+    instalacionId?: string | { $oid?: string, _id?: string, nombre?: string }
 }
 
 const props = defineProps<{ instalacion: Instalacion | null }>()
@@ -93,14 +94,39 @@ const publicaciones = ref<Publicacion[]>([])
 const tabs = ['Preguntas', 'Reporte', 'Información']
 const activeTab = ref('Preguntas')
 
-const preguntas = computed(() => publicaciones.value.filter(p => p.tipo === 'pregunta'))
-const reportes = computed(() => publicaciones.value.filter(p => p.tipo === 'reporte'))
-const noticias = computed(() => publicaciones.value.filter(p => p.tipo === 'noticia'))
+function matchInstalacionId(pub: Publicacion, id?: string) {
+    if (!pub.instalacionId || !id) return false
+    if (typeof pub.instalacionId === 'string') return pub.instalacionId === id
+    if (typeof pub.instalacionId === 'object') {
+        if (typeof (pub.instalacionId as any).$oid === 'string') return (pub.instalacionId as any).$oid === id
+        if (typeof (pub.instalacionId as any)._id === 'string') return (pub.instalacionId as any)._id === id
+    }
+    return false
+}
+
+const preguntas = computed(() => {
+    const id = props.instalacion?._id
+    publicaciones.value.forEach(p => {
+        if (p.tipo === 'pregunta') {
+            console.log('[DEBUG] instalacionId in pub:', p.instalacionId, 'selected _id:', id, 'match:', matchInstalacionId(p, id))
+        }
+    })
+    return publicaciones.value.filter(p => p.tipo === 'pregunta' && matchInstalacionId(p, id))
+})
+const reportes = computed(() => {
+    const id = props.instalacion?._id
+    return publicaciones.value.filter(p => p.tipo === 'reporte' && matchInstalacionId(p, id))
+})
+const noticias = computed(() => {
+    const id = props.instalacion?._id
+    return publicaciones.value.filter(p => p.tipo === 'noticia' && matchInstalacionId(p, id))
+})
 
 watch(() => props.instalacion, async (inst) => {
     if (inst && inst._id) {
         try {
             const { data } = await axios.get(`http://localhost:5000/publicaciones?instalacionId=${inst._id}`)
+            console.log('[tarjetaInstalacion] publicaciones response:', data)
             publicaciones.value = Array.isArray(data) ? data : []
         } catch (error) {
             publicaciones.value = []
