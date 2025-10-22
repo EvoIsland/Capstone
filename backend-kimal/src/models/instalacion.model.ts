@@ -7,9 +7,13 @@ export interface IInstalacion extends Document {
   direccion: string;
   comunaId: mongoose.Types.ObjectId | typeof ComunaModel;
   regionId: mongoose.Types.ObjectId | typeof RegionModel;
-  tipo: string;
-  descripcion?: string;
-  imagenes?: string[];
+  location: {
+    type: 'Point'
+    coordinates: [number, number]
+  }
+  // tipo: string;
+  // descripcion?: string;
+  // imagenes?: string[];
 }
 
 const InstalacionSchema: Schema = new Schema({
@@ -17,9 +21,23 @@ const InstalacionSchema: Schema = new Schema({
   direccion: { type: String, required: true },
   comunaId: { type: Schema.Types.ObjectId, ref: 'Comuna', required: true },
   regionId: { type: Schema.Types.ObjectId, ref: 'Region', required: true },
-  tipo: { type: String, required: true },
-  descripcion: { type: String },
-  imagenes: [{ type: String }],
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  }
+  // tipo: { type: String, required: true },
+  // descripcion: { type: String },
+  // imagenes: [{ type: String }],
 }, { timestamps: true, collection: 'instalaciones' });
+
+InstalacionSchema.index({ location: '2dsphere' }) // Índice geoespacial
 
 export const InstalacionModel = mongoose.model<IInstalacion>('Instalacion', InstalacionSchema);

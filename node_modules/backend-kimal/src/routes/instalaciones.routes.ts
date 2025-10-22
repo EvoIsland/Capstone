@@ -12,8 +12,6 @@ const instalacionesRoutes: FastifyPluginAsync = async (fastify, opts): Promise<v
         console.error("Error al obtener las instalaciones: ", error);
         reply.status(500).send({ error: "Error interno al obtener las instalaciones"});
     }
-
-
   });
 };
 
