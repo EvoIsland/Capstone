@@ -9,21 +9,38 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import axios from 'axios'
 
-interface Instalacion {
-  _id: string
-  nombre: string
-  location: {
-    type: 'Point'
-    coordinates: [number, number] // [longitud, latitud]
-  }
-  regionId: string
-  comunaId: string
-  direccion: string
-}
+const instalaciones = [
+  { nombre: 'Lampa', coords: [-33.2857, -70.8756], region: 'Región Metropolitana' },
+  { nombre: 'Pudahuel', coords: [-33.4333, -70.7667], region: 'Región Metropolitana' },
+  { nombre: 'Til Til', coords: [-33.0833, -70.9333], region: 'Región Metropolitana' },
+  { nombre: 'Cabildo', coords: [-32.4333, -71.0167], region: 'Región de Valparaíso' },
+  { nombre: 'Catemu', coords: [-32.7833, -70.9667], region: 'Región de Valparaíso' },
+  { nombre: 'La Ligua', coords: [-32.4500, -71.2333], region: 'Región de Valparaíso' },
+  { nombre: 'LlayLlay', coords: [-32.8167, -70.9667], region: 'Región de Valparaíso' },
+  { nombre: 'Panquehue', coords: [-32.8000, -70.8333], region: 'Región de Valparaíso' },
+  { nombre: 'Petorca', coords: [-32.2500, -70.9333], region: 'Región de Valparaíso' },
+  { nombre: 'Andacollo', coords: [-29.6167, -71.1833], region: 'Región de Coquimbo' },
+  { nombre: 'Combarbalá', coords: [-31.1792, -71.0583], region: 'Región de Coquimbo' },
+  { nombre: 'Canela', coords: [-31.4000, -71.4500], region: 'Región de Coquimbo' },
+  { nombre: 'Illapel', coords: [-31.6333, -71.1667], region: 'Región de Coquimbo' },
+  { nombre: 'La Higuera', coords: [-29.5000, -71.2500], region: 'Región de Coquimbo' },
+  { nombre: 'La Serena', coords: [-29.9045, -71.2489], region: 'Región de Coquimbo' },
+  { nombre: 'Los Vilos', coords: [-31.9097, -71.5072], region: 'Región de Coquimbo' },
+  { nombre: 'Ovalle', coords: [-30.6016, -71.2000], region: 'Región de Coquimbo' },
+  { nombre: 'Punitaqui', coords: [-31.0500, -71.2500], region: 'Región de Coquimbo' },
+  { nombre: 'Río Hurtado', coords: [-30.2667, -71.0833], region: 'Región de Coquimbo' },
+  { nombre: 'Vicuña', coords: [-30.0333, -70.7083], region: 'Región de Coquimbo' },
+  { nombre: 'Diego de Almagro', coords: [-26.3922, -70.0456], region: 'Atacama' },
+  { nombre: 'Tierra Amarilla', coords: [-27.9833, -70.2500], region: 'Atacama' },
+  { nombre: 'Vallenar', coords: [-28.5750, -70.7583], region: 'Atacama' },
+  { nombre: 'Copiapó', coords: [-27.3667, -70.3333], region: 'Atacama' },
+  { nombre: 'Antofagasta', coords: [-23.6500, -70.4000], region: 'Antofagasta' },
+  { nombre: 'María Elena', coords: [-22.3500, -69.6667], region: 'Antofagasta' },
+  { nombre: 'Sierra Gorda', coords: [-22.9500, -69.3167], region: 'Antofagasta' },
+  { nombre: 'Taltal', coords: [-25.4000, -70.4833], region: 'Antofagasta' }
+]
 
-const instalaciones = ref<Instalacion[]>([])
 const mapRef = ref(null)
 const miUbicacionMarker = ref(null)
 
@@ -60,10 +77,6 @@ function centrarEnMiUbicacion() {
 }
 
 onMounted(async () => {
-  // 1. Obtén las instalaciones desde el backend
-  const { data } = await axios.get('http://localhost:5000/instalaciones')
-  instalaciones.value = data
-
   const L = await import('leaflet')
   await import('leaflet/dist/leaflet.css')
 
@@ -83,18 +96,11 @@ onMounted(async () => {
     iconAnchor: [15, 30]
   })
 
-  // 2. Agrega los marcadores usando las coordenadas de la BD
-  instalaciones.value.forEach(instalacion => {
-    if (
-      instalacion.location &&
-      Array.isArray(instalacion.location.coordinates) &&
-      instalacion.location.coordinates.length === 2
-    ) {
-      const [lng, lat] = instalacion.location.coordinates
-      window.L.marker([lat, lng], { icon: customIcon })
-        .addTo(mapRef.value)
-        .bindPopup(instalacion.nombre)
-    }
+  // Agregar marcadores de instalaciones
+  instalaciones.forEach(instalacion => {
+    window.L.marker(instalacion.coords, { icon: customIcon })
+      .addTo(mapRef.value)
+      .bindPopup(instalacion.nombre)
   })
 })
 </script>
