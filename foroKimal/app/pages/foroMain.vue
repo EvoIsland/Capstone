@@ -34,37 +34,18 @@
 <script setup lang="ts">
 
 import { onMounted, ref } from 'vue'
+import { usePublicaciones } from '../../composables/usePublicaciones'
 
-interface Publicacion {
-  _id: string
-  tipo: string
-  texto: string
-  fecha: string
-  imagenes?: string[]
-  instalacionId?: { nombre: string }
-  comunaId?: { nombre: string }
-  regionId?: { nombre: string }
-  publicadorId?: { nombre?: string }
-}
+import PostBoxFeed from '~/components/PostBoxFeed.vue'
 
-const publicaciones = ref<Publicacion[]>([])
-const cargandoPublicaciones = ref(true)
-const errorPublicaciones = ref('')
+const {
+  publicaciones,
+  cargandoPublicaciones,
+  errorPublicaciones,
+  cargarPublicaciones
+} = usePublicaciones()
 
-onMounted(async () => {
-  try{
-    cargandoPublicaciones.value = true
-    const res = await fetch('http://localhost:5000/publicaciones')
-    if(!res.ok) throw new Error('No se pudieron obtener publicaciones')
-    publicaciones.value = await res.json()
-  } catch (err) {
-    errorPublicaciones.value = 'Error al cargar publicaciones'
-  } finally {
-    cargandoPublicaciones.value = false
-  }
-
-})
-
+onMounted(cargarPublicaciones)
 
 const showPostDetail = ref(false)
 const selectedPublicacionId = ref<string | null>(null)
