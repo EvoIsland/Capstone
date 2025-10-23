@@ -80,6 +80,13 @@ onMounted(async () => {
   const L = await import('leaflet')
   await import('leaflet/dist/leaflet.css')
 
+  const mapDiv = document.getElementById('map-intro');
+  console.log('Creando mapa en:', mapDiv);
+  if (!mapDiv) {
+    console.error('No se encontró el div #map-intro');
+    return;
+  }
+
   const map = L.map('map-intro').setView([-29.9045, -71.2489], 6)
   mapRef.value = map
   window.L = L
@@ -116,8 +123,8 @@ onMounted(async () => {
 
 #map-intro {
   width: 100%;
-  height: 100%;
-  min-height: 300px;
+  height: 400px;
+  min-height: 400px;
 }
 
 .btn-ubicacion-intro {

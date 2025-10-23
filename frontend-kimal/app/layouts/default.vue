@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import ChatbotFloating from '~/components/chatbotFloating.vue'
+import ChatbotFloating from '~/components/ui/chatbotFloating.vue'
 </script>
 
 <style lang="sass">

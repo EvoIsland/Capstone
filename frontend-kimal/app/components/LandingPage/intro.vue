@@ -1,41 +1,44 @@
+
 <template>
-    <section class="intro p4rem">
-        <div class="anchoMaximo flex flex-responsive jcc gap4rem">
-            <!-- Contenido principal izquierdo -->
-            <div class="contenido-izquierdo">
-                <h1 class="titulo mb3rem">Torres de alta tensión</h1>
-                
-                <!-- Mapa de Chile con torres -->
-                <div class="mapa-container">
-                    <div class="mapa-chile">
-                        <img src="/images/mapa.svg" alt="Mapa de Chile" class="mapa-imagen">
-                        <div class="torre-marker">
-                            <div class="torre-icon">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-                                    <path d="M12 2L8 6v2l4-4 4 4V6l-4-4zM8 8v8l4-4 4 4V8l-4 4-4-4zm0 10v2l4-4 4 4v-2l-4 4-4-4z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tarjetas informativas con swipe -->
-                <TarjetaIntro />
-            </div>
-            
-            <!-- Contenido derecho -->
-            <div class="contenido-derecho">
-                <div class="ubicacion-tiempo">
-                    <h2 class="subTitulo mb2rem">Ubicación tiempo real</h2>
-                    <div class="mapa-tiempo-real">
-                        <MapaIntro />
-                    </div>
-                    <button class="btn-leer-mas mt3rem">Leer más</button>
-                </div>
-            </div>
-        </div>
-    </section>
+	<section class="intro p4rem">
+		<div class="anchoMaximo flex flex-responsive jcc gap4rem">
+			<!-- Contenido principal izquierdo -->
+			<div class="contenido-izquierdo">
+				<h1 class="titulo mb3rem">Torres de alta tensión</h1>
+				<!-- Mapa de Chile con torres -->
+				<div class="mapa-container">
+					<div class="mapa-chile">
+						<img src="/images/mapa.svg" alt="Mapa de Chile" class="mapa-imagen">
+						<div class="torre-marker">
+							<div class="torre-icon">
+								<svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+									<path d="M12 2L8 6v2l4-4 4 4V6l-4-4zM8 8v8l4-4 4 4V8l-4 4-4-4zm0 10v2l4-4 4 4v-2l-4 4-4-4z"/>
+								</svg>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Tarjetas informativas con swipe -->
+				<TarjetaIntro />
+			</div>
+			<!-- Contenido derecho -->
+			<div class="contenido-derecho">
+				<div class="ubicacion-tiempo">
+					<h2 class="subTitulo mb2rem">Ubicación tiempo real</h2>
+					<div class="mapa-tiempo-real">
+						<MapaIntro />
+					</div>
+					<button class="btn-leer-mas mt3rem">Leer más</button>
+				</div>
+			</div>
+		</div>
+	</section>
 </template>
+
+<script setup>
+import TarjetaIntro from './tarjetaIntro.vue';
+import MapaIntro from './MapaIntro.vue';
+</script>
 
 <style lang="sass" scoped>
 @use '@sass/base' as *
