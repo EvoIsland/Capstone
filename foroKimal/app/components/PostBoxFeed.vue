@@ -91,7 +91,7 @@ const fetchLikes = async () => {
   const res = await $fetch<LikesResponse>(`http://localhost:5000/publicacion/${props.publicacionId}/likes`);
   likesTotal.value = res.total;
   likesUsuarios.value = res.usuarios;
-  userLiked.value = res.usuarios.some((u: any) => u._id === (user.value && (user.value._id || user.value.id)));
+  userLiked.value = res.usuarios.some((u: any) => u._id === (user.value && (user.value.id)));
 };
 
 
@@ -117,7 +117,6 @@ const typeClass = computed(() => props.tipo === 'Reporte' ? 'report' : 'question
 </script>
 
 <style scoped>
-/* Card principal */
 .post-box {
   background: #f7f7f7;
   border-radius: 2.5rem;
