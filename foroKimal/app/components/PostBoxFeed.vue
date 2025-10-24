@@ -51,15 +51,10 @@
 </template>
 
 <script setup lang="ts">
-
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useAuth } from '../../composables/useAuth'
+import { useLikes } from '../../composables/useLikes'
 import { Icon as IconifyIcon } from '@iconify/vue'
-
-interface LikesResponse {
-  total: number;
-  usuarios: { _id: string; nombre: string }[];
-}
 
 const props = defineProps({
   publicacionId: { type: String, required: true },
@@ -74,49 +69,38 @@ const props = defineProps({
   avatarColor: { type: String, default: '#FFD600' }
 })
 
-const { user, accessToken } = useAuth();
+const { user, accessToken } = useAuth()
 
+const {
+  likesTotal,
+  likesUsuarios,
+  userLiked,
+  cargarLikes,
+  darLike
+} = useLikes(props.publicacionId, accessToken.value, user.value?.id ?? '')
 
-const likesTotal = ref(0);
-const likesUsuarios = ref<{ _id: string; nombre: string }[]>([]);
-const userLiked = ref(false);
-
-const comentarios = ref<any[]>([]);
-const nuevoComentario = ref('');
-const respuestaA = ref<string | null>(null);
-const cargandoComentarios = ref(false);
-
-
-const fetchLikes = async () => {
-  const res = await $fetch<LikesResponse>(`http://localhost:5000/publicacion/${props.publicacionId}/likes`);
-  likesTotal.value = res.total;
-  likesUsuarios.value = res.usuarios;
-  userLiked.value = res.usuarios.some((u: any) => u._id === (user.value && (user.value.id)));
-};
-
+onMounted(cargarLikes)
 
 const toggleLike = async () => {
-  await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/like`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken.value}` }
-  });
-  fetchLikes();
-};
-
+  await darLike()
+}
 
 const compartir = () => {
-  const url = `${window.location.origin}/publicacion/${props.publicacionId}`;
-  navigator.clipboard.writeText(url);
-  alert('¡Enlace copiado al portapapeles!');
-};
+  const url = `${window.location.origin}/publicacion/${props.publicacionId}`
+  navigator.clipboard.writeText(url)
+  alert('¡Enlace copiado al portapapeles!')
+}
 
-onMounted(fetchLikes);
-
-const userInitials = computed(() => props.username?.split('_').map(n => n[0]).join('').toUpperCase() || 'US')
-const typeClass = computed(() => props.tipo === 'Reporte' ? 'report' : 'question')
+const userInitials = computed(() =>
+  props.username?.split('_').map(n => n[0]).join('').toUpperCase() || 'US'
+)
+const typeClass = computed(() =>
+  props.tipo === 'Reporte' ? 'report' : 'question'
+)
 </script>
 
 <style scoped>
+/* Card principal */
 .post-box {
   background: #f7f7f7;
   border-radius: 2.5rem;
