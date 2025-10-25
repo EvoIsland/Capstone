@@ -19,6 +19,8 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		// Variables de servidor (privadas)
 		strapiToken: process.env.STRAPI_API_TOKEN,
+		n8nUrl: process.env.N8N_URL || 'http://192.168.2.120:5678/webhook-test/kimal/ask',
+   		agentKey: process.env.AGENT_KEY || '',
 		
 		// Variables públicas (expuestas al cliente)
 		public: {
