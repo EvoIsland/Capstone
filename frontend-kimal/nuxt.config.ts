@@ -19,6 +19,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		// Variables de servidor (privadas)
 		strapiToken: process.env.STRAPI_API_TOKEN,
+		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		
 		// Variables públicas (expuestas al cliente)
 		public: {
