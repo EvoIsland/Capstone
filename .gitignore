@@ -2,3 +2,4 @@ node_modules/
 *.lock
 .env
 dist/
+data/kimal_context.txt

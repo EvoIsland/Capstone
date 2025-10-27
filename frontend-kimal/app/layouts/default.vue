@@ -3,7 +3,6 @@
     <!-- Navbar -->
     <nav class="navbar">
       <div class="anchoMaximo navbar-content">
-        <!-- Logo y título -->
         <div class="navbar-brand">
           <div class="logo-container">
             <img src="/images/logokimal.svg" alt="Logo Kimal" class="logo-kimal">
@@ -18,13 +17,19 @@
       <slot />
     </main>
 
-    <!-- Chatbot flotante -->
-    <ChatbotFloating />
+    <!-- Chatbot flotante (oculto SOLO en /ai) -->
+    <ChatbotFloating v-if="showFloating" />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from '#app'
 import ChatbotFloating from '~/components/ui/chatbotFloating.vue'
+
+// Oculta el botón flotante sólo en /ai
+const route = useRoute()
+const showFloating = computed(() => !route.path.startsWith('/ai'))
 </script>
 
 <style lang="sass">
