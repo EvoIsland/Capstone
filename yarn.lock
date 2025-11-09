@@ -4193,7 +4193,7 @@ babel-plugin-macros@^3.1.0:
     cosmiconfig "^7.0.0"
     resolve "^1.19.0"
 
-"backend-kimal@file:C:\\Users\\giova\\Desktop\\practicajs\\Capstone\\backend-kimal":
+"backend-kimal@file:C:\\proyectos\\Capstone\\backend-kimal":
   version "1.0.0"
   resolved "backend-kimal"
   dependencies:
@@ -4695,7 +4695,7 @@ close-with-grace@^2.1.0:
 cluster-key-slot@^1.1.0:
   version "1.1.2"
 
-"cms-conexiones-kimal@file:C:\\Users\\giova\\Desktop\\practicajs\\Capstone\\cms-conexiones-kimal":
+"cms-conexiones-kimal@file:C:\\proyectos\\Capstone\\cms-conexiones-kimal":
   version "0.1.0"
   resolved "cms-conexiones-kimal"
   dependencies:
@@ -6203,7 +6203,7 @@ formik@2.4.5:
     tiny-warning "^1.0.2"
     tslib "^2.0.0"
 
-"forokimal@file:C:\\Users\\giova\\Desktop\\practicajs\\Capstone\\forokimal":
+"forokimal@file:C:\\proyectos\\Capstone\\forokimal":
   resolved "forokimal"
   dependencies:
     "@iconify/vue" "^5.0.0"
@@ -6227,7 +6227,7 @@ fresh@^2.0.0:
 fresh@~0.5.2:
   version "0.5.2"
 
-"frontend-kimal@file:C:\\Users\\giova\\Desktop\\practicajs\\Capstone\\frontend-kimal":
+"frontend-kimal@file:C:\\proyectos\\Capstone\\frontend-kimal":
   resolved "file:frontend-kimal"
   dependencies:
     "@google/generative-ai" "^0.24.1"
@@ -8164,7 +8164,12 @@ minipass-sized@^1.0.3:
   dependencies:
     minipass "^3.0.0"
 
-minipass@^3.0.0, "minipass@^5.0.0 || ^6.0.2 || ^7.0.0", minipass@^7.0.2, minipass@^7.0.3, minipass@^7.0.4, minipass@^7.1.2:
+minipass@^3.0.0:
+  version "3.3.6"
+  dependencies:
+    yallist "^4.0.0"
+
+"minipass@^5.0.0 || ^6.0.2 || ^7.0.0", minipass@^7.0.2, minipass@^7.0.3, minipass@^7.0.4, minipass@^7.1.2:
   version "7.1.2"
 
 minipass@^5.0.0:
@@ -10203,12 +10208,22 @@ sanitize-html@2.13.0:
     parse-srcset "^1.0.2"
     postcss "^8.3.11"
 
-sass-embedded-all-unknown@1.92.1, sass-embedded-all-unknown@1.93.2:
+sass-embedded-all-unknown@1.92.1:
+  version "1.92.1"
+  dependencies:
+    sass "1.92.1"
+
+sass-embedded-all-unknown@1.93.2:
   version "1.93.2"
   dependencies:
     sass "1.93.2"
 
-sass-embedded-unknown-all@1.92.1, sass-embedded-unknown-all@1.93.2:
+sass-embedded-unknown-all@1.92.1:
+  version "1.92.1"
+  dependencies:
+    sass "1.92.1"
+
+sass-embedded-unknown-all@1.93.2:
   version "1.93.2"
   dependencies:
     sass "1.93.2"
@@ -10290,7 +10305,7 @@ sass@*, sass@1.93.2:
   optionalDependencies:
     "@parcel/watcher" "^2.4.1"
 
-sass@^1.70.0:
+sass@^1.70.0, sass@1.92.1:
   version "1.92.1"
   dependencies:
     chokidar "^4.0.0"

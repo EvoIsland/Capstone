@@ -1,0 +1,32 @@
+foroKimal:
+
+Panel Administrativo
+-Gestionar usuarios, publicaciones, comentarios
+-CRUD USUARIOS 
+-CRUD ZONAS DE mapa
+
+SECCION NOTICIAS FORO
+-HACER PUBLICACIONES DE NOTICIAS
+-TIPOS DE NOTICIAS (EMERGENCIA, NOVEDAD, REUNION?, AVANCES DE CONSTRUCCION)
+-Debe ser un tipo canva la manera en la que se hace la publicacion de noticia
+
+Foro:
+-Falta agregar imagenes en publicaciones
+-Buscador
+-Seguir instalaciones
+-Agregar feed por siguiendo/feed/noticias
+
+
+FRONTEND
+-Finalizar Landing
+    -Agregar vista de noticias
+    -Agregar informativos de las secciones realizadas
+-Todo texto desde STRAPI
+
+-Implementar chatbot desde layout/default
+-Mejoras de diseño
+-Chatbot debe de consumir datos constantemente desde la MongoDB(EN ESPECIAL SECCION NOTICIAS)
+
+
+
+-SEGUIR PATRON PARA TODO NUEVO MODULO
