@@ -43,7 +43,7 @@ const handleSubmit = async () => {
     const data = await res.json();
     if (res.ok) {
       mensaje.value = data.message;
-      setTimeout(() => router.push('/login'), 2000);
+      setTimeout(() => router.push('/'), 2000);
     } else {
       mensaje.value = data.error || 'Error al cambiar la contraseña';
       error.value = true;
