@@ -15,14 +15,13 @@ interface AuthResponse {
 
 export const useAuth = () => {
 
-  const user = useState<User | null>('user', () => null)
+  const user = ref<User | null>(null) // Cambia useState por ref
   const accessToken = useLocalStorage('accessToken', '')
-  const loading = useState('auth-loading', () => false)
-  const error = useState<string | null>('auth error', () => null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   const API_URL = 'http://localhost:5000'
-
-  const router = useRouter();
+  const router = useRouter()
 
   const register = async (userData: {
     nombre: string
@@ -104,9 +103,12 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    user.value = null
     accessToken.value = ''
+    user.value = null
     error.value = null
+    // Fuerza la limpieza del estado
+    localStorage.removeItem('accessToken')
+    await nextTick() // Espera a que se actualice el estado
     await router.push('/')
   }
 
@@ -119,6 +121,7 @@ export const useAuth = () => {
 
       if (!response.ok) {
         throw new Error('Error al renovar el token')
+
       }
 
       const data = await response.json()
@@ -128,7 +131,6 @@ export const useAuth = () => {
       logout()
     }
   }
-
 
   const getProfile = async () => {
     try {
@@ -147,6 +149,8 @@ export const useAuth = () => {
       user.value = data.user
     } catch (e) {
       console.error('Error al obtener el perfil:', e)
+      user.value = null
+      accessToken.value = ''
     }
   }
 
@@ -177,6 +181,17 @@ export const useAuth = () => {
     return response
   }
 
+  if (process.client) {
+    // Primero limpia si no hay token
+    if (!accessToken.value) {
+      user.value = null
+    } else if (!user.value) {
+      // Solo intenta obtener el perfil si hay token y no hay usuario
+      getProfile()
+    }
+  }
+  
+
   return {
     user,
     loading,
@@ -189,4 +204,6 @@ export const useAuth = () => {
     fetchWithToken,
     isAuthenticated: () => !!accessToken.value
   }
+
+
 }

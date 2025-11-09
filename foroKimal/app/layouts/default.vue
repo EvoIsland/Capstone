@@ -3,7 +3,7 @@
     <div :class="['feed-header-overlay', { 'is-sticky': isSticky }]">
       <div class="feed-header">
         <div class="feed-title">MiConexionKimal</div>
-        <template v-if="user">
+        <template v-if="isLoggedIn">
           <div class="feed-tabs">
             <button :class="['feed-tab', activeTab === 'siguiendo' ? 'active' : '']" @click="activeTab = 'siguiendo'">
               <Icon icon="mdi:account-group" width="22" height="22" /> Siguiendo
@@ -37,16 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth';
 
 const { user, getProfile, logout } = useAuth()
 
-const showAddPostModal = ref(false) //Se asigna de manera predeterimanda que el postModal este cerrado
+const showAddPostModal = ref(false)
 const activeTab = ref('general')
 const showDropdown = ref(false)
 
+// Computed para asegurar reactividad
+const isLoggedIn = computed(() => !!user.value)
 
 function openAddPostModal(){
   showAddPostModal.value = true
@@ -56,24 +58,24 @@ function toggleDropdown() {
   showDropdown.value = !showDropdown.value
 }
 
-function handleLogout() {
-  logout()
+async function handleLogout() {
   showDropdown.value = false
+  await logout()
+  await nextTick() // Espera a que se actualice el estado
 }
-
 
 const isSticky = ref(false)
 function handleScroll() {
   isSticky.value = window.scrollY > 10
 }
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
-  getProfile()
 })
+
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
-
 
 const userInitial = computed(() =>{
   if (user.value && user.value.nombre) {
