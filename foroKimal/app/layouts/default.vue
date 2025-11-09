@@ -3,25 +3,30 @@
     <div :class="['feed-header-overlay', { 'is-sticky': isSticky }]">
       <div class="feed-header">
         <div class="feed-title">MiConexionKimal</div>
-        <div class="feed-tabs">
-          <button :class="['feed-tab', activeTab === 'siguiendo' ? 'active' : '']" @click="activeTab = 'siguiendo'">
-            <Icon icon="mdi:account-group" width="22" height="22" /> Siguiendo
-          </button>
-          <button :class="['feed-tab', activeTab === 'general' ? 'active' : '']" @click="activeTab = 'general'">
-            <Icon icon="mdi:earth" width="22" height="22" /> General
-          </button>
-          <button :class="['feed-tab', activeTab === 'noticias' ? 'active' : '']" @click="activeTab = 'noticias'">
-            <Icon icon="mdi:newspaper" width="22" height="22" /> Noticias
-          </button>
-        </div>
-        <div class="feed-actions">
-          <button class="feed-add-btn" @click="openAddPostModal">
-            <Icon icon="mdi:plus" width="28" height="28" />
-          </button>
-          <div class="feed-user-circle">
-            {{ userInitial }}
+        <template v-if="user">
+          <div class="feed-tabs">
+            <button :class="['feed-tab', activeTab === 'siguiendo' ? 'active' : '']" @click="activeTab = 'siguiendo'">
+              <Icon icon="mdi:account-group" width="22" height="22" /> Siguiendo
+            </button>
+            <button :class="['feed-tab', activeTab === 'general' ? 'active' : '']" @click="activeTab = 'general'">
+              <Icon icon="mdi:earth" width="22" height="22" /> General
+            </button>
+            <button :class="['feed-tab', activeTab === 'noticias' ? 'active' : '']" @click="activeTab = 'noticias'">
+              <Icon icon="mdi:newspaper" width="22" height="22" /> Noticias
+            </button>
           </div>
-        </div>
+          <div class="feed-actions">
+            <button class="feed-add-btn" @click="openAddPostModal">
+              <Icon icon="mdi:plus" width="28" height="28" />
+            </button>
+            <div class="feed-user-circle" @click="toggleDropdown">
+              {{ userInitial }}
+            </div>
+            <div v-if="showDropdown" class="dropdown-menu">
+              <button @click="handleLogout">Cerrar sesión</button>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
     <div class="feed-content" :style="{ marginTop: isSticky ? '110px' : '90px' }">
@@ -36,16 +41,26 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth';
 
-const { user, getProfile } = useAuth()
+const { user, getProfile, logout } = useAuth()
 
 const showAddPostModal = ref(false) //Se asigna de manera predeterimanda que el postModal este cerrado
 const activeTab = ref('general')
-
+const showDropdown = ref(false)
 
 
 function openAddPostModal(){
   showAddPostModal.value = true
 }
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value
+}
+
+function handleLogout() {
+  logout()
+  showDropdown.value = false
+}
+
 
 const isSticky = ref(false)
 function handleScroll() {

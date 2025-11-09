@@ -104,20 +104,10 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    try {
-      await fetch(`${API_URL}/logout`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken.value}`
-        },
-        credentials: 'include'
-      })
-
-      user.value = null
-      accessToken.value = ''
-    } catch (e) {
-      console.error('Error en el cierre de sesión:', e)
-    }
+    user.value = null
+    accessToken.value = ''
+    error.value = null
+    await router.push('/')
   }
 
   const refreshToken = async () => {
