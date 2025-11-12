@@ -345,7 +345,9 @@ const cargarPublicaciones = async () => {
 const cargarComentarios = async (publicacionId: string) => {
   loadingComentarios.value = true
   try {
-    const res = await fetch(`http://localhost:5000/comentarios/publicacion/${publicacionId}`)
+    const res = await fetch(`http://localhost:5000/publicacion/${publicacionId}/comentarios`, {
+      headers: { Authorization: `Bearer ${accessToken.value}` }
+    })
     if (!res.ok) throw new Error('Error al cargar comentarios')
     comentarios.value = await res.json()
   } catch (err) {
@@ -466,6 +468,7 @@ onMounted(() => {
   height: calc(100vh - 64px);
 }
 
+
 .publications-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -473,10 +476,33 @@ onMounted(() => {
   height: 100%;
   padding: 2rem;
   overflow: hidden;
-  
   @media (min-width: 1024px) {
     grid-template-columns: 3fr 4fr 3fr;
   }
+}
+
+.publications-col-1,
+.publications-col-2,
+.publications-col-3 {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.column-content-list,
+.publications-feed {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .column-card {
