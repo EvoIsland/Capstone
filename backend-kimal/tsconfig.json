@@ -2,12 +2,7 @@
   "extends": "fastify-tsconfig",
   "compilerOptions": {
     "outDir": "dist",
-    "sourceMap": true,
-
-    // 🔽 Añadidos para que no falle el build
-    "strict": false,
-    "noImplicitAny": false,
-    "skipLibCheck": true
+    "sourceMap": true
   },
   "include": ["src/**/*.ts"]
 }
