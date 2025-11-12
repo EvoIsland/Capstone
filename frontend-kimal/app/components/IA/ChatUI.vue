@@ -1,67 +1,111 @@
 <template>
-  <div class="chat">
-    <header class="chat__header">
-      <h1>Asistente IA – Conexión Kimal</h1>
-      <button class="btn btn--ghost" @click="clearChat" :disabled="asking">Limpiar</button>
-    </header>
-
-    <main class="chat__messages" ref="scrollArea">
-      <!-- mensaje de bienvenida -->
-      <div v-if="showWelcome" class="bubble bubble--bot">
-        <span class="bubble__role">agenteKimal</span>
-        <p class="bubble__text">Hola, soy el asistente del proyecto Conexión Kimal. ¿En qué puedo ayudarte?</p>
+  <div class="app-layout">
+    <!-- Sidebar: Historial de Conversaciones -->
+    <aside :class="['sidebar', { open: sidebarOpen }]" id="sidebar">
+      <div class="sidebar-header">
+        <button class="new-chat-btn" @click="clearChat" :disabled="asking">+ Nuevo Chat</button>
       </div>
+      
+      <h3>Conversación Actual</h3>
+      
+      <nav class="chat-history-list" id="chat-history-list">
+        <a
+          v-for="(msg, idx) in userMessages"
+          :key="idx"
+          href="#"
+          :class="['history-item', { active: selectedMessage === idx }]"
+          @click.prevent="scrollToMessage(idx)"
+        >
+          {{ msg.content }}
+        </a>
+      </nav>
+    </aside>
 
-      <!-- historial -->
-      <div
-        v-for="(m, i) in visibleMessages"
-        :key="i"
-        class="bubble"
-        :class="m.role === 'user' ? 'bubble--user' : 'bubble--bot'"
-      >
-        <span class="bubble__role">{{ m.role === 'assistant' ? 'agenteKimal' : 'Tú' }}</span>
-        <p class="bubble__text">{{ m.content }}</p>
-      </div>
+    <!-- Overlay para cerrar el menú en móvil -->
+    <div :class="['sidebar-overlay', { open: sidebarOpen }]" @click="sidebarOpen = false"></div>
 
-      <div v-if="asking" class="typing">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <!-- Contenido Principal: Chat -->
+    <main class="main-content">
+      <div class="chat-widget">
+        <!-- Header del Chat -->
+        <header class="chat-header">
+          <!-- Botón de Menú (Hamburguesa) -->
+          <button class="menu-toggle" @click="sidebarOpen = !sidebarOpen">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+
+          <!-- Avatar del Bot -->
+          <div class="header-avatar">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+            </svg>
+          </div>
+          
+          <!-- Nombre y Estado -->
+          <div class="header-info">
+            <h1>KimalBot</h1>
+            <div class="header-status">
+              <span class="status-dot"></span>
+              <span class="status-text">En línea</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Cuerpo del Chat -->
+        <main class="chat-body" ref="scrollArea">
+          <!-- Mensaje de bienvenida -->
+          <div v-if="showWelcome" class="message-row bot">
+            <div class="message-bubble bot">
+              ¡Hola! Soy KimalBot. ¿En qué puedo ayudarte hoy? ✨
+            </div>
+          </div>
+
+          <!-- Historial de mensajes -->
+          <div
+            v-for="(m, i) in visibleMessages"
+            :key="i"
+            :ref="el => { if (el) messageRefs[i] = el }"
+            class="message-row"
+            :class="m.role === 'user' ? 'user' : 'bot'"
+          >
+            <div class="message-bubble" :class="m.role === 'user' ? 'user' : 'bot'">
+              {{ m.content }}
+            </div>
+          </div>
+
+          <!-- Indicador de escritura -->
+          <div v-if="asking" class="message-row bot">
+            <div class="message-bubble bot">
+              <div class="typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- Respuestas rápidas -->
+        <div class="quick-replies" id="quick-replies"></div>
+
+        <!-- Barra de Entrada -->
+        <footer class="chat-footer">
+          <input
+            type="text"
+            v-model="input"
+            :disabled="asking"
+            @keydown.enter="send"
+            placeholder="Escribe un mensaje..."
+            class="chat-input"
+          >
+          <button class="send-button" @click="send" :disabled="asking || !canSend">
+            <svg fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </footer>
       </div>
     </main>
-
-    <!-- INPUT BAR -->
-    <footer class="chat__input">
-      <div class="inputBar">
-        <textarea
-          class="ta"
-          v-model="input"
-          :disabled="asking"
-          @keydown.enter.exact.prevent="send"
-          @keydown.enter.shift.exact="newline"
-          placeholder="Escribe tu mensaje… (Enter para enviar, Shift+Enter para salto)"
-          rows="1"
-          ref="ta"
-          spellcheck="false"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          data-gramm="false"
-          data-gramm_editor="false"
-          :style="{
-            color: '#FFFFFF',
-            caretColor: '#FFFFFF',
-            boxShadow: 'none',
-            WebkitAppearance: 'none',
-            appearance: 'none'
-          }"
-        />
-        <button class="btn btn--send" @click="send" :disabled="asking || !canSend" aria-label="Enviar">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon-plane" viewBox="0 0 24 24" fill="none">
-            <path d="M4 12L20 4L13.5 20L11.5 13.5L4 12Z"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -72,199 +116,378 @@ import { useChat } from '../../../composables/useChat'
 const { history, ask, asking, clear } = useChat()
 const input = ref('')
 const scrollArea = ref<HTMLElement | null>(null)
-const ta = ref<HTMLTextAreaElement | null>(null)
+const sidebarOpen = ref(false)
+const selectedMessage = ref<number | null>(null)
+const messageRefs = ref<any[]>([])
 
 const visibleMessages = computed(() => history.value.filter(m => m.role !== 'system'))
 const showWelcome = computed(() => visibleMessages.value.length === 0)
 const canSend = computed(() => input.value.trim().length > 0)
 
+// Obtener solo los mensajes del usuario para el historial
+const userMessages = computed(() => visibleMessages.value.filter(m => m.role === 'user'))
+
 const autoScroll = () => nextTick(() => {
   if (scrollArea.value) scrollArea.value.scrollTop = scrollArea.value.scrollHeight
 })
-
-const autoResize = () => {
-  if (!ta.value) return
-  ta.value.style.height = 'auto'
-  ta.value.style.height = Math.min(ta.value.scrollHeight, 160) + 'px'
-}
 
 const send = async () => {
   if (!canSend.value) return
   const text = input.value.trim()
   input.value = ''
-  autoResize()
   await ask(text)
   autoScroll()
-}
-
-const newline = () => {
-  input.value += '\n'
-  autoResize()
 }
 
 const clearChat = () => {
   clear()
   input.value = ''
-  autoResize()
+  selectedMessage.value = null
   autoScroll()
+  if (window.innerWidth <= 768) sidebarOpen.value = false
+}
+
+const scrollToMessage = (idx: number) => {
+  selectedMessage.value = idx
+  let userMsgCount = -1
+  for (let i = 0; i < visibleMessages.value.length; i++) {
+    const msg = visibleMessages.value[i]
+    if (msg && msg.role === 'user') {
+      userMsgCount++
+      if (userMsgCount === idx) {
+        const targetElement = messageRefs.value[i]
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          targetElement.style.transition = 'background-color 0.5s ease'
+          targetElement.style.backgroundColor = '#e8e0f3'
+          setTimeout(() => { targetElement.style.backgroundColor = '' }, 1500)
+        }
+        break
+      }
+    }
+  }
+  if (window.innerWidth <= 768) sidebarOpen.value = false
 }
 
 onMounted(() => {
   autoScroll()
-  autoResize()
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+/* --- Definición de Colores y Fuentes --- */
 :root {
-  --bg: #0b1220;
-  --panel: #121a2b;
-  --muted: #94a3b8;
-  --text: #e5e7eb;
-  --brand: #7F2BFF;
-  --brand-weak: #6a22e0;
-  --bot: #1f2937;
-  --user: #194cfa;
-  --border: #202a40;
+  --morado-suave: #7E57C2;
+  --verde-menta: #26A69A;
+  --blanco-lavanda: #F7F3FF;
+  --gris-oscuro: #333333;
+  --gris-medio: #5E5E5E;
+  --fondo-app: #f0f4f8;
+  --sombra: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --sombra-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Layout general */
-.chat {
-  height: 100vh;
-  background: linear-gradient(180deg, var(--bg), #0a1020 40%, #0a0f1c 100%);
-  color: var(--text);
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-}
-
-.chat__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-
-  h1 {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: .2px;
-  }
-}
-
-.chat__messages {
-  padding: 18px 16px 140px; /* espacio para la barra fija */
-  overflow: auto;
-}
-
-/* Burbujas */
-.bubble {
-  max-width: 72ch;
-  padding: 10px 12px;
-  border-radius: 12px;
-  margin: 10px 0;
-  line-height: 1.35;
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 10px rgba(0,0,0,.15);
-}
-.bubble--bot   {
-  background: #ffffff !important;
-  color: #111827 !important;
-  border: 1px solid #e5e7eb !important;
-}
-.bubble--user  {
-  background: #7F2BFF !important;
-  color: #fff !important;
-  margin-left: auto;
-  border: none !important;
-}
-
-.bubble__role { color: rgba(0,0,0,.45) !important; }
-.bubble--user .bubble__role { color: #ffffff !important; }
-.bubble__text { white-space: pre-wrap; }
-
-/* typing */
-.typing { display: inline-flex; gap: 6px; padding: 10px 0; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: bounce 1s infinite; }
-.dot:nth-child(2){ animation-delay: .15s }
-.dot:nth-child(3){ animation-delay: .3s }
-@keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.4} 40%{transform:translateY(-4px);opacity:1} }
-
-/* Barra de input fija */
-.chat__input {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
+/* --- Reseteo Básico --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
   padding: 0;
-  z-index: 50;
 }
 
-/* Contenedor del textarea + botón */
-.inputBar {
-  display: grid;
-  grid-template-columns: 1fr 50px;       /* textarea | botón */
-  align-items: center;
-  background: var(--brand);
-  border-radius: 14px;
-  padding: 10px;                         /* respiro interno (mínimo) */
-  box-shadow: 0 8px 30px rgba(127,43,255,.35);
-  overflow: hidden;                      /* nada sale de los bordes redondeados */
-  box-sizing: border-box;
+/* --- Estilo de Fuente Principal --- */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  background-color: var(--fondo-app);
+  overflow: hidden; /* Evita el scroll de la página entera */
 }
 
-/* Textarea */
-.ta {
-  background-color: rgba(127,43,255,.35); /* mantengo tu visual actual */
-  color: #fff !important;
+/* --- 1. Contenedor Principal (Estilo Gemini) --- */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* --- 2. Barra Lateral (Historial) --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--blanco-lavanda);
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+ 
+.sidebar-header { margin-bottom: 1rem; }
+
+.new-chat-btn {
+  background-color: var(--verde-menta);
+  color: white;
   border: none;
-  resize: none;
-  outline: none;
-  padding: 12px 14px;
-  font-size: 14px;
-  line-height: 1.35;
+  padding: 0.75rem;
   width: 100%;
-  box-sizing: border-box;
-}
-.ta::placeholder { color: rgba(255,255,255,0.9) !important; }
-.ta:focus { outline: 2px solid rgba(255,255,255,0.35); }
-
-/* Botones */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, opacity .12s ease;
-  border: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: transform 0.1s ease;
 }
-.btn:disabled { opacity: .55; cursor: not-allowed; }
+.new-chat-btn:hover { transform: scale(1.02); }
+.new-chat-btn:active { transform: scale(0.98); }
 
-.btn--send {
-  justify-self: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #ffffff;                   /* blanco sólido */
-  color: var(--brand);
+.sidebar h3 {
+  font-size: 0.875rem;
+  color: var(--gris-medio);
+  margin-bottom: 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.chat-history-list {
+  display: flex;
+  flex-direction: column; /* Se llenará de arriba hacia abajo */
+  gap: 0.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+ 
+.history-item {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: var(--gris-oscuro);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-item:hover { background-color: #e8e0f3; }
+.history-item.active { background-color: var(--morado-suave); color: white; }
+ 
+/* --- 3. Contenido Principal (Chat) --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  /* Padding para centrar el widget en escritorio */
+  padding: 1rem; 
+}
+
+/* Botón de Menú para Móvil (Hamburguesa) */
+.menu-toggle {
+  display: none; /* Oculto en escritorio */
+  position: absolute;
+  top: 1.25rem;
+  left: 1rem;
+  z-index: 50;
+  background: none;
   border: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  color: white;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+.menu-toggle svg { width: 24px; height: 24px; }
+
+/* Overlay para cerrar el menú en móvil */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+.sidebar-overlay.open { display: block; }
+
+
+/* --- 4. Widget de Chat (Adaptado) --- */
+.chat-widget {
+  background-color: white;
+  width: 100%;
+  /* Centrado y con ancho máximo en escritorio */
+  max-width: 800px; 
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--sombra-lg);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* --- 4a. Encabezado del Chat --- */
+.chat-header {
+  background-color: var(--morado-suave);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  /* Espacio a la izquierda para el botón de menú en móvil */
+  padding-left: 4rem; 
+  gap: 0.75rem;
+  box-shadow: var(--sombra);
+  z-index: 10;
+  position: relative; /* Para el botón de menú */
+}
+
+.header-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, var(--morado-suave), var(--verde-menta));
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.btn--send:hover { background: #f5f5f5; }
-.btn--ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn--ghost:hover { border-color: var(--brand-weak); color: #cbd5e1; }
+.header-avatar svg { width: 24px; height: 24px; opacity: 0.9; }
+ 
+.header-info h1 { font-size: 1.125rem; font-weight: 700; }
+.header-status { display: flex; align-items: center; gap: 0.375rem; }
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--verde-menta);
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.status-text { font-size: 0.875rem; opacity: 0.9; }
 
-.icon-plane {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: var(--brand);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+/* --- 4b. Cuerpo del Chat --- */
+.chat-body {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background-color: var(--blanco-lavanda);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+ 
+.message-row { display: flex; }
+.message-row.user { justify-content: flex-end; }
+.message-row.bot { justify-content: flex-start; }
+ 
+.message-bubble {
+  padding: 0.75rem 1rem;
+  max-width: 80%;
+  box-shadow: var(--sombra);
+  word-wrap: break-word;
+}
+.message-bubble.bot {
+  background-color: var(--morado-suave);
+  color: white;
+  border-radius: 1rem;
+  border-top-left-radius: 0.25rem;
+}
+.message-bubble.user {
+  background-color: white;
+  color: var(--gris-oscuro);
+  border: 1px solid #f0f0f0;
+  border-radius: 1rem;
+  border-top-right-radius: 0.25rem;
+}
+
+/* --- 4c. Respuestas Rápidas --- */
+.quick-replies {
+  padding: 0.5rem;
+  background-color: var(--blanco-lavanda);
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.quick-reply-btn {
+  background-color: var(--verde-menta);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.quick-reply-btn:hover { transform: scale(1.05); }
+
+/* --- 4d. Barra de Entrada (Footer) --- */
+.chat-footer {
+  background-color: white;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+.chat-input {
+  flex: 1;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  outline: none;
+  color: var(--gris-oscuro);
+  font-size: 1rem;
+}
+.chat-input:focus {
+  border-color: var(--morado-suave);
+  box-shadow: 0 0 0 2px rgba(126, 87, 194, 0.3);
+}
+.send-button {
+  background-color: var(--verde-menta);
+  color: white;
+  width: 40px; height: 40px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sombra-lg);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.send-button:hover { transform: scale(1.1); }
+.send-button svg { width: 20px; height: 20px; margin-right: -1px; }
+
+/* --- Estilo de la Barra de Scroll --- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb {
+  background: #c7b8da;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: #b3a2c9; }
+ 
+/* --- 5. Responsividad para Móviles (<= 768px) --- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    height: 100%;
+    /* Oculto por defecto */
+    transform: translateX(-100%); 
+    box-shadow: var(--sombra-lg);
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .main-content { padding: 0; /* Sin padding en móvil */ }
+
+  .chat-widget {
+    height: 100vh; /* Pantalla completa */
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .menu-toggle { display: block; /* Mostrar botón de menú */ }
+
+  .chat-header {
+    /* Reducir el padding izquierdo en móvil para que el avatar no se monte */
+    padding-left: 4.5rem; 
+  }
 }
 </style>
