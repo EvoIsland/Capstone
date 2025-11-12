@@ -73,8 +73,12 @@
           </svg>
         </div>
         <div v-if="!collapsed" class="user-info">
-          <div class="user-name">Admin</div>
-          <div class="user-role">Administrador</div>
+          <div class="user-name">
+            {{ user?.nombre || 'Usuario' }}
+          </div>
+          <div class="user-role">
+            {{ user?.rol ? (user.rol === 'admin' ? 'Administrador' : 'Usuario') : '' }}
+          </div>
         </div>
       </div>
     </div>
@@ -83,9 +87,12 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useAuth } from '../../../composables/useAuth'
 const collapsed = ref(false)
 const emit = defineEmits(['collapse'])
 watch(collapsed, (val) => emit('collapse', val))
+
+const { user } = useAuth()
 </script>
 
 <style scoped lang="scss">
