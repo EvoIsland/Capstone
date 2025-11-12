@@ -25,7 +25,7 @@ const usuariosRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
   fastify.post('/admin/usuarios', async (request, reply) => {
     const parseResult = userAdminSchema.safeParse(request.body)
     if (!parseResult.success) {
-      return reply.status(400).send({ error: 'Datos inválidos', detalles: parseResult.error.errors })
+      return reply.status(400).send({ error: 'Datos inválidos', detalles: parseResult.error.issues })
     }
     const data = parseResult.data
 

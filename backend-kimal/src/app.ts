@@ -23,7 +23,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   await fastify.register(cors, {
     origin: true,
     credentials: true,
-    methods: ['GET','POST','PUT','DELETE','OPTIONS']
+    methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 
   // Conectar a la base de datos
