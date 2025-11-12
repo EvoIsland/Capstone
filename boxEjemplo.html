@@ -3,116 +3,865 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diseño de Publicación para Feed</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Panel de Administración Completo</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Leaflet CSS (para el mapa) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVL9oEYYnRhpNcOPHfBfORGdGrj8e/AStsz/nF+X/cQv1S.tLq/eQ==" crossorigin=""/>
+    
+    <!-- Leaflet JS (para el mapa) -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1/L+7MWXcSHc3ZoCSxN4/RcrrTfdO.js" crossorigin=""></script>
+
+    <!-- Fuente Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* Usando una fuente más moderna como Inter */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
         }
+        /* Estilos para un scrollbar más fino */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Asegura que el contenedor del mapa tenga altura */
+        #map {
+            height: 300px;
+            z-index: 10; /* Asegura que el mapa esté visible */
+        }
+
+        /* Clase para la navegación activa */
+        .nav-link.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+        }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 space-y-8">
+<body class="bg-gray-100 text-gray-800 antialiased">
 
-    <!-- EJEMPLO 1: PUBLICACIÓN TIPO "PREGUNTA" -->
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-lg w-full mx-auto">
-        
-        <!-- 1. Encabezado de la Publicación -->
-        <div class="flex items-center p-4 border-b border-gray-200">
-            <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=AV" alt="Avatar" class="w-10 h-10 rounded-full">
-            <div class="ml-3 flex-grow">
-                <!-- Contenedor para nombre y etiqueta -->
-                <div class="flex items-center space-x-2">
-                    <p class="text-sm font-semibold text-gray-800">nombre_de_usuario</p>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Pregunta</span>
+    <div class="flex h-screen bg-gray-100">
+        <!-- Barra de Navegación Lateral (Sidebar) -->
+        <aside class="w-64 bg-gray-900 text-gray-200 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-30">
+            <!-- Logo -->
+            <div class="h-20 flex items-center justify-center px-4 bg-gray-900 shadow-md">
+                <div class="flex-shrink-0 flex items-center space-x-2">
+                    <svg class="h-10 w-10 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                    </svg>
+                    <span class="font-bold text-2xl text-white">AdminForo</span>
                 </div>
-                <p class="text-xs text-gray-500">Hace 5 minutos</p>
             </div>
-            <button class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-ellipsis-h"></i>
-            </button>
-        </div>
-
-        <!-- Descripción de la publicación (AHORA AQUÍ) -->
-        <div class="px-4 pt-4">
-             <p class="text-sm text-gray-700"><span class="font-semibold text-gray-800">nombre_de_usuario</span> ¡Aquí va la descripción de la publicación! Un día increíble en la playa. ☀️🌊 #verano #playa #vacaciones</p>
-        </div>
-
-        <!-- Contenido (Imagen) -->
-        <div class="pt-4">
-            <img src="https://placehold.co/600x400/94A3B8/FFFFFF?text=Imagen+de+Publicación" alt="Contenido de la publicación" class="w-full h-auto">
-        </div>
-
-        <!-- Acciones y estadísticas -->
-        <div class="p-4">
-            <div class="flex items-center space-x-4">
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors duration-200"><i class="far fa-heart text-xl"></i><span class="text-sm font-semibold">Me gusta</span></button>
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-gray-800 transition-colors duration-200"><i class="far fa-comment text-xl"></i><span class="text-sm font-semibold">Comentar</span></button>
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-gray-800 transition-colors duration-200"><i class="far fa-share-square text-xl"></i><span class="text-sm font-semibold">Compartir</span></button>
+            
+            <!-- Menú de Navegación -->
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul class="space-y-2 px-4">
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white active" data-target="page-dashboard">
+                            <!-- Icono Dashboard -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-usuarios">
+                            <!-- Icono Usuarios -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.003c0 1.113.285 2.16.786 3.07M15 19.128a2.25 2.25 0 01-2.25-2.25v-.003c0-1.113-.285-2.16-.786-3.07M9 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM3.5 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-publicaciones">
+                            <!-- Icono Publicaciones -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            <span>Publicaciones</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-instalaciones">
+                            <!-- Icono Instalaciones -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                            <span>Instalaciones</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Perfil de Admin (Abajo) -->
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" alt="Avatar de usuario">
+                    <div>
+                        <p class="text-sm font-medium text-white">Admin</p>
+                        <a href="#" class="text-xs text-gray-400 hover:text-indigo-400">Cerrar Sesión</a>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3"><p class="text-sm font-semibold text-gray-800">A 1,234 personas les gusta esto</p></div>
-            <div class="mt-2"><a href="#" class="text-sm text-gray-500 hover:underline">Ver los 42 comentarios</a></div>
-        </div>
+        </aside>
 
-        <!-- Añadir Comentario -->
-        <div class="border-t border-gray-200 p-4">
-            <div class="flex items-center space-x-3">
-                <img src="https://placehold.co/32x32/E2E8F0/4A5568?text=YO" alt="Tu avatar" class="w-8 h-8 rounded-full">
-                <input type="text" placeholder="Añade un comentario..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                <button class="text-blue-500 font-semibold text-sm hover:text-blue-700">Publicar</button>
+        <!-- Contenido Principal -->
+        <main class="flex-1 ml-64"> <!-- MODIFICADO: overflow-y-auto eliminado -->
+            <!-- Encabezado Superior -->
+            <header class="bg-white shadow-sm sticky top-0 z-20 border-b border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        <!-- Título de la Página (cambiará con JS, pero estático por ahora) -->
+                        <h1 id="page-title" class="text-2xl font-bold text-gray-900">
+                            Inicio
+                        </h1>
+                        <!-- Botones de Acción (Notificaciones, etc.) -->
+                        <div class="flex items-center space-x-4">
+                            <button class="p-1 rounded-full text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-label="Notificaciones">
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Área de Contenido Dinámico -->
+            <div class="py-8 px-4 sm:px-6 lg:px-8">
+                
+                <!-- PÁGINA: INICIO (DASHBOARD) -->
+                <div id="page-dashboard" class="content-page">
+                    <!-- Tarjetas de Estadísticas (KPIs) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Card 1: Total Publicaciones -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
+                            <div class="bg-indigo-100 rounded-full p-3 flex-shrink-0">
+                                <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Publicaciones</p>
+                                <p class="text-3xl font-bold text-gray-900">1,240</p>
+                            </div>
+                        </div>
+                        <!-- Card 2: Contenido Reportado -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
+                            <div class="bg-red-100 rounded-full p-3 flex-shrink-0">
+                                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Contenido Reportado</p>
+                                <p class="text-3xl font-bold text-gray-900">28</p>
+                            </div>
+                        </div>
+                        <!-- Card 3: Total Comentarios -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
+                            <div class="bg-blue-100 rounded-full p-3 flex-shrink-0">
+                                <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Comentarios</p>
+                                <p class="text-3xl font-bold text-gray-900">4,109</p>
+                            </div>
+                        </div>
+                        <!-- Card 4: Total Usuarios -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
+                            <div class="bg-green-100 rounded-full p-3 flex-shrink-0">
+                                <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-4.682 2.72a.75.75 0 01-.059 1.054a9.094 9.094 0 01-3.741.479 3 3 0 01-4.682-2.72M18 18.72A7.96 7.96 0 0012 21a7.96 7.96 0 00-6-2.28m12 0A5.96 5.96 0 0012 15a5.96 5.96 0 00-6 3.72m12 0a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72M6 18.72a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72m4.682 2.72c.059 1.054.09 2.128.09 3.228a7.96 7.96 0 00-6-2.28M6 18.72A5.96 5.96 0 0112 15a5.96 5.96 0 016 3.72m0 0a9.094 9.094 0 003.741-.479 3 3 0 004.682-2.72M12 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Usuarios</p>
+                                <p class="text-3xl font-bold text-gray-900">345</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Otras secciones del dashboard... -->
+                </div>
+
+                <!-- PÁGINA: GESTIÓN DE USUARIOS -->
+                <div id="page-usuarios" class="content-page hidden">
+                    <!-- Pestañas de Usuarios -->
+                    <div class="mb-6">
+                        <div class="border-b border-gray-200">
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600" data-tab="all-users">
+                                    Todos los Usuarios
+                                </button>
+                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="reported-users">
+                                    Con Reportes
+                                </button>
+                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="banned-users">
+                                    Baneados
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Usuarios (Contenido de Pestaña) -->
+                    <div id="tab-all-users" class="user-tab-content bg-white rounded-xl shadow-lg overflow-hidden">
+                        <!-- Barra de Búsqueda -->
+                        <div class="p-5 border-b border-gray-200">
+                             <input class="block w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm" type="search" placeholder="Buscar por nombre o email...">
+                             <!-- Icono de Búsqueda (SVG) -->
+                        </div>
+                        <!-- Tabla -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Miembro desde</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <!-- Fila 1 -->
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-8 w-8">
+                                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="text-sm font-medium text-gray-900">Ana Gómez</div>
+                                                    <div class="text-sm text-gray-500">ana.gomez@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10/10/2024</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="user-details-modal">Ver Detalles</button>
+                                            <button class="text-red-600 hover:text-red-900">Banear</button>
+                                        </td>
+                                    </tr>
+                                    <!-- Fila 2 -->
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-8 w-8">
+                                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="text-sm font-medium text-gray-900">Carlos Pérez</div>
+                                                    <div class="text-sm text-gray-500">carlos.perez@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Baneado</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">05/09/2024</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="user-details-modal">Ver Detalles</button>
+                                            <button class="text-green-600 hover:text-green-900">Quitar Ban</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paginación -->
+                        <div class="p-5 border-t border-gray-200">
+                            <!-- ... Paginación ... -->
+                        </div>
+                    </div>
+                    <!-- Contenido para "Reportados" y "Baneados" (similar, pero oculto) -->
+                    <div id="tab-reported-users" class="user-tab-content hidden p-5 bg-white rounded-xl shadow-lg">Contenido de Usuarios Reportados...</div>
+                    <div id="tab-banned-users" class="user-tab-content hidden p-5 bg-white rounded-xl shadow-lg">Contenido de Usuarios Baneados...</div>
+                </div>
+
+                <!-- PÁGINA: GESTIÓN DE PUBLICACIONES (REDISEÑADA) -->
+                <div id="page-publicaciones" class="content-page hidden">
+                    <!-- Contenedor de 3 columnas con altura fija y scroll independiente -->
+                    <!-- Altura: 100vh - header (4rem) - padding (4.5rem) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-10 gap-6" style="height: calc(100vh - 8.5rem);"> 
+                        
+                        <!-- Col 1: Lista de Instalaciones -->
+                        <div class="lg:col-span-3">
+                            <div class="bg-white rounded-xl shadow-lg flex flex-col h-full">
+                                <div class="p-4 border-b">
+                                    <h3 class="text-lg font-semibold">Instalaciones</h3>
+                                    <!-- Filtros para la lista de instalaciones -->
+                                    <div class="flex space-x-2 mt-3">
+                                        <select class="block w-1/2 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm py-2" title="Filtrar por Región">
+                                            <option>Todas las Regiones</option>
+                                            <option>Metropolitana</option>
+                                            <option>Valparaíso</option>
+                                        </select>
+                                        <select class="block w-1/2 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm py-2" title="Filtrar por Comuna">
+                                            <option>Todas las Comunas</option>
+                                            <option>Las Condes</option>
+                                            <option>Santiago</option>
+                                            <option>Viña del Mar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Lista scrolleable de instalaciones -->
+                                <div id="installation-list" class="flex-1 p-4 space-y-2 overflow-y-auto">
+                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 bg-indigo-100 border-l-4 border-indigo-500 installation-item" data-id="1" onclick="selectInstallation(event, this, 'Parque Araucano')">
+                                        <h4 class="font-medium">Parque Araucano</h4>
+                                        <p class="text-sm text-gray-500">Las Condes</p>
+                                    </a>
+                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="2" onclick="selectInstallation(event, this, 'Parque O\'Higgins')">
+                                        <h4 class="font-medium">Parque O'Higgins</h4>
+                                        <p class="text-sm text-gray-500">Santiago</p>
+                                    </a>
+                                     <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="3" onclick="selectInstallation(event, this, 'Quinta Vergara')">
+                                        <h4 class="font-medium">Quinta Vergara</h4>
+                                        <p class="text-sm text-gray-500">Viña del Mar</p>
+                                    </a>
+                                    <!-- Más instalaciones de ejemplo -->
+                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="4" onclick="selectInstallation(event, this, 'Parque Bicentenario')">
+                                        <h4 class="font-medium">Parque Bicentenario</h4>
+                                        <p class="text-sm text-gray-500">Vitacura</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <!-- Col 2: Publicaciones (Feed) -->
+                        <div class="lg:col-span-4">
+                             <h3 class="text-xl font-semibold mb-4 text-gray-800">Publicaciones en <span id="selected-installation-name" class="text-indigo-600">Parque Araucano</span></h3>
+                            <div class="space-y-5 h-[calc(100vh-12rem)] overflow-y-auto pr-2" id="publications-feed">
+                                <!-- Post 1 (Card Format) -->
+                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-indigo-500 publication-item active-post" data-id="p1" onclick="selectPublication(event, this, 'Estado de las canchas')">
+                                    <div class="p-5">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex items-center space-x-3 mb-3">
+                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                                <div>
+                                                    <p class="font-medium text-sm">Ana Gómez</p>
+                                                    <p class="text-xs text-gray-500">11/11/2025</p>
+                                                </div>
+                                            </div>
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-800 mb-2">Estado de las canchas</h4>
+                                        <p class="text-sm text-gray-600 line-clamp-3">Hola a todos, Quería saber si alguien ha ido al Parque Araucano esta semana. ¿Cómo están las canchas de fútbol después de la lluvia del lunes? Agradecería cualquier información, ¡gracias!</p>
+                                    </div>
+                                </div>
+                                <!-- Post 2 -->
+                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-indigo-500 publication-item" data-id="p2" onclick="selectPublication(event, this, 'SPAM: Vendo cosas')">
+                                    <div class="p-5">
+                                         <div class="flex justify-between items-start">
+                                            <div class="flex items-center space-x-3 mb-3">
+                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=SB" alt="Avatar">
+                                                <div>
+                                                    <p class="font-medium text-sm">Spam Bot</p>
+                                                    <p class="text-xs text-gray-500">10/11/2025</p>
+                                                </div>
+                                            </div>
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Reportado</span>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-800 mb-2">SPAM: Vendo cosas</h4>
+                                        <p class="text-sm text-gray-600 line-clamp-3">Las mejores ofertas solo por hoy, haz clic en este enlace... lorem ipsum dolor sit amet.</p>
+                                    </div>
+                                </div>
+                                 <!-- Post 3 -->
+                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-indigo-500 publication-item" data-id="p3" onclick="selectPublication(event, this, 'Busco gente para jugar hoy')">
+                                    <div class="p-5">
+                                         <div class="flex justify-between items-start">
+                                            <div class="flex items-center space-x-3 mb-3">
+                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                                <div>
+                                                    <p class="font-medium text-sm">Ana Gómez</p>
+                                                    <p class="text-xs text-gray-500">10/11/2025</p>
+                                                </div>
+                                            </div>
+                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-800 mb-2">Busco gente para jugar hoy</h4>
+                                        <p class="text-sm text-gray-600 line-clamp-3">Somos 3 y nos falta uno para jugar a las 7pm en el Araucano. ¿Alguien se suma?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <!-- Col 3: Comentarios -->
+                        <div class="lg:col-span-3">
+                             <div class="bg-white rounded-xl shadow-lg flex flex-col h-full">
+                                <div class="p-4 border-b">
+                                    <h3 class="text-lg font-semibold">Comentarios</h3>
+                                    <p id="selected-post-name" class="text-sm text-gray-500 truncate">de "Estado de las canchas"</p>
+                                </div>
+                                <div class="flex-1 p-4 space-y-3 overflow-y-auto" id="comments-section">
+                                    <!-- Comentario 1 -->
+                                    <div class="p-3 bg-gray-50 rounded-lg border">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <div class="flex items-center space-x-2">
+                                                <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                                <span class="font-medium text-sm">Carlos Pérez</span>
+                                            </div>
+                                            <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
+                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                            </button>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
+                                    </div>
+                                    <!-- Comentario 2 -->
+                                    <div class="p-3 bg-gray-50 rounded-lg border">
+                                         <div class="flex justify-between items-start mb-1">
+                                            <div class="flex items-center space-x-2">
+                                                <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
+                                                <span class="font-medium text-sm">Lucía Méndez</span>
+                                            </div>
+                                            <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
+                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                            </button>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Confirmo, acabo de pasar por ahí y se ven bien.</p>
+                                    </div>
+                                </div>
+                                <!-- Input para nuevo comentario (moderador) -->
+                                <div class="p-4 border-t">
+                                    <input type="text" placeholder="Escribir un comentario..." class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PÁGINA: GESTIÓN DE INSTALACIONES -->
+                <div id="page-instalaciones" class="content-page hidden">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <!-- Barra de Acciones -->
+                        <div class="p-5 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold">Lista de Instalaciones</h2>
+                            <button class="open-modal bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2" data-modal-id="installation-modal">
+                                <!-- Icono + -->
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                <span>Agregar Instalación</span>
+                            </button>
+                        </div>
+                        <!-- Tabla de Instalaciones -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comuna</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Parque Araucano</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Av. Pdte. Riesco 5330</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Las Condes</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="installation-modal">Editar</button>
+                                            <button class="text-red-600 hover:text-red-900">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Parque O'Higgins</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rondizzoni</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Santiago</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="installation-modal">Editar</button>
+                                            <button class="text-red-600 hover:text-red-900">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ========= MODALES ========= -->
+    
+    <!-- Modal: Detalles de Usuario -->
+    <div id="user-details-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <!-- Cabecera del Modal -->
+            <div class="flex justify-between items-center p-5 border-b">
+                <h3 class="text-xl font-semibold">Detalles de Usuario</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <!-- Contenido del Modal -->
+            <div class="p-6 overflow-y-auto space-y-6">
+                <!-- Info de Usuario -->
+                <div class="flex items-center space-x-4">
+                    <img class="h-16 w-16 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                    <div>
+                        <h4 class="text-lg font-bold">Ana Gómez</h4>
+                        <p class="text-sm text-gray-500">ana.gomez@example.com</p>
+                        <p class="text-sm text-gray-500">Miembro desde: 10/10/2024</p>
+                    </div>
+                </div>
+                <!-- Pestañas de Actividad -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Columna de Publicaciones -->
+                    <div>
+                        <h5 class="font-semibold mb-3">Publicaciones del Usuario</h5>
+                        <ul class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <li class="p-3 bg-gray-50 rounded-lg border">
+                                <p class="font-medium text-sm">Estado de las canchas</p>
+                                <p class="text-xs text-gray-500">11/11/2025 - 2 comentarios</p>
+                            </li>
+                            <li class="p-3 bg-gray-50 rounded-lg border">
+                                <p class="font-medium text-sm">Busco gente para jugar hoy</p>
+                                <p class="text-xs text-gray-500">10/11/2025 - 5 comentarios</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Columna de Comentarios -->
+                    <div>
+                        <h5 class="font-semibold mb-3">Comentarios del Usuario</h5>
+                        <ul class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <li class="p-3 bg-gray-50 rounded-lg border">
+                                <p class="text-sm italic">"¡Totalmente de acuerdo!"</p>
+                                <p class="text-xs text-gray-500">en "Nuevas redes..."</p>
+                            </li>
+                            <li class="p-3 bg-gray-50 rounded-lg border">
+                                <p class="text-sm italic">"Yo me apunto para la próxima"</p>
+                                <p class="text-xs text-gray-500">en "Fútbol este sábado"</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Pie del Modal -->
+            <div class="flex justify-end items-center p-5 border-t space-x-3">
+                <button class="close-modal bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cerrar</button>
+                <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Banear Usuario</button>
             </div>
         </div>
     </div>
 
-    <!-- EJEMPLO 2: PUBLICACIÓN TIPO "REPORTE" -->
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm max-w-lg w-full mx-auto">
-        
-        <!-- 1. Encabezado de la Publicación -->
-        <div class="flex items-center p-4 border-b border-gray-200">
-            <img src="https://placehold.co/40x40/facc15/4a5568?text=AD" alt="Avatar" class="w-10 h-10 rounded-full">
-            <div class="ml-3 flex-grow">
-                <!-- Contenedor para nombre y etiqueta -->
-                <div class="flex items-center space-x-2">
-                    <p class="text-sm font-semibold text-gray-800">otro_usuario</p>
-                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Reporte</span>
+    <!-- Modal: Detalles de Publicación -->
+    <div id="post-details-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <!-- Cabecera -->
+            <div class="flex justify-between items-center p-5 border-b">
+                <h3 class="text-xl font-semibold">Detalle de Publicación</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <!-- Contenido (División Post / Comentarios) -->
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+                <!-- Columna Izquierda: Publicación -->
+                <div class="lg:col-span-2 p-6 overflow-y-auto border-r border-gray-200">
+                    <div class="flex justify-between items-start">
+                        <h4 class="text-2xl font-bold mb-2">Estado de las canchas</h4>
+                        <!-- Botón 3 puntos (Post) -->
+                        <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de post">
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                        <span class="text-sm font-medium">Ana Gómez</span>
+                        <span class="text-sm text-gray-500">· 11/11/2025</span>
+                    </div>
+                    <div class="prose max-w-none text-gray-700">
+                        <p>Hola a todos,</p>
+                        <p>Quería saber si alguien ha ido al Parque Araucano esta semana. ¿Cómo están las canchas de fútbol después de la lluvia del lunes?</p>
+                        <p>Agradecería cualquier información, ¡gracias!</p>
+                    </div>
                 </div>
-                <p class="text-xs text-gray-500">Hace 30 minutos</p>
-            </div>
-            <button class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-ellipsis-h"></i>
-            </button>
-        </div>
-
-        <!-- Contenido -->
-        <div class="p-4">
-             <p class="text-sm text-gray-700"><span class="font-semibold text-gray-800">otro_usuario</span> Este es el texto de un reporte. No necesita una imagen, solo el contenido del texto que informa sobre algo importante.</p>
-        </div>
-
-        <!-- Acciones y estadísticas -->
-        <div class="p-4 pt-0">
-            <div class="flex items-center space-x-4">
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors duration-200"><i class="far fa-heart text-xl"></i><span class="text-sm font-semibold">Me gusta</span></button>
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-gray-800 transition-colors duration-200"><i class="far fa-comment text-xl"></i><span class="text-sm font-semibold">Comentar</span></button>
-                <button class="flex items-center space-x-1 text-gray-500 hover:text-gray-800 transition-colors duration-200"><i class="far fa-share-square text-xl"></i><span class="text-sm font-semibold">Compartir</span></button>
-            </div>
-            <div class="mt-3"><p class="text-sm font-semibold text-gray-800">A 210 personas les gusta esto</p></div>
-            <div class="mt-2"><a href="#" class="text-sm text-gray-500 hover:underline">Ver los 15 comentarios</a></div>
-        </div>
-
-        <!-- Añadir Comentario -->
-        <div class="border-t border-gray-200 p-4">
-            <div class="flex items-center space-x-3">
-                <img src="https://placehold.co/32x32/E2E8F0/4A5568?text=YO" alt="Tu avatar" class="w-8 h-8 rounded-full">
-                <input type="text" placeholder="Añade un comentario..." class="w-full bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                <button class="text-blue-500 font-semibold text-sm hover:text-blue-700">Publicar</button>
+                <!-- Columna Derecha: Comentarios -->
+                <div class="lg:col-span-1 p-6 bg-gray-50 overflow-y-auto">
+                    <h5 class="font-semibold mb-4">Comentarios (2)</h5>
+                    <ul class="space-y-4">
+                        <!-- Comentario 1 -->
+                        <li class="p-4 bg-white rounded-lg shadow-sm border">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center space-x-2">
+                                    <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                    <span class="text-sm font-medium">Carlos Pérez</span>
+                                </div>
+                                <!-- Botón 3 puntos (Comentario) -->
+                                <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
+                        </li>
+                        <!-- Comentario 2 -->
+                        <li class="p-4 bg-white rounded-lg shadow-sm border">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center space-x-2">
+                                    <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
+                                    <span class="text-sm font-medium">Lucía Méndez</span>
+                                </div>
+                                <!-- Botón 3 puntos (Comentario) -->
+                                <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">Confirmo, acabo de pasar por ahí y se ven bien.</p>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal: Agregar/Editar Instalación -->
+    <div id="installation-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <!-- Cabecera -->
+            <div class="flex justify-between items-center p-5 border-b">
+                <h3 class="text-xl font-semibold">Agregar Nueva Instalación</h3>
+                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <!-- Formulario -->
+            <form class="p-6 overflow-y-auto space-y-4">
+                <div>
+                    <label for="inst-name" class="block text-sm font-medium text-gray-700">Nombre de la Instalación</label>
+                    <input type="text" id="inst-name" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                </div>
+                <div>
+                    <label for="inst-address" class="block text-sm font-medium text-gray-700">Dirección</label>
+                    <input type="text" id="inst-address" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="inst-region" class="block text-sm font-medium text-gray-700">Región</label>
+                        <select id="inst-region" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                            <option>Metropolitana</option>
+                            <option>Valparaíso</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="inst-comuna" class="block text-sm font-medium text-gray-700">Comuna</label>
+                        <select id="inst-comuna" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                            <option>Las Condes</option>
+                            <option>Santiago</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Mapa Leaflet -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Ubicación (Haz clic en el mapa)</label>
+                    <div id="map" class="mt-1 w-full rounded-lg border border-gray-300"></div>
+                </div>
+                <!-- Coordenadas -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="inst-lat" class="block text-sm font-medium text-gray-700">Latitud</D label>
+                        <input type="text" id="inst-lat" readonly class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 text-sm">
+                    </div>
+                    <div>
+                        <label for="inst-lng" class="block text-sm font-medium text-gray-700">Longitud</label>
+                        <input type="text" id="inst-lng" readonly class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 text-sm">
+                    </div>
+                </div>
+            </form>
+            <!-- Pie -->
+            <div class="flex justify-end items-center p-5 border-t space-x-3">
+                <button class="close-modal bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Guardar Instalación</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========= SCRIPTS ========= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- NAVEGACIÓN PRINCIPAL (Sidebar) ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentPages = document.querySelectorAll('.content-page');
+            const pageTitle = document.getElementById('page-title');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    const targetId = link.getAttribute('data-target');
+                    const targetPage = document.getElementById(targetId);
+                    
+                    // Actualizar título
+                    pageTitle.textContent = link.querySelector('span').textContent;
+
+                    // Ocultar todas las páginas
+                    contentPages.forEach(page => {
+                        page.classList.add('hidden');
+                    });
+                    
+                    // Mostrar la página objetivo
+                    if (targetPage) {
+                        targetPage.classList.remove('hidden');
+                    }
+
+                    // Actualizar estado activo del link
+                    navLinks.forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    link.classList.add('active');
+                });
+            });
+
+            // --- PESTAÑAS (Tabs) DE USUARIOS ---
+            const userTabs = document.querySelectorAll('.user-tab');
+            const userTabContents = document.querySelectorAll('.user-tab-content');
+            
+            userTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTabId = tab.getAttribute('data-tab');
+                    
+                    // Ocultar todos los contenidos
+                    userTabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Mostrar contenido objetivo
+                    const targetContent = document.getElementById(`tab-${targetTabId}`);
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                    }
+                    
+                    // Actualizar estilos de pestañas
+                    userTabs.forEach(t => {
+                        t.classList.remove('border-indigo-500', 'text-indigo-600');
+                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    tab.classList.add('border-indigo-500', 'text-indigo-600');
+                    tab.classList.remove('border-transparent', 'text-gray-500');
+                });
+            });
+
+            // --- MANEJO DE MODALES (Genérico) ---
+            const openModalButtons = document.querySelectorAll('.open-modal');
+            const closeModalButtons = document.querySelectorAll('.close-modal');
+            const modalContainers = document.querySelectorAll('.modal-container');
+
+            openModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modalId = button.getAttribute('data-modal-id');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        
+                        // Si es el modal de instalación, inicializar el mapa
+                        if (modalId === 'installation-modal') {
+                            initMap();
+                        }
+                    }
+                });
+            });
+
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Encontrar el modal padre y cerrarlo
+                    const modal = button.closest('.modal-container');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Cerrar modal al hacer clic en el fondo oscuro
+            modalContainers.forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+
+            // --- LÓGICA DEL MAPA LEAFLET ---
+            let mapInstance = null;
+            let markerInstance = null;
+            const latInput = document.getElementById('inst-lat');
+            const lngInput = document.getElementById('inst-lng');
+
+            function initMap() {
+                // Centrar en Santiago de Chile por defecto
+                const defaultLatLng = [-33.45694, -70.64827];
+
+                // Solo inicializar el mapa una vez
+                if (mapInstance) {
+                    mapInstance.invalidateSize(); // Reajustar tamaño al reabrir modal
+                    return;
+                }
+
+                mapInstance = L.map('map').setView(defaultLatLng, 13);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(mapInstance);
+
+                // Marcador inicial
+                markerInstance = L.marker(defaultLatLng, { draggable: true }).addTo(mapInstance);
+
+                // Actualizar inputs al arrastrar el marcador
+                markerInstance.on('dragend', (e) => {
+                    const latlng = e.target.getLatLng();
+                    latInput.value = latlng.lat.toFixed(6);
+                    lngInput.value = latlng.lng.toFixed(6);
+                });
+
+                // Mover marcador al hacer clic en el mapa
+                mapInstance.on('click', (e) => {
+                    const latlng = e.latlng;
+                    markerInstance.setLatLng(latlng);
+                    latInput.value = latlng.lat.toFixed(6);
+                    lngInput.value = latlng.lng.toFixed(6);
+                });
+
+                // Establecer valores iniciales
+                latInput.value = defaultLatLng[0].toFixed(6);
+                lngInput.value = defaultLatLng[1].toFixed(6);
+            }
+        });
+
+        // --- FUNCIONES PARA LA NUEVA VISTA DE PUBLICACIONES ---
+
+        // Seleccionar Instalación
+        function selectInstallation(event, element, installationName) {
+            if (event) event.preventDefault();
+            // Actualizar nombre en Col 2
+            document.getElementById('selected-installation-name').textContent = installationName;
+            
+            // Quitar clase activa de todos los items
+            document.querySelectorAll('.installation-item').forEach(item => {
+                item.classList.remove('bg-indigo-100', 'border-l-4', 'border-indigo-500');
+            });
+            
+            // Añadir clase activa al item clickeado
+            element.classList.add('bg-indigo-100', 'border-l-4', 'border-indigo-500');
+            
+            // Aquí iría la lógica para cargar las publicaciones de esa instalación
+            // (Simulación)
+            console.log(`Cargando publicaciones para: ${installationName}`);
+        }
+
+        // Seleccionar Publicación
+        function selectPublication(event, element, postName) {
+            if (event) event.preventDefault();
+            // Actualizar nombre en Col 3
+            document.getElementById('selected-post-name').textContent = `de "${postName}"`;
+            
+            // Quitar clase activa de todas las publicaciones
+            document.querySelectorAll('.publication-item').forEach(item => {
+                item.classList.remove('border-indigo-500');
+                item.classList.add('border-transparent');
+            });
+            
+            // Añadir clase activa a la publicación clickeada
+            element.classList.add('border-indigo-500');
+            element.classList.remove('border-transparent');
+            
+            // Aquí iría la lógica para cargar los comentarios de esa publicación
+            // (Simulación)
+            console.log(`Cargando comentarios para: ${postName}`);
+        }
+
+    </script>
 
 </body>
 </html>
-
