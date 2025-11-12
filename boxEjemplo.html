@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración Completo</title>
+    <title>Panel de Administración Completo (CSS Puro)</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Leaflet CSS (para el mapa) -->
+    <!-- Leaflet CSS (para el mapa) - Esto NO es Tailwind -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVL9oEYYnRhpNcOPHfBfORGdGrj8e/AStsz/nF+X/cQv1S.tLq/eQ==" crossorigin=""/>
     
     <!-- Leaflet JS (para el mapa) -->
@@ -19,276 +16,936 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- INICIO DE CSS PERSONALIZADO (Reemplazo de Tailwind) -->
     <style>
+        /* --- Reset Básico y Globales --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #1f2937; /* text-gray-800 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        /* Estilos para un scrollbar más fino */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* --- Clases de Utilidad --- */
+        .is-hidden {
+            display: none !important;
+        }
+
+        /* --- Scrollbar --- */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Asegura que el contenedor del mapa tenga altura */
-        #map {
-            height: 300px;
-            z-index: 10; /* Asegura que el mapa esté visible */
+
+        /* --- Layout Principal --- */
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+            background-color: #f3f4f6;
         }
 
-        /* Clase para la navegación activa */
-        .nav-link.active {
-            background-color: #4f46e5; /* indigo-600 */
+        /* --- Barra Lateral (Sidebar) --- */
+        .sidebar {
+            width: 256px; /* w-64 */
+            background-color: #111827; /* bg-gray-900 */
+            color: #d1d5db; /* text-gray-200 */
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 30;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            height: 80px; /* h-20 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1rem; /* px-4 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+        }
+        .sidebar-logo-icon {
+            height: 2.5rem; /* h-10 */
+            width: 2.5rem; /* w-10 */
+            color: #6366f1; /* text-indigo-500 */
+            margin-right: 0.5rem; /* space-x-2 */
+        }
+        .sidebar-logo-text {
+            font-weight: 700; /* font-bold */
+            font-size: 1.5rem; /* text-2xl */
             color: white;
         }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800 antialiased">
 
-    <div class="flex h-screen bg-gray-100">
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0; /* py-4 */
+        }
+        .sidebar-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0 1rem; /* px-4 */
+        }
+        .sidebar-nav li {
+            margin-bottom: 0.5rem; /* space-y-2 */
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* px-4 py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: background-color 0.2s, color 0.2s;
+            text-decoration: none;
+            color: #d1d5db; /* text-gray-200 */
+        }
+        .nav-link svg {
+            width: 1.5rem; /* h-6 w-6 */
+            height: 1.5rem;
+            margin-right: 0.75rem; /* space-x-3 */
+        }
+        .nav-link:hover {
+            background-color: #374151; /* hover:bg-gray-700 */
+            color: white;
+        }
+        .nav-link.is-active {
+            background-color: #4f46e5; /* active:bg-indigo-600 */
+            color: white;
+        }
+
+        .sidebar-profile {
+            padding: 1rem; /* p-4 */
+            border-top: 1px solid #374151; /* border-t border-gray-700 */
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* space-x-3 */
+        }
+        .sidebar-profile img {
+            height: 2.5rem; /* h-10 */
+            width: 2.5rem; /* w-10 */
+            border-radius: 9999px; /* rounded-full */
+        }
+        .sidebar-profile-info p {
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: white;
+            margin: 0;
+        }
+        .sidebar-profile-info a {
+            font-size: 0.75rem; /* text-xs */
+            color: #9ca3af; /* text-gray-400 */
+            text-decoration: none;
+        }
+        .sidebar-profile-info a:hover {
+            color: #818cf8; /* hover:text-indigo-400 */
+        }
+
+        /* --- Contenido Principal --- */
+        .main-content {
+            flex: 1;
+            margin-left: 256px; /* ml-64 */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Evita doble scroll */
+        }
+
+        .main-header {
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm */
+            border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            height: 64px; /* h-16 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem; /* lg:px-8 */
+            flex-shrink: 0;
+        }
+        #page-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #111827; /* text-gray-900 */
+            margin: 0;
+        }
+        .header-actions button {
+            background: none;
+            border: none;
+            padding: 0.25rem; /* p-1 */
+            border-radius: 9999px; /* rounded-full */
+            color: #9ca3af; /* text-gray-400 */
+            cursor: pointer;
+        }
+        .header-actions button:hover {
+            color: #4b5563; /* hover:text-gray-600 */
+        }
+        .header-actions button svg {
+            width: 1.5rem; /* h-6 w-6 */
+            height: 1.5rem;
+        }
+
+        /* --- Área de Contenido de Página --- */
+        .page-content-area {
+            padding: 2rem; /* py-8 px-4 sm:px-6 lg:px-8 */
+            flex: 1;
+            overflow-y: auto; /* Scroll para páginas largas como Dashboard */
+        }
+        
+        .content-page.is-hidden {
+            display: none;
+        }
+        
+        /* --- Componentes Generales --- */
+        .card {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            overflow: hidden;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem; /* gap-6 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+        @media (min-width: 640px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            padding: 1.5rem; /* p-6 */
+            display: flex;
+            align-items: center;
+            gap: 1rem; /* space-x-4 */
+            transition: box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* hover:shadow-xl */
+        }
+        .stat-icon {
+            padding: 0.75rem; /* p-3 */
+            border-radius: 9999px; /* rounded-full */
+            flex-shrink: 0;
+        }
+        .stat-icon svg { width: 1.5rem; height: 1.5rem; }
+        .stat-icon.indigo { background-color: #e0e7ff; color: #4f46e5; }
+        .stat-icon.red { background-color: #fee2e2; color: #dc2626; }
+        .stat-icon.blue { background-color: #dbeafe; color: #2563eb; }
+        .stat-icon.green { background-color: #d1fae5; color: #059669; }
+        
+        .stat-info p { margin: 0; }
+        .stat-info .title {
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: #6b7280; /* text-gray-500 */
+        }
+        .stat-info .value {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #111827; /* text-gray-900 */
+        }
+
+        .tabs-nav {
+            margin-bottom: 1.5rem; /* mb-6 */
+            border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+        }
+        .tabs-nav nav {
+            display: flex;
+            gap: 2rem; /* space-x-8 */
+            margin-bottom: -1px; /* -mb-px */
+        }
+        .tab-button {
+            white-space: nowrap;
+            padding: 1rem 0.25rem; /* py-4 px-1 */
+            border-bottom: 2px solid transparent;
+            font-weight: 500; /* font-medium */
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-500 */
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            cursor: pointer;
+        }
+        .tab-button:hover {
+            color: #374151; /* hover:text-gray-700 */
+            border-color: #d1d5db; /* hover:border-gray-300 */
+        }
+        .tab-button.is-active {
+            border-color: #4f46e5; /* border-indigo-500 */
+            color: #4338ca; /* text-indigo-600 */
+        }
+
+        .table-container { overflow-x: auto; }
+        table {
+            min-width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        table thead { background-color: #f9fafb; /* bg-gray-50 */ }
+        table th, table td {
+            border-bottom: 1px solid #e5e7eb; /* divide-y */
+        }
+        table th {
+            padding: 0.75rem 1.5rem; /* px-6 py-3 */
+            text-align: left;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500; /* font-medium */
+            color: #6b7280; /* text-gray-500 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em; /* tracking-wider */
+        }
+        table td {
+            padding: 1rem 1.5rem; /* px-6 py-4 */
+            white-space: nowrap;
+            font-size: 0.875rem; /* text-sm */
+            color: #374151;
+        }
+        .table-avatar { display: flex; align-items: center; }
+        .table-avatar img { width: 2rem; height: 2rem; border-radius: 9999px; }
+        .table-avatar-info { margin-left: 0.75rem; }
+        .table-avatar-info .name { font-weight: 500; color: #111827; }
+        .table-avatar-info .email { color: #6b7280; }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem; /* px-3 py-1 */
+            display: inline-flex;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            border-radius: 9999px; /* rounded-full */
+        }
+        .status-green { background-color: #d1fae5; color: #065f46; } /* bg-green-100 text-green-800 */
+        .status-red { background-color: #fee2e2; color: #991b1b; } /* bg-red-100 text-red-800 */
+
+        .table-actions {
+            text-align: right;
+            display: flex;
+            gap: 0.75rem; /* space-x-3 */
+            justify-content: flex-end;
+        }
+        .table-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .link-indigo { color: #4f46e5; }
+        .link-indigo:hover { color: #3730a3; }
+        .link-red { color: #dc2626; }
+        .link-red:hover { color: #991b1b; }
+        .link-green { color: #059669; }
+        .link-green:hover { color: #047857; }
+
+        .card-header, .card-footer {
+            padding: 1.25rem; /* p-5 */
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-footer { border-bottom: 0; border-top: 1px solid #e5e7eb; }
+        
+        .form-input, .form-select {
+            display: block;
+            width: 100%;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            font-size: 0.875rem; /* text-sm */
+            padding: 0.6rem 0.75rem; /* Ajustado para py-2 px-3 */
+            font-family: 'Inter', sans-serif;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 1px #4f46e5;
+        }
+        .form-input[readonly] {
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+
+        .button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; /* space-x-2 */
+            font-size: 0.875rem; /* text-sm */
+        }
+        .button-indigo { background-color: #4f46e5; color: white; }
+        .button-indigo:hover { background-color: #4338ca; }
+        .button-red { background-color: #dc2626; color: white; }
+        .button-red:hover { background-color: #b91c1c; }
+        .button-gray { background-color: #e5e7eb; color: #1f2937; }
+        .button-gray:hover { background-color: #d1d5db; }
+        .button svg { width: 1.25rem; height: 1.25rem; }
+
+        /* --- Página de Publicaciones (3 Columnas) --- */
+        #page-publicaciones {
+            /* Remover padding de .page-content-area para esta página */
+            margin: -2rem; 
+            padding: 2rem;
+            height: calc(100vh - 64px); /* 100vh - header height */
+        }
+        .publications-layout {
+            display: grid;
+            grid-template-columns: 1fr; /* Stacked por defecto */
+            gap: 1.5rem; /* gap-6 */
+            height: 100%;
+        }
+        @media (min-width: 1024px) {
+            .publications-layout {
+                grid-template-columns: 3fr 4fr 3fr; /* lg:grid-cols-10 */
+            }
+        }
+        
+        .column-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden; /* Importante */
+        }
+        .column-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+        .column-header h3 {
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* font-semibold */
+            margin: 0;
+        }
+        .column-header p {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-500 */
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .column-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .column-filters .form-select {
+            width: 50%;
+        }
+
+        .column-content-list {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* space-y-2 */
+        }
+
+        .installation-item {
+            display: block;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: inherit;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+        .installation-item:hover {
+            background-color: #f3f4f6; /* hover:bg-gray-100 */
+        }
+        .installation-item.is-active {
+            background-color: #e0e7ff; /* bg-indigo-100 */
+            border-left-color: #4f46e5; /* border-indigo-500 */
+        }
+        .installation-item h4 { font-weight: 500; margin: 0 0 0.25rem 0; }
+        .installation-item p { font-size: 0.875rem; color: #6b7280; margin: 0; }
+
+        .publications-col-2 > h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 1rem;
+            padding: 0 0.5rem; /* Padding para alinear con feed */
+        }
+        .publications-col-2 > h3 span { color: #4f46e5; }
+        
+        .publications-feed {
+            height: calc(100% - 3.5rem); /* 100% - altura del h3 */
+            overflow-y: auto;
+            padding-right: 0.5rem; /* pr-2 */
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem; /* space-y-5 */
+            padding-bottom: 1rem;
+        }
+        .publication-item {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .publication-item:hover {
+            border-color: #818cf8; /* hover:border-indigo-400 */
+        }
+        .publication-item.is-active {
+            border-color: #4f46e5; /* border-indigo-500 */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .publication-item-content { padding: 1.25rem; /* p-5 */ }
+        .publication-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .publication-item-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* space-x-3 */
+        }
+        .publication-item-author img {
+            width: 2.5rem; /* h-10 w-10 */
+            height: 2.5rem;
+            border-radius: 9999px;
+        }
+        .publication-item-author p { margin: 0; }
+        .publication-item-author .name { font-weight: 500; font-size: 0.875rem; }
+        .publication-item-author .date { font-size: 0.75rem; color: #6b7280; }
+        
+        .publication-item h4 { font-weight: 600; margin: 0 0 0.5rem 0; color: #1f2937; }
+        .publication-item p {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin: 0;
+            /* line-clamp-3 */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+        
+        .comment-item {
+            background-color: #f9fafb; /* bg-gray-50 */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.25rem; /* mb-1 */
+        }
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* space-x-2 */
+        }
+        .comment-author img { width: 1.5rem; height: 1.5rem; border-radius: 9999px; }
+        .comment-author span { font-weight: 500; font-size: 0.875rem; }
+        .comment-action-btn {
+            background: none; border: none; color: #9ca3af; cursor: pointer;
+        }
+        .comment-action-btn:hover { color: #4b5563; }
+        .comment-action-btn svg { width: 1.25rem; height: 1.25rem; }
+        .comment-item p {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin: 0;
+        }
+        .comment-footer {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        /* --- Modales --- */
+        .modal-container {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+            padding: 1rem;
+        }
+        .modal-container.is-hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-2xl */
+            width: 100%;
+            max-width: 48rem; /* max-w-3xl */
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content-lg { max-width: 72rem; } /* max-w-6xl */
+        .modal-content-md { max-width: 42rem; } /* max-w-2xl */
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem; /* p-5 */
+            border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
+        }
+        .modal-header h3 { font-size: 1.25rem; font-weight: 600; margin: 0; }
+        .modal-header .close-modal {
+            background: none; border: none; cursor: pointer; color: #9ca3af;
+        }
+        .modal-header .close-modal:hover { color: #4b5563; }
+        .modal-header .close-modal svg { width: 1.5rem; height: 1.5rem; }
+        
+        .modal-body {
+            padding: 1.5rem; /* p-6 */
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-body-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .modal-body-grid { grid-template-columns: 1fr 1fr; }
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 1.25rem; /* p-5 */
+            border-top: 1px solid #e5e7eb;
+            gap: 0.75rem; /* space-x-3 */
+            flex-shrink: 0;
+        }
+
+        #map {
+            height: 300px;
+            z-index: 10;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            margin-top: 0.25rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151; /* text-gray-700 */
+        }
+        
+        /* Modal de Detalles de Publicación (columnas) */
+        .post-details-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr; /* Stacked */
+            overflow: hidden;
+        }
+        @media (min-width: 1024px) {
+            .post-details-grid { grid-template-columns: 2fr 1fr; } /* lg:grid-cols-3 */
+        }
+        .post-details-post {
+            padding: 1.5rem; /* p-6 */
+            overflow-y: auto;
+            border-right: 1px solid #e5e7eb;
+        }
+        .post-details-post h4 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin: 0 0 0.5rem 0;
+        }
+        .post-details-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .post-details-author img { width: 2rem; height: 2rem; border-radius: 9999px; }
+        .post-details-author .name { font-size: 0.875rem; font-weight: 500; }
+        .post-details-author .date { font-size: 0.875rem; color: #6b7280; }
+        
+        .prose { line-height: 1.6; color: #374151; }
+        .prose p { margin-bottom: 1rem; }
+
+        .post-details-comments {
+            padding: 1.5rem; /* p-6 */
+            background-color: #f9fafb; /* bg-gray-50 */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* space-y-4 */
+        }
+        .post-details-comments h5 {
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+        }
+        .post-details-comments .comment-item {
+            background-color: white; /* bg-white */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+
+    </style>
+    <!-- FIN DE CSS PERSONALIZADO -->
+</head>
+<body>
+
+    <div class="dashboard-container">
         <!-- Barra de Navegación Lateral (Sidebar) -->
-        <aside class="w-64 bg-gray-900 text-gray-200 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-30">
+        <aside class="sidebar">
             <!-- Logo -->
-            <div class="h-20 flex items-center justify-center px-4 bg-gray-900 shadow-md">
-                <div class="flex-shrink-0 flex items-center space-x-2">
-                    <svg class="h-10 w-10 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
-                    </svg>
-                    <span class="font-bold text-2xl text-white">AdminForo</span>
-                </div>
+            <div class="sidebar-logo">
+                <svg class="sidebar-logo-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                </svg>
+                <span class="sidebar-logo-text">AdminForo</span>
             </div>
             
             <!-- Menú de Navegación -->
-            <nav class="flex-1 overflow-y-auto py-4">
-                <ul class="space-y-2 px-4">
+            <nav class="sidebar-nav">
+                <ul>
                     <li>
-                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white active" data-target="page-dashboard">
-                            <!-- Icono Dashboard -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
+                        <a href="#" class="nav-link is-active" data-target="page-dashboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>
                             <span>Inicio</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-usuarios">
-                            <!-- Icono Usuarios -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.003c0 1.113.285 2.16.786 3.07M15 19.128a2.25 2.25 0 01-2.25-2.25v-.003c0-1.113-.285-2.16-.786-3.07M9 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM3.5 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>
+                        <a href="#" class="nav-link" data-target="page-usuarios">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.003c0 1.113.285 2.16.786 3.07M15 19.128a2.25 2.25 0 01-2.25-2.25v-.003c0-1.113-.285-2.16-.786-3.07M9 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 13.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM3.5 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM21 7.5a3 3 0 11-6 0 3 3 0 016 0zm-3 8.25a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" /></svg>
                             <span>Usuarios</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-publicaciones">
-                            <!-- Icono Publicaciones -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                        <a href="#" class="nav-link" data-target="page-publicaciones">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                             <span>Publicaciones</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-gray-700 hover:text-white" data-target="page-instalaciones">
-                            <!-- Icono Instalaciones -->
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                        <a href="#" class="nav-link" data-target="page-instalaciones">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
                             <span>Instalaciones</span>
                         </a>
                     </li>
                 </ul>
             </nav>
             <!-- Perfil de Admin (Abajo) -->
-            <div class="p-4 border-t border-gray-700">
-                <div class="flex items-center space-x-3">
-                    <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" alt="Avatar de usuario">
-                    <div>
-                        <p class="text-sm font-medium text-white">Admin</p>
-                        <a href="#" class="text-xs text-gray-400 hover:text-indigo-400">Cerrar Sesión</a>
-                    </div>
+            <div class="sidebar-profile">
+                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" alt="Avatar de usuario">
+                <div class="sidebar-profile-info">
+                    <p>Admin</p>
+                    <a href="#">Cerrar Sesión</a>
                 </div>
             </div>
         </aside>
 
         <!-- Contenido Principal -->
-        <main class="flex-1 ml-64"> <!-- MODIFICADO: overflow-y-auto eliminado -->
+        <main class="main-content">
             <!-- Encabezado Superior -->
-            <header class="bg-white shadow-sm sticky top-0 z-20 border-b border-gray-200">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between items-center h-16">
-                        <!-- Título de la Página (cambiará con JS, pero estático por ahora) -->
-                        <h1 id="page-title" class="text-2xl font-bold text-gray-900">
-                            Inicio
-                        </h1>
-                        <!-- Botones de Acción (Notificaciones, etc.) -->
-                        <div class="flex items-center space-x-4">
-                            <button class="p-1 rounded-full text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-label="Notificaciones">
-                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+            <header class="main-header">
+                <h1 id="page-title">
+                    Inicio
+                </h1>
+                <div class="header-actions">
+                    <button aria-label="Notificaciones">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                    </button>
                 </div>
             </header>
 
             <!-- Área de Contenido Dinámico -->
-            <div class="py-8 px-4 sm:px-6 lg:px-8">
+            <div class="page-content-area">
                 
                 <!-- PÁGINA: INICIO (DASHBOARD) -->
                 <div id="page-dashboard" class="content-page">
                     <!-- Tarjetas de Estadísticas (KPIs) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <!-- Card 1: Total Publicaciones -->
-                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
-                            <div class="bg-indigo-100 rounded-full p-3 flex-shrink-0">
-                                <svg class="h-6 w-6 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon indigo">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500">Total Publicaciones</p>
-                                <p class="text-3xl font-bold text-gray-900">1,240</p>
-                            </div>
-                        </div>
-                        <!-- Card 2: Contenido Reportado -->
-                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
-                            <div class="bg-red-100 rounded-full p-3 flex-shrink-0">
-                                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" /></svg>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500">Contenido Reportado</p>
-                                <p class="text-3xl font-bold text-gray-900">28</p>
+                            <div class="stat-info">
+                                <p class="title">Total Publicaciones</p>
+                                <p class="value">1,240</p>
                             </div>
                         </div>
-                        <!-- Card 3: Total Comentarios -->
-                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
-                            <div class="bg-blue-100 rounded-full p-3 flex-shrink-0">
-                                <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <div class="stat-card">
+                            <div class="stat-icon red">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" /></svg>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500">Total Comentarios</p>
-                                <p class="text-3xl font-bold text-gray-900">4,109</p>
+                            <div class="stat-info">
+                                <p class="title">Contenido Reportado</p>
+                                <p class="value">28</p>
                             </div>
                         </div>
-                        <!-- Card 4: Total Usuarios -->
-                        <div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-4 transition-all duration-300 hover:shadow-xl">
-                            <div class="bg-green-100 rounded-full p-3 flex-shrink-0">
-                                <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-4.682 2.72a.75.75 0 01-.059 1.054a9.094 9.094 0 01-3.741.479 3 3 0 01-4.682-2.72M18 18.72A7.96 7.96 0 0012 21a7.96 7.96 0 00-6-2.28m12 0A5.96 5.96 0 0012 15a5.96 5.96 0 00-6 3.72m12 0a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72M6 18.72a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72m4.682 2.72c.059 1.054.09 2.128.09 3.228a7.96 7.96 0 00-6-2.28M6 18.72A5.96 5.96 0 0112 15a5.96 5.96 0 016 3.72m0 0a9.094 9.094 0 003.741-.479 3 3 0 004.682-2.72M12 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-500">Total Usuarios</p>
-                                <p class="text-3xl font-bold text-gray-900">345</p>
+                            <div class="stat-info">
+                                <p class="title">Total Comentarios</p>
+                                <p class="value">4,109</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-4.682 2.72a.75.75 0 01-.059 1.054a9.094 9.094 0 01-3.741.479 3 3 0 01-4.682-2.72M18 18.72A7.96 7.96 0 0012 21a7.96 7.96 0 00-6-2.28m12 0A5.96 5.96 0 0012 15a5.96 5.96 0 00-6 3.72m12 0a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72M6 18.72a9.094 9.094 0 01-3.741-.479 3 3 0 01-4.682-2.72m4.682 2.72c.059 1.054.09 2.128.09 3.228a7.96 7.96 0 00-6-2.28M6 18.72A5.96 5.96 0 0112 15a5.96 5.96 0 016 3.72m0 0a9.094 9.094 0 003.741-.479 3 3 0 004.682-2.72M12 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            </div>
+                            <div class="stat-info">
+                                <p class="title">Total Usuarios</p>
+                                <p class="value">345</p>
                             </div>
                         </div>
                     </div>
-                    <!-- Otras secciones del dashboard... -->
                 </div>
 
                 <!-- PÁGINA: GESTIÓN DE USUARIOS -->
-                <div id="page-usuarios" class="content-page hidden">
-                    <!-- Pestañas de Usuarios -->
-                    <div class="mb-6">
-                        <div class="border-b border-gray-200">
-                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600" data-tab="all-users">
-                                    Todos los Usuarios
-                                </button>
-                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="reported-users">
-                                    Con Reportes
-                                </button>
-                                <button class="user-tab whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="banned-users">
-                                    Baneados
-                                </button>
-                            </nav>
-                        </div>
+                <div id="page-usuarios" class="content-page is-hidden">
+                    <div class="tabs-nav">
+                        <nav aria-label="Tabs">
+                            <button class="tab-button user-tab is-active" data-tab="all-users">
+                                Todos los Usuarios
+                            </button>
+                            <button class="tab-button user-tab" data-tab="reported-users">
+                                Con Reportes
+                            </button>
+                            <button class="tab-button user-tab" data-tab="banned-users">
+                                Baneados
+                            </button>
+                        </nav>
                     </div>
 
-                    <!-- Tabla de Usuarios (Contenido de Pestaña) -->
-                    <div id="tab-all-users" class="user-tab-content bg-white rounded-xl shadow-lg overflow-hidden">
-                        <!-- Barra de Búsqueda -->
-                        <div class="p-5 border-b border-gray-200">
-                             <input class="block w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm" type="search" placeholder="Buscar por nombre o email...">
-                             <!-- Icono de Búsqueda (SVG) -->
+                    <div id="tab-all-users" class="user-tab-content card">
+                        <div class="card-header">
+                             <input class="form-input" style="width: 256px;" type="search" placeholder="Buscar por nombre o email...">
                         </div>
-                        <!-- Tabla -->
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                        <div class="table-container">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Miembro desde</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                        <th>Miembro desde</th>
+                                        <th style="text-align: right;">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <!-- Fila 1 -->
+                                <tbody>
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-8 w-8">
-                                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
-                                                </div>
-                                                <div class="ml-3">
-                                                    <div class="text-sm font-medium text-gray-900">Ana Gómez</div>
-                                                    <div class="text-sm text-gray-500">ana.gomez@example.com</div>
+                                        <td>
+                                            <div class="table-avatar">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                                <div class="table-avatar-info">
+                                                    <div class="name">Ana Gómez</div>
+                                                    <div class="email">ana.gomez@example.com</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
+                                        <td>
+                                            <span class="status-badge status-green">Activo</span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10/10/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="user-details-modal">Ver Detalles</button>
-                                            <button class="text-red-600 hover:text-red-900">Banear</button>
+                                        <td>10/10/2024</td>
+                                        <td class="table-actions">
+                                            <button class="open-modal link-indigo" data-modal-id="user-details-modal">Ver Detalles</button>
+                                            <button class="link-red">Banear</button>
                                         </td>
                                     </tr>
-                                    <!-- Fila 2 -->
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-8 w-8">
-                                                    <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
-                                                </div>
-                                                <div class="ml-3">
-                                                    <div class="text-sm font-medium text-gray-900">Carlos Pérez</div>
-                                                    <div class="text-sm text-gray-500">carlos.perez@example.com</div>
+                                        <td>
+                                            <div class="table-avatar">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                                <div class="table-avatar-info">
+                                                    <div class="name">Carlos Pérez</div>
+                                                    <div class="email">carlos.perez@example.com</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Baneado</span>
+                                        <td>
+                                            <span class="status-badge status-red">Baneado</span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">05/09/2024</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="user-details-modal">Ver Detalles</button>
-                                            <button class="text-green-600 hover:text-green-900">Quitar Ban</button>
+                                        <td>05/09/2024</td>
+                                        <td class="table-actions">
+                                            <button class="open-modal link-indigo" data-modal-id="user-details-modal">Ver Detalles</button>
+                                            <button class="link-green">Quitar Ban</button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Paginación -->
-                        <div class="p-5 border-t border-gray-200">
-                            <!-- ... Paginación ... -->
+                        <div class="card-footer">
+                            <!-- Paginación -->
                         </div>
                     </div>
-                    <!-- Contenido para "Reportados" y "Baneados" (similar, pero oculto) -->
-                    <div id="tab-reported-users" class="user-tab-content hidden p-5 bg-white rounded-xl shadow-lg">Contenido de Usuarios Reportados...</div>
-                    <div id="tab-banned-users" class="user-tab-content hidden p-5 bg-white rounded-xl shadow-lg">Contenido de Usuarios Baneados...</div>
+                    <div id="tab-reported-users" class="user-tab-content is-hidden card" style="padding: 1.25rem;">Contenido de Usuarios Reportados...</div>
+                    <div id="tab-banned-users" class="user-tab-content is-hidden card" style="padding: 1.25rem;">Contenido de Usuarios Baneados...</div>
                 </div>
 
                 <!-- PÁGINA: GESTIÓN DE PUBLICACIONES (REDISEÑADA) -->
-                <div id="page-publicaciones" class="content-page hidden">
-                    <!-- Contenedor de 3 columnas con altura fija y scroll independiente -->
-                    <!-- Altura: 100vh - header (4rem) - padding (4.5rem) -->
-                    <div class="grid grid-cols-1 lg:grid-cols-10 gap-6" style="height: calc(100vh - 8.5rem);"> 
+                <div id="page-publicaciones" class="content-page is-hidden">
+                    <div class="publications-layout"> 
                         
                         <!-- Col 1: Lista de Instalaciones -->
-                        <div class="lg:col-span-3">
-                            <div class="bg-white rounded-xl shadow-lg flex flex-col h-full">
-                                <div class="p-4 border-b">
-                                    <h3 class="text-lg font-semibold">Instalaciones</h3>
-                                    <!-- Filtros para la lista de instalaciones -->
-                                    <div class="flex space-x-2 mt-3">
-                                        <select class="block w-1/2 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm py-2" title="Filtrar por Región">
+                        <div class="publications-col-1">
+                            <div class="column-card">
+                                <div class="column-header">
+                                    <h3>Instalaciones</h3>
+                                    <div class="column-filters">
+                                        <select class="form-select" title="Filtrar por Región">
                                             <option>Todas las Regiones</option>
                                             <option>Metropolitana</option>
                                             <option>Valparaíso</option>
                                         </select>
-                                        <select class="block w-1/2 border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm py-2" title="Filtrar por Comuna">
+                                        <select class="form-select" title="Filtrar por Comuna">
                                             <option>Todas las Comunas</option>
                                             <option>Las Condes</option>
                                             <option>Santiago</option>
@@ -296,125 +953,122 @@
                                         </select>
                                     </div>
                                 </div>
-                                <!-- Lista scrolleable de instalaciones -->
-                                <div id="installation-list" class="flex-1 p-4 space-y-2 overflow-y-auto">
-                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 bg-indigo-100 border-l-4 border-indigo-500 installation-item" data-id="1" onclick="selectInstallation(event, this, 'Parque Araucano')">
-                                        <h4 class="font-medium">Parque Araucano</h4>
-                                        <p class="text-sm text-gray-500">Las Condes</p>
+                                <div id="installation-list" class="column-content-list">
+                                    <a href="#" class="installation-item is-active" data-id="1" onclick="selectInstallation(event, this, 'Parque Araucano')">
+                                        <h4>Parque Araucano</h4>
+                                        <p>Las Condes</p>
                                     </a>
-                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="2" onclick="selectInstallation(event, this, 'Parque O\'Higgins')">
-                                        <h4 class="font-medium">Parque O'Higgins</h4>
-                                        <p class="text-sm text-gray-500">Santiago</p>
+                                    <a href="#" class="installation-item" data-id="2" onclick="selectInstallation(event, this, 'Parque O\'Higgins')">
+                                        <h4>Parque O'Higgins</h4>
+                                        <p>Santiago</p>
                                     </a>
-                                     <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="3" onclick="selectInstallation(event, this, 'Quinta Vergara')">
-                                        <h4 class="font-medium">Quinta Vergara</h4>
-                                        <p class="text-sm text-gray-500">Viña del Mar</p>
+                                     <a href="#" class="installation-item" data-id="3" onclick="selectInstallation(event, this, 'Quinta Vergara')">
+                                        <h4>Quinta Vergara</h4>
+                                        <p>Viña del Mar</p>
                                     </a>
-                                    <!-- Más instalaciones de ejemplo -->
-                                    <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 installation-item" data-id="4" onclick="selectInstallation(event, this, 'Parque Bicentenario')">
-                                        <h4 class="font-medium">Parque Bicentenario</h4>
-                                        <p class="text-sm text-gray-500">Vitacura</p>
+                                    <a href="#" class="installation-item" data-id="4" onclick="selectInstallation(event, this, 'Parque Bicentenario')">
+                                        <h4>Parque Bicentenario</h4>
+                                        <p>Vitacura</p>
                                     </a>
                                 </div>
                             </div>
                         </div>
             
                         <!-- Col 2: Publicaciones (Feed) -->
-                        <div class="lg:col-span-4">
-                             <h3 class="text-xl font-semibold mb-4 text-gray-800">Publicaciones en <span id="selected-installation-name" class="text-indigo-600">Parque Araucano</span></h3>
-                            <div class="space-y-5 h-[calc(100vh-12rem)] overflow-y-auto pr-2" id="publications-feed">
+                        <div class="publications-col-2">
+                             <h3>Publicaciones en <span id="selected-installation-name">Parque Araucano</span></h3>
+                            <div class="publications-feed" id="publications-feed">
                                 <!-- Post 1 (Card Format) -->
-                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-indigo-500 publication-item active-post" data-id="p1" onclick="selectPublication(event, this, 'Estado de las canchas')">
-                                    <div class="p-5">
-                                        <div class="flex justify-between items-start">
-                                            <div class="flex items-center space-x-3 mb-3">
-                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                <div class="publication-item is-active" data-id="p1" onclick="selectPublication(event, this, 'Estado de las canchas')">
+                                    <div class="publication-item-content">
+                                        <div class="publication-item-header">
+                                            <div class="publication-item-author">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
                                                 <div>
-                                                    <p class="font-medium text-sm">Ana Gómez</p>
-                                                    <p class="text-xs text-gray-500">11/11/2025</p>
+                                                    <p class="name">Ana Gómez</p>
+                                                    <p class="date">11/11/2025</p>
                                                 </div>
                                             </div>
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
+                                            <span class="status-badge status-green">Publicado</span>
                                         </div>
-                                        <h4 class="font-semibold text-gray-800 mb-2">Estado de las canchas</h4>
-                                        <p class="text-sm text-gray-600 line-clamp-3">Hola a todos, Quería saber si alguien ha ido al Parque Araucano esta semana. ¿Cómo están las canchas de fútbol después de la lluvia del lunes? Agradecería cualquier información, ¡gracias!</p>
+                                        <h4>Estado de las canchas</h4>
+                                        <p>Hola a todos, Quería saber si alguien ha ido al Parque Araucano esta semana. ¿Cómo están las canchas de fútbol después de la lluvia del lunes? Agradecería cualquier información, ¡gracias!</p>
                                     </div>
                                 </div>
                                 <!-- Post 2 -->
-                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-indigo-500 publication-item" data-id="p2" onclick="selectPublication(event, this, 'SPAM: Vendo cosas')">
-                                    <div class="p-5">
-                                         <div class="flex justify-between items-start">
-                                            <div class="flex items-center space-x-3 mb-3">
-                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=SB" alt="Avatar">
+                                <div class="publication-item" data-id="p2" onclick="selectPublication(event, this, 'SPAM: Vendo cosas')">
+                                    <div class="publication-item-content">
+                                         <div class="publication-item-header">
+                                            <div class="publication-item-author">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=SB" alt="Avatar">
                                                 <div>
-                                                    <p class="font-medium text-sm">Spam Bot</p>
-                                                    <p class="text-xs text-gray-500">10/11/2025</p>
+                                                    <p class="name">Spam Bot</p>
+                                                    <p class="date">10/11/2025</p>
                                                 </div>
                                             </div>
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Reportado</span>
+                                            <span class="status-badge status-red">Reportado</span>
                                         </div>
-                                        <h4 class="font-semibold text-gray-800 mb-2">SPAM: Vendo cosas</h4>
-                                        <p class="text-sm text-gray-600 line-clamp-3">Las mejores ofertas solo por hoy, haz clic en este enlace... lorem ipsum dolor sit amet.</p>
+                                        <h4>SPAM: Vendo cosas</h4>
+                                        <p>Las mejores ofertas solo por hoy, haz clic en este enlace... lorem ipsum dolor sit amet.</p>
                                     </div>
                                 </div>
                                  <!-- Post 3 -->
-                                <div class="bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-indigo-500 publication-item" data-id="p3" onclick="selectPublication(event, this, 'Busco gente para jugar hoy')">
-                                    <div class="p-5">
-                                         <div class="flex justify-between items-start">
-                                            <div class="flex items-center space-x-3 mb-3">
-                                                <img class="h-10 w-10 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                                <div class="publication-item" data-id="p3" onclick="selectPublication(event, this, 'Busco gente para jugar hoy')">
+                                    <div class="publication-item-content">
+                                         <div class="publication-item-header">
+                                            <div class="publication-item-author">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
                                                 <div>
-                                                    <p class="font-medium text-sm">Ana Gómez</p>
-                                                    <p class="text-xs text-gray-500">10/11/2025</p>
+                                                    <p class="name">Ana Gómez</p>
+                                                    <p class="date">10/11/2025</p>
                                                 </div>
                                             </div>
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Publicado</span>
+                                            <span class="status-badge status-green">Publicado</span>
                                         </div>
-                                        <h4 class="font-semibold text-gray-800 mb-2">Busco gente para jugar hoy</h4>
-                                        <p class="text-sm text-gray-600 line-clamp-3">Somos 3 y nos falta uno para jugar a las 7pm en el Araucano. ¿Alguien se suma?</p>
+                                        <h4>Busco gente para jugar hoy</h4>
+                                        <p>Somos 3 y nos falta uno para jugar a las 7pm en el Araucano. ¿Alguien se suma?</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
             
                         <!-- Col 3: Comentarios -->
-                        <div class="lg:col-span-3">
-                             <div class="bg-white rounded-xl shadow-lg flex flex-col h-full">
-                                <div class="p-4 border-b">
-                                    <h3 class="text-lg font-semibold">Comentarios</h3>
-                                    <p id="selected-post-name" class="text-sm text-gray-500 truncate">de "Estado de las canchas"</p>
+                        <div class="publications-col-3">
+                             <div class="column-card">
+                                <div class="column-header">
+                                    <h3>Comentarios</h3>
+                                    <p id="selected-post-name">de "Estado de las canchas"</p>
                                 </div>
-                                <div class="flex-1 p-4 space-y-3 overflow-y-auto" id="comments-section">
+                                <div class="column-content-list" id="comments-section">
                                     <!-- Comentario 1 -->
-                                    <div class="p-3 bg-gray-50 rounded-lg border">
-                                        <div class="flex justify-between items-start mb-1">
-                                            <div class="flex items-center space-x-2">
-                                                <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
-                                                <span class="font-medium text-sm">Carlos Pérez</span>
+                                    <div class="comment-item">
+                                        <div class="comment-header">
+                                            <div class="comment-author">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                                <span>Carlos Pérez</span>
                                             </div>
-                                            <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
-                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                            <button class="comment-action-btn" aria-label="Acciones de comentario">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                                             </button>
                                         </div>
-                                        <p class="text-sm text-gray-600">Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
+                                        <p>Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
                                     </div>
                                     <!-- Comentario 2 -->
-                                    <div class="p-3 bg-gray-50 rounded-lg border">
-                                         <div class="flex justify-between items-start mb-1">
-                                            <div class="flex items-center space-x-2">
-                                                <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
-                                                <span class="font-medium text-sm">Lucía Méndez</span>
+                                    <div class="comment-item">
+                                         <div class="comment-header">
+                                            <div class="comment-author">
+                                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
+                                                <span>Lucía Méndez</span>
                                             </div>
-                                            <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
-                                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                                            <button class="comment-action-btn" aria-label="Acciones de comentario">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                                             </button>
                                         </div>
-                                        <p class="text-sm text-gray-600">Confirmo, acabo de pasar por ahí y se ven bien.</p>
+                                        <p>Confirmo, acabo de pasar por ahí y se ven bien.</p>
                                     </div>
                                 </div>
-                                <!-- Input para nuevo comentario (moderador) -->
-                                <div class="p-4 border-t">
-                                    <input type="text" placeholder="Escribir un comentario..." class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                                <div class="comment-footer">
+                                    <input type="text" placeholder="Escribir un comentario..." class="form-input">
                                 </div>
                             </div>
                         </div>
@@ -422,45 +1076,42 @@
                 </div>
 
                 <!-- PÁGINA: GESTIÓN DE INSTALACIONES -->
-                <div id="page-instalaciones" class="content-page hidden">
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <!-- Barra de Acciones -->
-                        <div class="p-5 border-b border-gray-200 flex justify-between items-center">
-                            <h2 class="text-lg font-semibold">Lista de Instalaciones</h2>
-                            <button class="open-modal bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg flex items-center space-x-2" data-modal-id="installation-modal">
-                                <!-- Icono + -->
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                <div id="page-instalaciones" class="content-page is-hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 style="font-size: 1.125rem; font-weight: 600;">Lista de Instalaciones</h2>
+                            <button class="open-modal button button-indigo" data-modal-id="installation-modal">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                                 <span>Agregar Instalación</span>
                             </button>
                         </div>
-                        <!-- Tabla de Instalaciones -->
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
+                        <div class="table-container">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comuna</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        <th>Nombre</th>
+                                        <th>Dirección</th>
+                                        <th>Comuna</th>
+                                        <th style="text-align: right;">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Parque Araucano</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Av. Pdte. Riesco 5330</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Las Condes</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="installation-modal">Editar</button>
-                                            <button class="text-red-600 hover:text-red-900">Eliminar</button>
+                                        <td>Parque Araucano</td>
+                                        <td>Av. Pdte. Riesco 5330</td>
+                                        <td>Las Condes</td>
+                                        <td class="table-actions">
+                                            <button class="open-modal link-indigo" data-modal-id="installation-modal">Editar</button>
+                                            <button class="link-red">Eliminar</button>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Parque O'Higgins</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rondizzoni</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Santiago</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                            <button class="open-modal text-indigo-600 hover:text-indigo-900" data-modal-id="installation-modal">Editar</button>
-                                            <button class="text-red-600 hover:text-red-900">Eliminar</button>
+                                        <td>Parque O'Higgins</td>
+                                        <td>Rondizzoni</td>
+                                        <td>Santiago</td>
+                                        <td class="table-actions">
+                                            <button class="open-modal link-indigo" data-modal-id="installation-modal">Editar</button>
+                                            <button class="link-red">Eliminar</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -476,193 +1127,173 @@
     <!-- ========= MODALES ========= -->
     
     <!-- Modal: Detalles de Usuario -->
-    <div id="user-details-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
-            <!-- Cabecera del Modal -->
-            <div class="flex justify-between items-center p-5 border-b">
-                <h3 class="text-xl font-semibold">Detalles de Usuario</h3>
-                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    <div id="user-details-modal" class="modal-container is-hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalles de Usuario</h3>
+                <button class="close-modal" aria-label="Cerrar modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <!-- Contenido del Modal -->
-            <div class="p-6 overflow-y-auto space-y-6">
-                <!-- Info de Usuario -->
-                <div class="flex items-center space-x-4">
-                    <img class="h-16 w-16 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+            <div class="modal-body" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img style="height: 4rem; width: 4rem; border-radius: 9999px;" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
                     <div>
-                        <h4 class="text-lg font-bold">Ana Gómez</h4>
-                        <p class="text-sm text-gray-500">ana.gomez@example.com</p>
-                        <p class="text-sm text-gray-500">Miembro desde: 10/10/2024</p>
+                        <h4 style="font-size: 1.125rem; font-weight: 700; margin: 0;">Ana Gómez</h4>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">ana.gomez@example.com</p>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Miembro desde: 10/10/2024</p>
                     </div>
                 </div>
-                <!-- Pestañas de Actividad -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Columna de Publicaciones -->
+                <div class="modal-body-grid">
                     <div>
-                        <h5 class="font-semibold mb-3">Publicaciones del Usuario</h5>
-                        <ul class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                            <li class="p-3 bg-gray-50 rounded-lg border">
-                                <p class="font-medium text-sm">Estado de las canchas</p>
-                                <p class="text-xs text-gray-500">11/11/2025 - 2 comentarios</p>
+                        <h5 style="font-weight: 600; margin: 0 0 0.75rem 0;">Publicaciones del Usuario</h5>
+                        <ul style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 256px; overflow-y: auto; padding-right: 0.5rem; list-style: none; margin: 0; padding: 0;">
+                            <li style="padding: 0.75rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                                <p style="font-weight: 500; font-size: 0.875rem; margin: 0;">Estado de las canchas</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">11/11/2025 - 2 comentarios</p>
                             </li>
-                            <li class="p-3 bg-gray-50 rounded-lg border">
-                                <p class="font-medium text-sm">Busco gente para jugar hoy</p>
-                                <p class="text-xs text-gray-500">10/11/2025 - 5 comentarios</p>
+                            <li style="padding: 0.75rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                                <p style="font-weight: 500; font-size: 0.875rem; margin: 0;">Busco gente para jugar hoy</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">10/11/2025 - 5 comentarios</p>
                             </li>
                         </ul>
                     </div>
-                    <!-- Columna de Comentarios -->
                     <div>
-                        <h5 class="font-semibold mb-3">Comentarios del Usuario</h5>
-                        <ul class="space-y-3 max-h-64 overflow-y-auto pr-2">
-                            <li class="p-3 bg-gray-50 rounded-lg border">
-                                <p class="text-sm italic">"¡Totalmente de acuerdo!"</p>
-                                <p class="text-xs text-gray-500">en "Nuevas redes..."</p>
+                        <h5 style="font-weight: 600; margin: 0 0 0.75rem 0;">Comentarios del Usuario</h5>
+                        <ul style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 256px; overflow-y: auto; padding-right: 0.5rem; list-style: none; margin: 0; padding: 0;">
+                            <li style="padding: 0.75rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                                <p style="font-size: 0.875rem; font-style: italic; margin: 0;">"¡Totalmente de acuerdo!"</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">en "Nuevas redes..."</p>
                             </li>
-                            <li class="p-3 bg-gray-50 rounded-lg border">
-                                <p class="text-sm italic">"Yo me apunto para la próxima"</p>
-                                <p class="text-xs text-gray-500">en "Fútbol este sábado"</p>
+                            <li style="padding: 0.75rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                                <p style="font-size: 0.875rem; font-style: italic; margin: 0;">"Yo me apunto para la próxima"</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0;">en "Fútbol este sábado"</p>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <!-- Pie del Modal -->
-            <div class="flex justify-end items-center p-5 border-t space-x-3">
-                <button class="close-modal bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cerrar</button>
-                <button class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Banear Usuario</button>
+            <div class="modal-footer">
+                <button class="close-modal button button-gray">Cerrar</button>
+                <button class="button button-red">Banear Usuario</button>
             </div>
         </div>
     </div>
 
     <!-- Modal: Detalles de Publicación -->
-    <div id="post-details-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <!-- Cabecera -->
-            <div class="flex justify-between items-center p-5 border-b">
-                <h3 class="text-xl font-semibold">Detalle de Publicación</h3>
-                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    <div id="post-details-modal" class="modal-container is-hidden">
+        <div class="modal-content modal-content-lg" style="overflow: hidden;"> <!-- Contenido no scrollea, las columnas sí -->
+            <div class="modal-header">
+                <h3>Detalle de Publicación</h3>
+                <button class="close-modal" aria-label="Cerrar modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <!-- Contenido (División Post / Comentarios) -->
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+            
+            <div class="post-details-grid"> <!-- Sin modal-body, grid directo -->
                 <!-- Columna Izquierda: Publicación -->
-                <div class="lg:col-span-2 p-6 overflow-y-auto border-r border-gray-200">
-                    <div class="flex justify-between items-start">
-                        <h4 class="text-2xl font-bold mb-2">Estado de las canchas</h4>
-                        <!-- Botón 3 puntos (Post) -->
-                        <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de post">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                <div class="post-details-post">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h4>Estado de las canchas</h4>
+                        <button class="comment-action-btn" aria-label="Acciones de post">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                         </button>
                     </div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <img class="h-8 w-8 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
-                        <span class="text-sm font-medium">Ana Gómez</span>
-                        <span class="text-sm text-gray-500">· 11/11/2025</span>
+                    <div class="post-details-author">
+                        <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=AG" alt="Avatar">
+                        <span class="name">Ana Gómez</span>
+                        <span class="date">· 11/11/2025</span>
                     </div>
-                    <div class="prose max-w-none text-gray-700">
+                    <div class="prose">
                         <p>Hola a todos,</p>
                         <p>Quería saber si alguien ha ido al Parque Araucano esta semana. ¿Cómo están las canchas de fútbol después de la lluvia del lunes?</p>
                         <p>Agradecería cualquier información, ¡gracias!</p>
                     </div>
                 </div>
                 <!-- Columna Derecha: Comentarios -->
-                <div class="lg:col-span-1 p-6 bg-gray-50 overflow-y-auto">
-                    <h5 class="font-semibold mb-4">Comentarios (2)</h5>
-                    <ul class="space-y-4">
-                        <!-- Comentario 1 -->
-                        <li class="p-4 bg-white rounded-lg shadow-sm border">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center space-x-2">
-                                    <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
-                                    <span class="text-sm font-medium">Carlos Pérez</span>
-                                </div>
-                                <!-- Botón 3 puntos (Comentario) -->
-                                <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
-                                </button>
+                <div class="post-details-comments">
+                    <h5>Comentarios (2)</h5>
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=CP" alt="Avatar">
+                                <span>Carlos Pérez</span>
                             </div>
-                            <p class="text-sm text-gray-600 mt-2">Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
-                        </li>
-                        <!-- Comentario 2 -->
-                        <li class="p-4 bg-white rounded-lg shadow-sm border">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center space-x-2">
-                                    <img class="h-6 w-6 rounded-full" src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
-                                    <span class="text-sm font-medium">Lucía Méndez</span>
-                                </div>
-                                <!-- Botón 3 puntos (Comentario) -->
-                                <button class="text-gray-400 hover:text-gray-600" aria-label="Acciones de comentario">
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
-                                </button>
+                            <button class="comment-action-btn" aria-label="Acciones de comentario">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                            </button>
+                        </div>
+                        <p>Fui ayer y estaban un poco húmedas pero jugables. Hoy deberían estar perfectas.</p>
+                    </div>
+                    <div class="comment-item">
+                         <div class="comment-header">
+                            <div class="comment-author">
+                                <img src="https://placehold.co/100x100/E2E8F0/4A5568?text=LM" alt="Avatar">
+                                <span>Lucía Méndez</span>
                             </div>
-                            <p class="text-sm text-gray-600 mt-2">Confirmo, acabo de pasar por ahí y se ven bien.</p>
-                        </li>
-                    </ul>
+                            <button class="comment-action-btn" aria-label="Acciones de comentario">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                            </button>
+                        </div>
+                        <p>Confirmo, acabo de pasar por ahí y se ven bien.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: Agregar/Editar Instalación -->
-    <div id="installation-modal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 p-4">
-        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <!-- Cabecera -->
-            <div class="flex justify-between items-center p-5 border-b">
-                <h3 class="text-xl font-semibold">Agregar Nueva Instalación</h3>
-                <button class="close-modal text-gray-400 hover:text-gray-600" aria-label="Cerrar modal">
-                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+    <div id="installation-modal" class="modal-container is-hidden">
+        <div class="modal-content modal-content-md">
+            <div class="modal-header">
+                <h3>Agregar Nueva Instalación</h3>
+                <button class="close-modal" aria-label="Cerrar modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <!-- Formulario -->
-            <form class="p-6 overflow-y-auto space-y-4">
-                <div>
-                    <label for="inst-name" class="block text-sm font-medium text-gray-700">Nombre de la Instalación</label>
-                    <input type="text" id="inst-name" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+            <form class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="form-group">
+                    <label for="inst-name">Nombre de la Instalación</label>
+                    <input type="text" id="inst-name" class="form-input">
                 </div>
-                <div>
-                    <label for="inst-address" class="block text-sm font-medium text-gray-700">Dirección</label>
-                    <input type="text" id="inst-address" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                <div class="form-group">
+                    <label for="inst-address">Dirección</label>
+                    <input type="text" id="inst-address" class="form-input">
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="inst-region" class="block text-sm font-medium text-gray-700">Región</label>
-                        <select id="inst-region" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="inst-region">Región</label>
+                        <select id="inst-region" class="form-select">
                             <option>Metropolitana</option>
                             <option>Valparaíso</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="inst-comuna" class="block text-sm font-medium text-gray-700">Comuna</label>
-                        <select id="inst-comuna" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <div class="form-group">
+                        <label for="inst-comuna">Comuna</label>
+                        <select id="inst-comuna" class="form-select">
                             <option>Las Condes</option>
                             <option>Santiago</option>
                         </select>
                     </div>
                 </div>
-                <!-- Mapa Leaflet -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Ubicación (Haz clic en el mapa)</label>
-                    <div id="map" class="mt-1 w-full rounded-lg border border-gray-300"></div>
+                <div class="form-group">
+                    <label>Ubicación (Haz clic en el mapa)</label>
+                    <div id="map"></div>
                 </div>
-                <!-- Coordenadas -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="inst-lat" class="block text-sm font-medium text-gray-700">Latitud</D label>
-                        <input type="text" id="inst-lat" readonly class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 text-sm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="inst-lat">Latitud</label>
+                        <input type="text" id="inst-lat" readonly class="form-input">
                     </div>
-                    <div>
-                        <label for="inst-lng" class="block text-sm font-medium text-gray-700">Longitud</label>
-                        <input type="text" id="inst-lng" readonly class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 text-sm">
+                    <div class="form-group">
+                        <label for="inst-lng">Longitud</label>
+                        <input type="text" id="inst-lng" readonly class="form-input">
                     </div>
                 </div>
             </form>
-            <!-- Pie -->
-            <div class="flex justify-end items-center p-5 border-t space-x-3">
-                <button class="close-modal bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancelar</button>
-                <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Guardar Instalación</button>
+            <div class="modal-footer">
+                <button type="button" class="close-modal button button-gray">Cancelar</button>
+                <button type="button" class="button button-indigo">Guardar Instalación</button>
             </div>
         </div>
     </div>
@@ -689,19 +1320,19 @@
 
                     // Ocultar todas las páginas
                     contentPages.forEach(page => {
-                        page.classList.add('hidden');
+                        page.classList.add('is-hidden');
                     });
                     
                     // Mostrar la página objetivo
                     if (targetPage) {
-                        targetPage.classList.remove('hidden');
+                        targetPage.classList.remove('is-hidden');
                     }
 
                     // Actualizar estado activo del link
                     navLinks.forEach(navLink => {
-                        navLink.classList.remove('active');
+                        navLink.classList.remove('is-active');
                     });
-                    link.classList.add('active');
+                    link.classList.add('is-active');
                 });
             });
 
@@ -715,22 +1346,20 @@
                     
                     // Ocultar todos los contenidos
                     userTabContents.forEach(content => {
-                        content.classList.add('hidden');
+                        content.classList.add('is-hidden');
                     });
                     
                     // Mostrar contenido objetivo
                     const targetContent = document.getElementById(`tab-${targetTabId}`);
                     if (targetContent) {
-                        targetContent.classList.remove('hidden');
+                        targetContent.classList.remove('is-hidden');
                     }
                     
                     // Actualizar estilos de pestañas
                     userTabs.forEach(t => {
-                        t.classList.remove('border-indigo-500', 'text-indigo-600');
-                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        t.classList.remove('is-active');
                     });
-                    tab.classList.add('border-indigo-500', 'text-indigo-600');
-                    tab.classList.remove('border-transparent', 'text-gray-500');
+                    tab.classList.add('is-active');
                 });
             });
 
@@ -744,7 +1373,7 @@
                     const modalId = button.getAttribute('data-modal-id');
                     const modal = document.getElementById(modalId);
                     if (modal) {
-                        modal.classList.remove('hidden');
+                        modal.classList.remove('is-hidden');
                         
                         // Si es el modal de instalación, inicializar el mapa
                         if (modalId === 'installation-modal') {
@@ -759,7 +1388,7 @@
                     // Encontrar el modal padre y cerrarlo
                     const modal = button.closest('.modal-container');
                     if (modal) {
-                        modal.classList.add('hidden');
+                        modal.classList.add('is-hidden');
                     }
                 });
             });
@@ -768,7 +1397,7 @@
             modalContainers.forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
-                        modal.classList.add('hidden');
+                        modal.classList.add('is-hidden');
                     }
                 });
             });
@@ -829,13 +1458,12 @@
             
             // Quitar clase activa de todos los items
             document.querySelectorAll('.installation-item').forEach(item => {
-                item.classList.remove('bg-indigo-100', 'border-l-4', 'border-indigo-500');
+                item.classList.remove('is-active');
             });
             
             // Añadir clase activa al item clickeado
-            element.classList.add('bg-indigo-100', 'border-l-4', 'border-indigo-500');
+            element.classList.add('is-active');
             
-            // Aquí iría la lógica para cargar las publicaciones de esa instalación
             // (Simulación)
             console.log(`Cargando publicaciones para: ${installationName}`);
         }
@@ -848,15 +1476,12 @@
             
             // Quitar clase activa de todas las publicaciones
             document.querySelectorAll('.publication-item').forEach(item => {
-                item.classList.remove('border-indigo-500');
-                item.classList.add('border-transparent');
+                item.classList.remove('is-active');
             });
             
             // Añadir clase activa a la publicación clickeada
-            element.classList.add('border-indigo-500');
-            element.classList.remove('border-transparent');
+            element.classList.add('is-active');
             
-            // Aquí iría la lógica para cargar los comentarios de esa publicación
             // (Simulación)
             console.log(`Cargando comentarios para: ${postName}`);
         }
