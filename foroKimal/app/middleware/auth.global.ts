@@ -11,19 +11,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Si está autenticado y va a login o registro, redirige según el rol
   if ((to.path === '/' || to.path === '/registro') && isAuthenticated()) {
     if (user.value?.rol === 'admin') {
-      return navigateTo('/admin/crear-noticia')
+      return navigateTo('/admin/dashboard')
     }
     return navigateTo('/foroMain')
   }
 
   // Si NO está autenticado y va a una ruta protegida, redirige al login
   const protectedRoutes = ['/foroMain', '/admin/crear-noticia']
-  if (protectedRoutes.includes(to.path) && !isAuthenticated()) {
+  if ((protectedRoutes.includes(to.path) || to.path.startsWith('/admin')) && !isAuthenticated()) {
     return navigateTo('/')
   }
 
-  // Si intenta acceder a la ruta de admin y no es admin, redirige al foro
-  if (to.path === '/admin/crear-noticia' && user.value?.rol !== 'admin') {
+  // Si intenta acceder a cualquier ruta de admin y no es admin, redirige al foro
+  if (to.path.startsWith('/admin') && user.value?.rol !== 'admin') {
     return navigateTo('/foroMain')
   }
 })
