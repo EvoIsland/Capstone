@@ -90,3 +90,29 @@ export const sendVerificationEmail = async (to: string, token: string): Promise<
     return false;
   }
 };
+
+export const sendInitialPasswordEmail = async (to: string, password: string): Promise<boolean> => {
+  try {
+    await transporter.sendMail({
+      from: `"Kimal App" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: 'Tu cuenta ha sido creada - Kimal',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #333; margin-bottom: 20px;">Bienvenido a Kimal</h1>
+          <p style="color: #666; margin-bottom: 30px;">
+            Tu cuenta ha sido creada por el administrador.<br>
+            <b>Tu contraseña inicial es:</b> <span style="color: #4CAF50;">${password}</span>
+          </p>
+          <p style="color: #999; font-size: 12px; margin-top: 30px;">
+            Te recomendamos cambiar tu contraseña después de iniciar sesión.
+          </p>
+        </div>
+      `
+    });
+    return true;
+  } catch (error) {
+    console.error('Error sending initial password email:', error);
+    return false;
+  }
+}

@@ -3,6 +3,10 @@ import { authenticateToken } from '../../middlewares/auth.middleware';
 import { authorizeAdmin } from '../../middlewares/admin.middleware';
 import { UserModel, IUser } from '../../models/user.model';
 
+import crypto from 'crypto'
+import bcrypt from 'bcrypt'
+import { sendInitialPasswordEmail } from '../../services/email.service'
+
 const usuariosRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   fastify.addHook('preHandler', authenticateToken); // <-- primero
   fastify.addHook('preHandler', authorizeAdmin);    // <-- después
@@ -15,10 +19,19 @@ const usuariosRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
 
   // Crear usuario
   fastify.post<{ Body: Partial<IUser> }>('/admin/usuarios', async (request, reply) => {
-    const nuevoUsuario = new UserModel(request.body);
-    await nuevoUsuario.save();
-    reply.send(nuevoUsuario);
-  });
+    const plainPassword = crypto.randomBytes(8).toString('hex')
+    const hashedPassword = await bcrypt.hash(plainPassword, 10)
+
+    const nuevoUsuario = new UserModel({
+      ...request.body,
+      contraseña: hashedPassword
+    })
+    await nuevoUsuario.save()
+
+    await sendInitialPasswordEmail(nuevoUsuario.correo, plainPassword)
+
+    reply.send(nuevoUsuario)
+  })
 
   // Actualizar usuario
   fastify.put<{ Params: { id: string }; Body: Partial<IUser> }>('/admin/usuarios/:id', async (request, reply) => {
