@@ -22,7 +22,8 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // Configurar CORS para cualquier origen (debe ir antes de todo)
   await fastify.register(cors, {
     origin: true,
-    credentials: true
+    credentials: true,
+    methods: ['GET','POST','PUT','DELETE','OPTIONS']
   })
 
   // Conectar a la base de datos
