@@ -125,6 +125,65 @@ const { user } = useAuth()
   justify-content: flex-end;
   align-items: center;
   padding: 0.75rem 1rem 0.25rem 0.5rem;
+  
+  button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--color-amarillo);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    svg {
+      position: relative;
+      z-index: 1;
+      transition: transform 0.2s ease;
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--color-amarillo);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      
+      &::before {
+        opacity: 0.1;
+      }
+      
+      svg {
+        transform: scale(1.1);
+      }
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+.admin-sidebar.collapsed .sidebar-toggle {
+  justify-content: center;
+  padding: 0.75rem 0.5rem 0.25rem 0.5rem;
 }
 
 .sidebar-header {
