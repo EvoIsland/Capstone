@@ -42,6 +42,43 @@ const noticiaRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> =
     }
   });
 
+fastify.get('/noticia/:id', async (request, reply) => {
+  try {
+    const { id } = request.params as { id: string };
+    const noticia = await NoticiaModel.findById(id);
+    if (!noticia) return reply.status(404).send({ error: 'Noticia no encontrada' });
+    return noticia;
+  } catch (error) {
+    return reply.status(500).send({ error: 'Error interno del servidor.' });
+  }
+});
+
+fastify.put('/noticia/:id', { preHandler: [authenticateToken, authorizeAdmin] }, async (request, reply) => {
+  try {
+    const validationResult = crearNoticiaSchema.safeParse(request.body);
+    if (!validationResult.success) {
+      return reply.status(400).send({ error: "Datos inválidos", details: validationResult.error.flatten() });
+    }
+    const { id } = request.params as { id: string };
+    const noticia = await NoticiaModel.findByIdAndUpdate(id, validationResult.data, { new: true });
+    if (!noticia) return reply.status(404).send({ error: 'Noticia no encontrada' });
+    return noticia;
+  } catch (error) {
+    return reply.status(500).send({ error: 'Error interno del servidor.' });
+  }
+});
+
+fastify.delete('/noticia/:id', { preHandler: [authenticateToken, authorizeAdmin] }, async (request, reply) => {
+  try {
+    const { id } = request.params as { id: string };
+    const noticia = await NoticiaModel.findByIdAndDelete(id);
+    if (!noticia) return reply.status(404).send({ error: 'Noticia no encontrada' });
+    return { ok: true };
+  } catch (error) {
+    return reply.status(500).send({ error: 'Error interno del servidor.' });
+  }
+});
+
 };
 
 export default noticiaRoutes;
