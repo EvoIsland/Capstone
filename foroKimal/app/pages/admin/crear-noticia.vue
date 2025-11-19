@@ -1,109 +1,285 @@
 <template>
-  <div class="admin-page-container">
-    <div class="news-form-card">
-      <h1 class="form-title">Crear Nueva Noticia</h1>
-      <p class="form-subtitle">
-        Esta publicación aparecerá en el feed de "Noticias".
-      </p>
+  <div class="news-editor-page">
+    <!-- Controles superiores -->
+    <div class="editor-controls">
+      <div class="controls-left">
+        <span class="badge" :class="deviceMode">{{ deviceMode === 'desktop' ? 'Escritorio' : 'Móvil' }}</span>
+      </div>
+      
+      <div class="device-toggle">
+        <button 
+          @click="deviceMode = 'desktop'"
+          :class="{ active: deviceMode === 'desktop' }"
+          title="Editar vista Escritorio"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        </button>
+        <button 
+          @click="deviceMode = 'mobile'"
+          :class="{ active: deviceMode === 'mobile' }"
+          title="Editar vista Móvil"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+        </button>
+      </div>
 
-      <form @submit.prevent="handleSubmit">
-        <div class="form-group">
-          <label for="titulo">Titular</label>
-          <input
-            id="titulo"
-            v-model="form.titulo"
-            type="text"
-            class="form-input"
-            required
-          />
-        </div>
+      <button class="preview-btn" @click="togglePreview">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <span>{{ viewMode === 'editor' ? 'Previsualizar' : 'Editar' }}</span>
+      </button>
+    </div>
 
-        <div class="form-group">
-          <label for="texto">Contenido</label>
-          <textarea
-            id="texto"
-            v-model="form.texto"
-            class="form-input form-textarea"
-            rows="10"
-            required
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Ubicación (Opcional)</label>
-          <div class="location-filters">
-            <select v-model="form.regionId" class="form-input select-style">
-              <option value="">Región</option>
-              <option v-for="region in regiones" :key="region._id" :value="region._id">{{ region.nombre }}</option>
-            </select>
-            <select v-model="form.comunaId" class="form-input select-style" :disabled="!form.regionId">
-              <option value="">Comuna</option>
-              <option v-for="comuna in comunasFiltradas" :key="comuna._id" :value="comuna._id">{{ comuna.nombre }}</option>
-            </select>
-            <select v-model="form.instalacionId" class="form-input select-style" :disabled="!form.comunaId">
-              <option value="">Instalación</option>
-              <option v-for="inst in instalacionesFiltradas" :key="inst._id" :value="inst._id">{{ inst.nombre }}</option>
-            </select>
+    <!-- VISTA PREVIA (FEED) -->
+    <div v-if="viewMode === 'feed_preview'" class="preview-container">
+      <div class="preview-card">
+        <h3>Así se verá en el Feed de Noticias</h3>
+        <div class="news-card-simulation">
+          <div v-if="getNewsMetadata().image" class="card-img">
+            <img :src="getNewsMetadata().image || ''" alt="Portada" />
+          </div>
+          <div class="card-content">
+            <h4>{{ getNewsMetadata().title }}</h4>
+            <p>{{ getNewsMetadata().excerpt }}</p>
+            <span class="read-more">Leer más -></span>
           </div>
         </div>
+        <p class="note">La imagen y textos se extraen automáticamente de tu diseño.</p>
+        <button @click="viewMode = 'editor'" class="back-btn">Volver al Editor</button>
+      </div>
+    </div>
 
-        <!-- <div class="form-group">
-          <label for="imagenes">Imágenes (Máx 3)</label>
-          <input
-            id="imagenes"
-            type="file"
-            class="form-input"
-            multiple
-            accept="image/png,image/jpeg"
-            @change="handleFileChange"
-          />
-        </div> -->
+    <!-- VISTA EDITOR -->
+    <div v-else class="editor-workspace">
+      
+      <!-- BARRA LATERAL (HERRAMIENTAS) -->
+      <div class="sidebar-tools">
+        <h3>Componentes</h3>
+        <div class="tools-grid">
+          <button @click="addElement('headline')" class="tool-btn">
+            <!-- Icono T (Titular) -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+            <span>Titular</span>
+          </button>
+          <button @click="addElement('subhead')" class="tool-btn">
+             <!-- Icono T pequeña -->
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+            <span>Subtítulo</span>
+          </button>
+          <button @click="addElement('body')" class="tool-btn">
+            <!-- Icono Párrafo -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+            <span>Párrafo</span>
+          </button>
+          <button @click="addElement('image')" class="tool-btn">
+            <!-- Icono Imagen -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <span>Imagen</span>
+          </button>
+          <button @click="addElement('divider')" class="tool-btn">
+            <!-- Icono Separador -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Separador</span>
+          </button>
+        </div>
 
-        <button type="submit" class="form-submit-btn" :disabled="isLoading">
+        <!-- FILTROS DE UBICACIÓN (Integrados en la sidebar para no estorbar) -->
+        <div class="location-section">
+          <h3>Publicar en:</h3>
+          <select v-model="form.regionId" class="mini-select">
+            <option value="">Todas las Regiones</option>
+            <option v-for="r in regiones" :key="r._id" :value="r._id">{{ r.nombre }}</option>
+          </select>
+          <select v-model="form.comunaId" class="mini-select" :disabled="!form.regionId">
+            <option value="">Todas las Comunas</option>
+            <option v-for="c in comunasFiltradas" :key="c._id" :value="c._id">{{ c.nombre }}</option>
+          </select>
+          <select v-model="form.instalacionId" class="mini-select" :disabled="!form.comunaId">
+            <option value="">Todas las Instalaciones</option>
+            <option v-for="i in instalacionesFiltradas" :key="i._id" :value="i._id">{{ i.nombre }}</option>
+          </select>
+        </div>
+
+        <button @click="handleSubmit" class="publish-btn" :disabled="isLoading">
           {{ isLoading ? 'Publicando...' : 'Publicar Noticia' }}
         </button>
-        <div v-if="error" class="form-message error">{{ error }}</div>
-        <div v-if="success" class="form-message success">{{ success }}</div>
-      </form>
+        <p v-if="error" class="error-msg">{{ error }}</p>
+        <p v-if="success" class="success-msg">{{ success }}</p>
+      </div>
+
+      <!-- CANVAS CENTRAL -->
+      <div class="canvas-area" @click="selectedId = null">
+        <div 
+          ref="canvasRef"
+          class="canvas-paper"
+          :style="{ 
+            width: canvasSizes[deviceMode].width + 'px', 
+            height: canvasSizes[deviceMode].height + 'px' 
+          }"
+        >
+          <!-- Renderizado de Elementos -->
+          <div 
+            v-for="element in elements" 
+            :key="element.id"
+            class="canvas-element"
+            :class="{ selected: selectedId === element.id }"
+            :style="getElementStyle(element)"
+            @mousedown.stop="handleMouseDown($event, element.id)"
+            @click.stop
+          >
+            <!-- Contenido Texto -->
+            <div v-if="element.type === 'text'" class="element-content text">
+              {{ element.content }}
+            </div>
+            
+            <!-- Contenido Imagen -->
+            <img v-if="element.type === 'image'" :src="element.src" class="element-content image" />
+            
+            <!-- Contenido Box/Divider -->
+            <div v-if="element.type === 'box'" class="element-content box"></div>
+
+            <!-- Botón Eliminar -->
+            <button v-if="selectedId === element.id" class="delete-element-btn" @click.stop="deleteElement(element.id)">
+              <!-- Icono Basura -->
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+
+             <!-- Etiqueta de modo -->
+            <div v-if="selectedId === element.id" class="mode-tag" :class="deviceMode">
+              {{ deviceMode === 'desktop' ? 'PC' : 'Móvil' }}
+            </div>
+          </div>
+
+          <div v-if="elements.length === 0" class="empty-state">
+            Arrastra elementos aquí
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL DE PROPIEDADES (DERECHA) -->
+      <div class="properties-panel" :class="{ open: selectedId }">
+        <div v-if="selectedElement" class="props-content">
+          <div class="props-header">
+            <h4>Propiedades</h4>
+            <button @click="selectedId = null">×</button>
+          </div>
+
+          <!-- Editor de Texto -->
+          <div v-if="selectedElement.type === 'text'" class="form-group">
+            <label>Texto (Compartido)</label>
+            <textarea v-model="selectedElement.content" rows="4"></textarea>
+          </div>
+
+          <!-- Editor de Layout -->
+          <div class="form-group">
+            <label>Ancho ({{ deviceMode }})</label>
+            <input 
+              type="range" 
+              min="50" 
+              :max="canvasSizes[deviceMode].width" 
+              step="10" 
+              v-model.number="selectedElement.layout[deviceMode].width"
+            >
+            <span>{{ selectedElement.layout[deviceMode].width }}px</span>
+          </div>
+
+          <!-- Estilos (Texto) -->
+          <div v-if="selectedElement.type === 'text'" class="style-grid">
+            <div class="form-group">
+              <label>Tamaño</label>
+              <input type="text" v-model="selectedElement.style.fontSize">
+            </div>
+            <div class="form-group">
+              <label>Color</label>
+              <input type="color" v-model="selectedElement.style.color">
+            </div>
+            <div class="form-group full">
+               <label>Alineación</label>
+               <div class="align-buttons">
+                 <button @click="selectedElement.style.textAlign = 'left'">
+                    <!-- Align Left -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                 </button>
+                 <button @click="selectedElement.style.textAlign = 'center'">
+                    <!-- Align Center -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                 </button>
+                 <button @click="selectedElement.style.textAlign = 'right'">
+                    <!-- Align Right -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                 </button>
+                 <button @click="selectedElement.style.textAlign = 'justify'">
+                    <!-- Align Justify -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+                 </button>
+               </div>
+            </div>
+          </div>
+
+        </div>
+        <div v-else class="no-selection">
+          Selecciona un elemento para editar
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
 import { useAuth } from '../../../composables/useAuth';
 import { useRouter } from 'vue-router';
-import type { Region, Comuna, Instalacion } from '~/types';
 
+definePageMeta({
+  layout: 'admin'
+});
+
+// --- Tipos (Si los tienes en un archivo aparte, impórtalos) ---
+interface Layout {
+  x: number; y: number; width: number | string; height: number | string;
+}
+interface Element {
+  id: string;
+  type: 'text' | 'image' | 'box';
+  role: string;
+  content: string;
+  src?: string;
+  layout: { desktop: Layout; mobile: Layout };
+  style: any;
+}
+
+// --- Setup Base ---
 const { accessToken, user } = useAuth();
 const router = useRouter();
 
-// --- Protección de Página ---
-onMounted(() => {
-  if (!user.value || user.value.rol !== 'admin') {
-    router.replace('/');
-  }
-});
+// --- Estado del Editor ---
+const elements = ref<Element[]>([]);
+const selectedId = ref<string | null>(null);
+const viewMode = ref<'editor' | 'feed_preview'>('editor');
+const deviceMode = ref<'desktop' | 'mobile'>('desktop');
 
-// --- Estado del Formulario ---
-const form = ref({
-  titulo: '',
-  texto: '',
-  regionId: '',
-  comunaId: '',
-  instalacionId: '',
-});
-const imagenFiles = ref<File[]>([]);
+const canvasSizes = {
+  desktop: { width: 800, height: 1200 },
+  mobile: { width: 375, height: 1000 }
+};
+
+// Estado de Arrastre
+const draggingId = ref<string | null>(null);
+const dragOffset = ref({ x: 0, y: 0 });
+const canvasRef = ref<HTMLElement | null>(null);
+
+// --- Estado de Formulario (Filtros) ---
+const form = ref({ regionId: '', comunaId: '', instalacionId: '' });
+const regiones = ref<any[]>([]);
+const comunas = ref<any[]>([]);
+const instalaciones = ref<any[]>([]);
 const error = ref('');
 const success = ref('');
 const isLoading = ref(false);
 
-// --- Estado para Filtros ---
-const regiones = ref<Region[]>([]);
-const comunas = ref<Comuna[]>([]);
-const instalaciones = ref<Instalacion[]>([]);
+// --- Computed ---
+const selectedElement = computed(() => elements.value.find(e => e.id === selectedId.value));
 
-// --- Filtros en Cadena ---
 const comunasFiltradas = computed(() => {
   if (!form.value.regionId) return [];
   return comunas.value.filter(c => c.regionId === form.value.regionId);
@@ -114,61 +290,234 @@ const instalacionesFiltradas = computed(() => {
   return instalaciones.value.filter(i => i.comunaId === form.value.comunaId);
 });
 
-// --- Watchers para limpiar filtros ---
-watch(() => form.value.regionId, () => {
-  form.value.comunaId = '';
-  form.value.instalacionId = '';
-});
-watch(() => form.value.comunaId, () => {
-  form.value.instalacionId = '';
-});
+// --- Watchers Filtros ---
+watch(() => form.value.regionId, () => { form.value.comunaId = ''; form.value.instalacionId = ''; });
+watch(() => form.value.comunaId, () => { form.value.instalacionId = ''; });
 
-// --- Carga de Datos ---
+// --- Carga Inicial ---
 onMounted(async () => {
+  if (!user.value || user.value.rol !== 'admin') router.replace('/');
+  
+  // Cargar datos de regiones (Mock o Real)
   try {
     const [reg, com, inst] = await Promise.all([
-      $fetch<Region[]>('http://localhost:5000/regiones'),
-      $fetch<Comuna[]>('http://localhost:5000/comunas'),
-      $fetch<Instalacion[]>('http://localhost:5000/instalaciones'),
+       $fetch<any[]>('http://localhost:5000/regiones'),
+       $fetch<any[]>('http://localhost:5000/comunas'),
+       $fetch<any[]>('http://localhost:5000/instalaciones'),
     ]);
-    regiones.value = reg;
-    comunas.value = com;
+    regiones.value = reg; 
+    comunas.value = com; 
     instalaciones.value = inst;
-  } catch (err) {
-    console.error("Error al cargar datos de ubicación:", err);
-    error.value = "No se pudieron cargar los filtros.";
+  } catch (e) { 
+    console.error('Error cargando datos:', e); 
   }
+
+  // Event Listeners Globales para Drag & Drop
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
 });
 
-// --- Manejador de Archivos ---
-// const handleFileChange = (e: Event) => {
-//   const files = (e.target as HTMLInputElement).files;
-//   if (!files) return;
-//   imagenFiles.value = Array.from(files).slice(0, 3);
+onUnmounted(() => {
+  window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('mouseup', handleMouseUp);
+});
 
-//   for (const file of imagenFiles.value) {
-//     if (file.size > 2 * 1024 * 1024) {
-//       error.value = 'Cada imagen debe pesar máximo 2MB.';
-//       (e.target as HTMLInputElement).value = '';
-//       return;
-//     }
-//   }
-//   error.value = '';
-// };
+// --- LÓGICA DEL EDITOR ---
 
-// --- Lógica de Envío con FormData ---
+// 1. Plantillas de Elementos
+const elementTypes = {
+    headline: {
+      type: 'text', role: 'title', content: 'TITULAR',
+      style: { fontSize: '36px', fontWeight: 'bold', color: '#1a1a1a', textAlign: 'center' },
+      defaultWidth: 600, mobileWidth: 340
+    },
+    subhead: {
+      type: 'text', role: 'subtitle', content: 'Subtítulo',
+      style: { fontSize: '24px', fontWeight: '600', color: '#444', textAlign: 'left' },
+      defaultWidth: 500, mobileWidth: 320
+    },
+    body: {
+      type: 'text', role: 'body', content: 'Escribe tu contenido aquí...',
+      style: { fontSize: '16px', lineHeight: '1.6', color: '#333', textAlign: 'justify' },
+      defaultWidth: 400, mobileWidth: 340
+    },
+    image: {
+      type: 'image', role: 'main_image', content: 'Img', src: 'https://via.placeholder.com/400x300',
+      style: { borderRadius: '4px' },
+      defaultWidth: 400, mobileWidth: 350, height: 250
+    },
+    divider: {
+      type: 'box', role: 'decoration', content: '',
+      style: { backgroundColor: '#000', height: '2px' },
+      defaultWidth: 600, mobileWidth: 300, height: 2
+    }
+};
+
+// 2. Agregar Elemento
+const addElement = (typeKey: string) => {
+  const tmpl = elementTypes[typeKey as keyof typeof elementTypes];
+  const dWidth = canvasSizes.desktop.width;
+  const mWidth = canvasSizes.mobile.width;
+  const dHeight = canvasSizes.desktop.height;
+  const mHeight = canvasSizes.mobile.height;
+  
+  // Posición Y (apilado simple)
+  let yPos = elements.value.length > 0 ? (elements.value.length * 80) + 50 : 50;
+  
+  // Asegurar que no se salga del canvas en desktop
+  const elementHeight = (tmpl as any).height || 50;
+  if (yPos + elementHeight > dHeight) {
+    yPos = dHeight - elementHeight - 20; // 20px de margen
+  }
+  
+  // Lo mismo para mobile
+  let yPosMobile = yPos;
+  if (yPosMobile + elementHeight > mHeight) {
+    yPosMobile = mHeight - elementHeight - 20;
+  }
+
+  const newEl: Element = {
+    id: Date.now().toString(),
+    type: tmpl.type as any,
+    role: tmpl.role,
+    content: tmpl.content,
+    src: (tmpl as any).src,
+    layout: {
+      desktop: { 
+        x: Math.max(0, Math.min((dWidth / 2) - (tmpl.defaultWidth / 2), dWidth - tmpl.defaultWidth)), 
+        y: yPos, 
+        width: tmpl.defaultWidth, 
+        height: (tmpl as any).height || 'auto' 
+      },
+      mobile: { 
+        x: Math.max(0, Math.min((mWidth / 2) - (tmpl.mobileWidth / 2), mWidth - tmpl.mobileWidth)), 
+        y: yPosMobile, 
+        width: tmpl.mobileWidth, 
+        height: (tmpl as any).height || 'auto' 
+      }
+    },
+    style: { ...tmpl.style }
+  };
+  elements.value.push(newEl);
+  selectedId.value = newEl.id;
+};
+
+// 3. Drag & Drop Handlers
+const handleMouseDown = (e: MouseEvent, id: string) => {
+  if (viewMode.value !== 'editor') return;
+  
+  // Solo seleccionar el elemento
+  selectedId.value = id;
+  
+  // Iniciar drag solo si se mueve el mouse
+  const el = elements.value.find(x => x.id === id);
+  if (!el || !canvasRef.value) return;
+
+  const currentLayout = el.layout[deviceMode.value];
+  const canvasRect = canvasRef.value.getBoundingClientRect();
+  
+  dragOffset.value = {
+    x: e.clientX - canvasRect.left - currentLayout.x,
+    y: e.clientY - canvasRect.top - currentLayout.y
+  };
+  
+  // Marcar como arrastrando
+  draggingId.value = id;
+};
+
+const handleMouseMove = (e: MouseEvent) => {
+  if (!draggingId.value || !canvasRef.value) return;
+
+  const el = elements.value.find(x => x.id === draggingId.value);
+  if (!el) return;
+
+  const canvasRect = canvasRef.value.getBoundingClientRect();
+  let newX = e.clientX - canvasRect.left - dragOffset.value.x;
+  let newY = e.clientY - canvasRect.top - dragOffset.value.y;
+
+  // Obtener dimensiones del elemento
+  const layout = el.layout[deviceMode.value];
+  const elementWidth = typeof layout.width === 'number' ? layout.width : 100;
+  const elementHeight = typeof layout.height === 'number' ? layout.height : 50;
+  
+  // Límites del canvas
+  const maxX = canvasSizes[deviceMode.value].width - elementWidth;
+  const maxY = canvasSizes[deviceMode.value].height - elementHeight;
+  
+  // Aplicar límites
+  newX = Math.max(0, Math.min(newX, maxX));
+  newY = Math.max(0, Math.min(newY, maxY));
+
+  // Snap to grid 10px
+  newX = Math.round(newX / 10) * 10;
+  newY = Math.round(newY / 10) * 10;
+
+  el.layout[deviceMode.value].x = newX;
+  el.layout[deviceMode.value].y = newY;
+};
+
+const handleMouseUp = () => {
+  draggingId.value = null;
+};
+
+// 4. Helpers de Renderizado
+const getElementStyle = (element: Element) => {
+  const l = element.layout[deviceMode.value];
+  return {
+    left: `${l.x}px`,
+    top: `${l.y}px`,
+    width: typeof l.width === 'number' ? `${l.width}px` : l.width,
+    height: typeof l.height === 'number' ? `${l.height}px` : l.height,
+    ...element.style
+  };
+};
+
+const deleteElement = (id: string) => {
+  elements.value = elements.value.filter(e => e.id !== id);
+  selectedId.value = null;
+};
+
+const togglePreview = () => {
+  viewMode.value = viewMode.value === 'editor' ? 'feed_preview' : 'editor';
+};
+
+// 5. Extracción de Datos (Metadata)
+const getNewsMetadata = () => {
+  const titleEl = elements.value.find(e => e.role === 'title') || elements.value.find(e => e.type === 'text');
+  const imageEl = elements.value.find(e => e.type === 'image');
+  const bodyEl = elements.value.find(e => e.role === 'body') || elements.value.find(e => e.type === 'text' && e.id !== titleEl?.id);
+
+  return {
+    title: titleEl ? titleEl.content : 'Sin título',
+    image: imageEl ? imageEl.src : null,
+    excerpt: bodyEl ? bodyEl.content.substring(0, 120) + '...' : '...'
+  };
+};
+
+// --- SUBMIT ---
 const handleSubmit = async () => {
   error.value = '';
   success.value = '';
   isLoading.value = true;
 
+  // 1. Extraemos info básica para el feed
+  const meta = getNewsMetadata();
+
+  // 2. Validamos
+  if (elements.value.length === 0) {
+    error.value = "El lienzo está vacío.";
+    isLoading.value = false;
+    return;
+  }
+
   try {
-    // Solo agrega los campos si tienen valor
     const body: any = {
       tipo: 'noticia',
-      titulo: form.value.titulo,
-      texto: form.value.texto,
+      titulo: meta.title,           // Se usa el título del diseño para el feed
+      texto: meta.excerpt,          // Se usa el extracto para el feed
+      contentJson: JSON.stringify(elements.value), // GUARDAMOS EL DISEÑO COMPLETO
     };
+
     if (form.value.regionId) body.regionId = form.value.regionId;
     if (form.value.comunaId) body.comunaId = form.value.comunaId;
     if (form.value.instalacionId) body.instalacionId = form.value.instalacionId;
@@ -182,128 +531,306 @@ const handleSubmit = async () => {
       body,
     });
 
-    success.value = '¡Noticia publicada con éxito! Redirigiendo...';
-    setTimeout(() => {
-      router.push('/');
-    }, 2000);
+    success.value = '¡Noticia publicada! Redirigiendo...';
+    setTimeout(() => router.push('/'), 2000);
 
   } catch (err: any) {
-    error.value = err.data?.error || 'No se pudo publicar la noticia.';
-    console.error(err);
+    error.value = err.data?.error || 'Error al publicar.';
   } finally {
     isLoading.value = false;
   }
 };
 </script>
 
-<style scoped lang="scss">
-/* ... (Los mismos estilos de la respuesta anterior) ... */
-.admin-page-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 4rem 1rem;
-  background-color: #f0f2f5;
-  min-height: 100vh;
-}
-.news-form-card {
-  width: 100%;
-  max-width: 800px;
-  background: #fff;
-  padding: 3rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.form-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-.form-subtitle {
-  text-align: center;
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 2.5rem;
-}
-form {
+<style scoped>
+/* Reset básico */
+* { box-sizing: border-box; }
+
+.news-editor-page {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  height: calc(100vh - 84px); /* Ajuste para el header del admin layout */
+  background-color: #f3f4f6;
+  overflow: hidden;
 }
-.form-group {
+
+/* CONTROLES SUPERIORES */
+.editor-controls {
+  height: 60px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #444;
-  }
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 10;
 }
-.form-input {
-  width: 100%;
-  padding: 0.8rem 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  &:focus {
-    outline: none;
-    border-color: #b388f5;
-    box-shadow: 0 0 0 2px #b388f544;
-  }
+.controls-left { display: flex; align-items: center; gap: 10px; }
+.badge { font-size: 0.75rem; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 600; }
+
+.device-toggle {
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 8px;
+  display: flex;
+  gap: 4px;
 }
-.form-textarea {
-  resize: vertical;
-  min-height: 200px;
-}
-.location-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-.select-style {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-Main,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
-}
-.form-submit-btn {
-  background: #ff3388;
-  color: #fff;
+.device-toggle button {
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.9rem;
-  font-size: 1.1rem;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+.device-toggle button.active {
+  background: white;
+  color: #2563eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.preview-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 1rem;
-  &:hover:not(:disabled) {
-    background: #e6006d;
-  }
-  &:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-  }
 }
-.form-message {
-  text-align: center;
-  margin-top: 1rem;
-  padding: 0.8rem;
-  border-radius: 0.5rem;
+
+/* WORKSPACE LAYOUT */
+.editor-workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* SIDEBAR IZQUIERDA */
+.sidebar-tools {
+  width: 260px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 5;
+}
+.sidebar-tools h3 { font-size: 0.85rem; text-transform: uppercase; color: #9ca3af; margin-bottom: 15px; letter-spacing: 0.05em; }
+
+.tools-grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #4b5563;
+  transition: all 0.2s;
   font-weight: 500;
-  &.error {
-    background-color: #ffdddd;
-    color: #d8000c;
-  }
-  &.success {
-    background-color: #ddffdd;
-    color: #4f8a10;
-  }
 }
+.tool-btn:hover { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+
+/* Location Section dentro de sidebar */
+.location-section {
+  margin-top: auto;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 20px;
+}
+.mini-select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.publish-btn {
+  width: 100%;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.publish-btn:disabled { background: #93c5fd; cursor: not-allowed; }
+.error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; }
+.success-msg { color: #16a34a; font-size: 0.85rem; margin-top: 10px; }
+
+
+/* CANVAS AREA */
+.canvas-area {
+  flex: 1;
+  background: #e5e7eb;
+  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+}
+
+.canvas-paper {
+  background: white;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: width 0.3s ease;
+  /* Importante para que los absolute children funcionen */
+}
+
+.empty-state {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Elementos en el Canvas */
+.canvas-element {
+  position: absolute;
+  /* border: 1px dashed transparent; */
+  transition: box-shadow 0.2s;
+}
+.canvas-element:hover { box-shadow: 0 0 0 1px #60a5fa; cursor: grab; }
+.canvas-element.selected { box-shadow: 0 0 0 2px #2563eb; z-index: 10; }
+
+.element-content { width: 100%; height: 100%; pointer-events: none; }
+.element-content.text { white-space: pre-wrap; word-break: break-word; }
+.element-content.image { object-fit: cover; border-radius: inherit; }
+.element-content.box { width: 100%; height: 100%; }
+
+/* Botones flotantes del elemento */
+.delete-element-btn {
+  position: absolute;
+  top: -10px; right: -10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.mode-tag {
+  position: absolute;
+  top: -20px; left: 0;
+  background: #2563eb;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px 4px 0 0;
+  font-weight: bold;
+}
+.mode-tag.mobile { background: #9333ea; }
+
+/* PROPIEDADES (DERECHA) */
+.properties-panel {
+  width: 280px;
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  transform: translateX(100%);
+  transition: transform 0.3s;
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  z-index: 20;
+}
+.properties-panel.open { transform: translateX(0); position: relative; }
+
+.props-header {
+  padding: 15px;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.props-header button { border: none; background: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af; }
+
+.props-content { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.form-group textarea, .form-group input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+.style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.full { grid-column: span 2; }
+
+.align-buttons { display: flex; gap: 5px; background: #f3f4f6; padding: 4px; border-radius: 6px; }
+.align-buttons button {
+  flex: 1; border: none; background: white; padding: 5px; border-radius: 4px; cursor: pointer; display: flex; justify-content: center;
+}
+.align-buttons button:hover { background: #e5e7eb; }
+
+.no-selection {
+  height: 100%;
+  display: flex;
+  align-items: center; justify-content: center;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* VISTA PREVIA FEED */
+.preview-container {
+  flex: 1;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.preview-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+.news-card-simulation {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: left;
+  margin: 20px 0;
+  display: flex;
+}
+.card-img { width: 150px; height: 150px; background: #e5e7eb; }
+.card-img img { width: 100%; height: 100%; object-fit: cover; }
+.card-content { padding: 15px; flex: 1; }
+.card-content h4 { margin: 0 0 10px 0; color: #111827; font-size: 1.1rem; }
+.card-content p { font-size: 0.9rem; color: #6b7280; line-height: 1.4; margin-bottom: 10px; }
+.read-more { font-size: 0.8rem; color: #2563eb; font-weight: 600; }
+.note { font-size: 0.8rem; color: #9ca3af; margin-bottom: 20px; }
+.back-btn { background: white; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
 </style>

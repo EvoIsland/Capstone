@@ -31,7 +31,8 @@ const pageTitle = computed(() => {
     '/admin/dashboard': 'Dashboard',
     '/admin/usuariosAdmin': 'Gestión de Usuarios',
     '/admin/publicacionesAdmin': 'Gestión de Publicaciones',
-    '/admin/instalacionesAdmin': 'Gestión de Instalaciones'
+    '/admin/instalacionesAdmin': 'Gestión de Instalaciones',
+    '/admin/crear-noticia': 'Crear Noticia'
   }
   return titles[route.path] || 'Administración'
 })
@@ -41,7 +42,8 @@ const pageSubtitle = computed(() => {
     '/admin/dashboard': 'Vista general del sistema',
     '/admin/usuariosAdmin': 'Administra los usuarios del sistema',
     '/admin/publicacionesAdmin': 'Gestiona las publicaciones del foro',
-    '/admin/instalacionesAdmin': 'Administra las zonas e instalaciones'
+    '/admin/instalacionesAdmin': 'Administra las zonas e instalaciones',
+    '/admin/crear-noticia': 'Publica noticias oficiales del sistema'
   }
   return subtitles[route.path] || ''
 })

@@ -83,7 +83,7 @@ export const useAuth = () => {
 
       const data = await response.json()
 
-      console.log('DATOS RECIBIDOS DEL LOGIN: ', data)
+      // console.log('DATOS RECIBIDOS DEL LOGIN: ', data)
 
       user.value = data.user
       accessToken.value = data.token
