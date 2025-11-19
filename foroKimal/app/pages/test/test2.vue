@@ -87,8 +87,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useAuth } from '../../composables/useAuth'
-import { useLikes } from '../../composables/useLikes'
+import { useAuth } from '../../../composables/useAuth'
+import { useLikes } from '../../../composables/useLikes'
 import { Icon as IconifyIcon } from '@iconify/vue'
 
 const props = defineProps({
