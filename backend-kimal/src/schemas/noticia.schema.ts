@@ -7,5 +7,6 @@ export const crearNoticiaSchema = z.object({
     imagenes: z.array(z.string().url()).optional(),
     instalacionId: z.string().optional(),
     comunaId: z.string().optional(),
-    regionId: z.string().optional()
+    regionId: z.string().optional(),
+    contentJson: z.array(z.any()) // <-- requerido para el editor visual
 })

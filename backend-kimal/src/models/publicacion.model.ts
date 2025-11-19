@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 export interface PublicacionDocument extends Document {
     publicadorId: Types.ObjectId;
     texto: string;
-    tipo: 'pregunta'| 'reporte' | 'noticia';
+    tipo: 'pregunta'| 'reporte'; //| 'noticia';
     imagenes: string[];
     fecha: Date;
     instalacionId?: Types.ObjectId;

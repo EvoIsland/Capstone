@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { PublicacionModel } from '../models/publicacion.model';
+import { NoticiaModel } from '../models/noticia.model'; // <-- usa el modelo correcto
 import { crearNoticiaSchema } from '../schemas/noticia.schema'; 
 import { authenticateToken } from '../middlewares/auth.middleware';
 import { authorizeAdmin } from '../middlewares/admin.middleware';
@@ -19,21 +19,19 @@ const noticiaRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> =
         });
       }
 
-
       const datosValidados = validationResult.data;
       const userId = request.user?._id; 
 
-      const nuevaNoticia = await PublicacionModel.create({
-        publicadorId: userId,
+      const nuevaNoticia = await NoticiaModel.create({
+        autorId: userId,
         titulo: datosValidados.titulo,
         texto: datosValidados.texto,
         tipo: datosValidados.tipo,
-        
         instalacionId: datosValidados.instalacionId,
         comunaId: datosValidados.comunaId,
         regionId: datosValidados.regionId,
-
         imagenes: datosValidados.imagenes || [],
+        contentJson: datosValidados.contentJson, // <-- guarda el contenido flexible
       });
 
       return reply.status(201).send(nuevaNoticia);
