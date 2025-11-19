@@ -60,15 +60,27 @@
       <div v-else class="feed-list">
         
         <!-- Estado Vacío -->
-        <div v-if="publicaciones.length === 0" class="status-message empty">
-          <p>No hay publicaciones aún.</p>
+        <div v-if="publicaciones.length === 0 && noticias.length === 0" class="status-message empty">
+          <p>No hay publicaciones ni noticias aún.</p>
         </div>
 
-        <!-- Loop de Posts -->
+        <!-- Loop de Posts y Noticias -->
         <div class="posts-wrapper">
+          <!-- Noticias -->
+          <PostNoticeFeed
+            v-for="noticia in noticias"
+            :key="'noticia-' + noticia._id"
+            :noticia="noticia"
+            :autor="'Administración'"
+            :avatarColor="'#6200EA'"
+            :fecha="new Date(noticia.fecha).toLocaleString()"
+            @abrirDetalle="abrirDetalleNoticia"
+          />
+
+          <!-- Publicaciones -->
           <PostBoxFeed
             v-for="publicacion in publicaciones"
-            :key="publicacion._id"
+            :key="'pub-' + publicacion._id"
             :publicacionId="publicacion._id"
             @abrirDetalle="abrirDetalle(publicacion._id)"
             :username="publicacion.publicadorId?.nombre || 'Usuario'"
@@ -82,13 +94,22 @@
           />
         </div>
 
-        <!-- Modal -->
+        <!-- Modal Publicaciones -->
         <DetailPostModal
           v-if="showPostDetail"
           :publicacionId="selectedPublicacionId!"
           @close="showPostDetail = false"
         />
+
+        <!-- Modal Noticias -->
+        <DetailNoticeModal
+          v-if="showNoticeDetail"
+          :noticiaId="selectedNoticiaId!"
+          @close="showNoticeDetail = false"
+        />
       </div>
+
+      
       </div>
     </template>
 
@@ -99,8 +120,12 @@
 import { onMounted, ref } from 'vue'
 import { usePublicaciones } from '../../composables/usePublicaciones'
 import { useAuth } from '../../composables/useAuth'
+import { useNoticias } from '../../composables/useNoticias'
+
 import PostBoxFeed from '~/components/PostBoxFeed.vue'
 import DetailPostModal from '~/components/DetailPostModal.vue'
+import PostNoticeFeed from '~/components/PostNoticeFeed.vue'
+import DetailNoticeModal from '~/components/DetailNoticeModal.vue'
 
 const {
   publicaciones,
@@ -109,16 +134,35 @@ const {
   cargarPublicaciones
 } = usePublicaciones()
 
+const {
+  noticias,
+  cargandoNoticias,
+  errorNoticias,
+  cargarNoticias
+} = useNoticias()
+
+
 const { isInitialized } = useAuth()
 
-onMounted(cargarPublicaciones)
+onMounted(() => {
+  cargarPublicaciones()
+  cargarNoticias()
+})
 
 const showPostDetail = ref(false)
 const selectedPublicacionId = ref<string | null>(null)
 
+const showNoticeDetail = ref(false)
+const selectedNoticiaId = ref<string | null>(null)
+
 function abrirDetalle(id: string) {
   selectedPublicacionId.value = id
   showPostDetail.value = true
+}
+
+function abrirDetalleNoticia(id: string) {
+  selectedNoticiaId.value = id
+  showNoticeDetail.value = true
 }
 </script>
 

@@ -42,6 +42,17 @@ const noticiaRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> =
     }
   });
 
+  // Obtener todas las noticias
+  fastify.get('/noticias', async (request, reply) => {
+    try {
+      const noticias = await NoticiaModel.find().sort({ fecha: -1 });
+      return noticias;
+    } catch (error) {
+      console.error('Error al obtener noticias:', error);
+      return reply.status(500).send({ error: 'Error interno del servidor.' });
+    }
+  });
+
 fastify.get('/noticia/:id', async (request, reply) => {
   try {
     const { id } = request.params as { id: string };

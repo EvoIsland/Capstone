@@ -515,7 +515,7 @@ const handleSubmit = async () => {
       tipo: 'noticia',
       titulo: meta.title,           // Se usa el título del diseño para el feed
       texto: meta.excerpt,          // Se usa el extracto para el feed
-      contentJson: JSON.stringify(elements.value), // GUARDAMOS EL DISEÑO COMPLETO
+      contentJson: elements.value, // GUARDAMOS EL DISEÑO COMPLETO como array
     };
 
     if (form.value.regionId) body.regionId = form.value.regionId;
