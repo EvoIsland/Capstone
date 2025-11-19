@@ -1,42 +1,49 @@
 <template>
   <div class="forum-layout">
     
-    <div class="decoration-fixed top-right">
-      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(300, 0)">
-          <circle cx="0" cy="0" r="260" fill="none" stroke="#6200EA" stroke-width="40" opacity="0.15" />
-          <circle cx="0" cy="0" r="190" fill="none" stroke="#00E5FF" stroke-width="40" opacity="0.2" />
-          <circle cx="0" cy="0" r="120" fill="none" stroke="#FF4081" stroke-width="40" opacity="0.15" />
-        </g>
-      </svg>
+    <!-- Estado Inicializando Auth -->
+    <div v-if="!isInitialized" class="status-message">
+      <div class="loader"></div>
+      <p>Verificando sesión...</p>
     </div>
 
-    <!-- 2. Esquina Inferior Izquierda (Arcos Espejo) -->
-    <div class="decoration-fixed bottom-left">
-      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(0, 300)">
-          <circle cx="0" cy="0" r="260" fill="none" stroke="#6200EA" stroke-width="40" opacity="0.15" />
-          <circle cx="0" cy="0" r="190" fill="none" stroke="#00E5FF" stroke-width="40" opacity="0.2" />
-          <circle cx="0" cy="0" r="120" fill="none" stroke="#FF4081" stroke-width="40" opacity="0.15" />
-        </g>
-      </svg>
-    </div>
+    <template v-else>
+      <div class="decoration-fixed top-right">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(300, 0)">
+            <circle cx="0" cy="0" r="260" fill="none" stroke="#6200EA" stroke-width="40" opacity="0.15" />
+            <circle cx="0" cy="0" r="190" fill="none" stroke="#00E5FF" stroke-width="40" opacity="0.2" />
+            <circle cx="0" cy="0" r="120" fill="none" stroke="#FF4081" stroke-width="40" opacity="0.15" />
+          </g>
+        </svg>
+      </div>
 
-    <!-- 3. Esquina Inferior Derecha (Cápsulas) -->
-    <div class="decoration-fixed bottom-right">
-      <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-        <g transform="rotate(-45, 400, 400) translate(50, 100)">
-          <rect x="0" y="0" width="600" height="60" rx="30" fill="none" stroke="#FF4081" stroke-width="4" opacity="0.15" />
-          <rect x="0" y="90" width="600" height="60" rx="30" fill="none" stroke="#00E5FF" stroke-width="4" opacity="0.2" />
-          <rect x="0" y="180" width="600" height="60" rx="30" fill="none" stroke="#6200EA" stroke-width="4" opacity="0.15" />
-        </g>
-      </svg>
-    </div>
+      <!-- 2. Esquina Inferior Izquierda (Arcos Espejo) -->
+      <div class="decoration-fixed bottom-left">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(0, 300)">
+            <circle cx="0" cy="0" r="260" fill="none" stroke="#6200EA" stroke-width="40" opacity="0.15" />
+            <circle cx="0" cy="0" r="190" fill="none" stroke="#00E5FF" stroke-width="40" opacity="0.2" />
+            <circle cx="0" cy="0" r="120" fill="none" stroke="#FF4081" stroke-width="40" opacity="0.15" />
+          </g>
+        </svg>
+      </div>
 
-    <!-- ========================================= -->
-    <!--         CONTENIDO PRINCIPAL (SCROLL)      -->
-    <!-- ========================================= -->
-    <div class="content-container">
+      <!-- 3. Esquina Inferior Derecha (Cápsulas) -->
+      <div class="decoration-fixed bottom-right">
+        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+          <g transform="rotate(-45, 400, 400) translate(50, 100)">
+            <rect x="0" y="0" width="600" height="60" rx="30" fill="none" stroke="#FF4081" stroke-width="4" opacity="0.15" />
+            <rect x="0" y="90" width="600" height="60" rx="30" fill="none" stroke="#00E5FF" stroke-width="4" opacity="0.2" />
+            <rect x="0" y="180" width="600" height="60" rx="30" fill="none" stroke="#6200EA" stroke-width="4" opacity="0.15" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- ========================================= -->
+      <!--         CONTENIDO PRINCIPAL (SCROLL)      -->
+      <!-- ========================================= -->
+      <div class="content-container">
       
       <!-- Estado Cargando -->
       <div v-if="cargandoPublicaciones" class="status-message">
@@ -82,7 +89,8 @@
           @close="showPostDetail = false"
         />
       </div>
-    </div>
+      </div>
+    </template>
 
   </div>
 </template>
@@ -90,8 +98,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { usePublicaciones } from '../../composables/usePublicaciones'
+import { useAuth } from '../../composables/useAuth'
 import PostBoxFeed from '~/components/PostBoxFeed.vue'
-import DetailPostModal from '~/components/DetailPostModal.vue' // Asumí la importación basado en tu template
+import DetailPostModal from '~/components/DetailPostModal.vue'
 
 const {
   publicaciones,
@@ -99,6 +108,8 @@ const {
   errorPublicaciones,
   cargarPublicaciones
 } = usePublicaciones()
+
+const { isInitialized } = useAuth()
 
 onMounted(cargarPublicaciones)
 

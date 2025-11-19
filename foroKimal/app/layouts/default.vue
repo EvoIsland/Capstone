@@ -73,9 +73,9 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth'
-import CreatePostModal from '../components/AddPostModal.vue' // Asegúrate que la ruta coincida con el componente anterior
+import CreatePostModal from '../components/AddPostModal.vue'
 
-const { user, logout } = useAuth()
+const { user, getProfile, logout, isInitialized } = useAuth()
 
 const showAddPostModal = ref(false)
 const activeTab = ref('general')
@@ -89,7 +89,7 @@ const tabs = [
   { id: 'noticias', label: 'Noticias', icon: 'mdi:newspaper-variant-outline' }
 ]
 
-const isLoggedIn = computed(() => !!user.value)
+const isLoggedIn = computed(() => isInitialized.value && !!user.value)
 
 const userInitial = computed(() => {
   if (user.value && user.value.nombre) {

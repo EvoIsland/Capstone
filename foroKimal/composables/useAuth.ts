@@ -15,10 +15,12 @@ interface AuthResponse {
 
 export const useAuth = () => {
 
-  const user = ref<User | null>(null) // Cambia useState por ref
+  // Estado global compartido usando useState de Nuxt
+  const user = useState<User | null>('auth-user', () => null)
   const accessToken = useLocalStorage('accessToken', '')
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const loading = useState('auth-loading', () => false)
+  const error = useState<string | null>('auth-error', () => null)
+  const isInitialized = useState('auth-initialized', () => false)
 
   const API_URL = 'http://localhost:5000'
   const router = useRouter()
@@ -85,10 +87,13 @@ export const useAuth = () => {
 
       user.value = data.user
       accessToken.value = data.token
+      isInitialized.value = true // Marca como inicializado inmediatamente después del login
 
+      // Espera a que Vue actualice el DOM antes de navegar
+      await nextTick()
 
       if (data.user.rol === 'admin') {
-        await router.push('/admin/crear-noticia')
+        await router.push('/admin/dashboard')
       } else {
         await router.push('/foroMain')
       }
@@ -151,6 +156,8 @@ export const useAuth = () => {
       console.error('Error al obtener el perfil:', e)
       user.value = null
       accessToken.value = ''
+    } finally {
+      isInitialized.value = true
     }
   }
 
@@ -181,14 +188,18 @@ export const useAuth = () => {
     return response
   }
 
-  if (process.client) {
-    // Primero limpia si no hay token
+  // Inicialización solo en cliente (solo se ejecuta una vez gracias a useState)
+  if (process.client && !isInitialized.value) {
     if (!accessToken.value) {
       user.value = null
-    } else if (!user.value) {
-      // Solo intenta obtener el perfil si hay token y no hay usuario
+      isInitialized.value = true
+    } else {
+      // Carga el perfil si hay token y espera a que termine
       getProfile()
     }
+  } else if (!process.client) {
+    // En servidor, marca como inicializado inmediatamente
+    isInitialized.value = true
   }
   
 
@@ -197,6 +208,7 @@ export const useAuth = () => {
     loading,
     error,
     accessToken,
+    isInitialized,
     register,
     login,
     logout,
