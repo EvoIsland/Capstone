@@ -1,240 +1,245 @@
 <template>
   <div class="news-editor-page">
-    <!-- Controles superiores -->
-    <div class="editor-controls">
-      <div class="controls-left">
-        <span class="badge" :class="deviceMode">{{ deviceMode === 'desktop' ? 'Escritorio' : 'Móvil' }}</span>
-      </div>
-      
-      <div class="device-toggle">
-        <button 
-          @click="deviceMode = 'desktop'"
-          :class="{ active: deviceMode === 'desktop' }"
-          title="Editar vista Escritorio"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-        </button>
-        <button 
-          @click="deviceMode = 'mobile'"
-          :class="{ active: deviceMode === 'mobile' }"
-          title="Editar vista Móvil"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <button class="preview-btn" @click="togglePreview">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        <span>{{ viewMode === 'editor' ? 'Previsualizar' : 'Editar' }}</span>
-      </button>
+    <!-- Estado de carga -->
+    <div v-if="cargandoNoticia" class="loading-overlay">
+      <div class="loader"></div>
+      <p>Cargando noticia...</p>
     </div>
 
-    <!-- VISTA PREVIA (FEED) -->
-    <div v-if="viewMode === 'feed_preview'" class="preview-container">
-      <div class="preview-card">
-        <h3>Así se verá en el Feed de Noticias</h3>
-        <div class="news-card-simulation">
-          <div v-if="getNewsMetadata().image" class="card-img">
-            <img :src="getNewsMetadata().image || ''" alt="Portada" />
-          </div>
-          <div class="card-content">
-            <h4>{{ getNewsMetadata().title }}</h4>
-            <p>{{ getNewsMetadata().excerpt }}</p>
-            <span class="read-more">Leer más -></span>
-          </div>
+    <template v-else>
+      <!-- Controles superiores -->
+      <div class="editor-controls">
+        <div class="controls-left">
+          <button @click="$router.push('/admin/noticiasAdmin')" class="btn-back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Volver
+          </button>
+          <span class="badge" :class="deviceMode">{{ deviceMode === 'desktop' ? 'Escritorio' : 'Móvil' }}</span>
         </div>
-        <p class="note">La imagen y textos se extraen automáticamente de tu diseño.</p>
-        <button @click="viewMode = 'editor'" class="back-btn">Volver al Editor</button>
-      </div>
-    </div>
-
-    <!-- VISTA EDITOR -->
-    <div v-else class="editor-workspace">
-      
-      <!-- BARRA LATERAL (HERRAMIENTAS) -->
-      <div class="sidebar-tools">
-        <h3>Componentes</h3>
-        <div class="tools-grid">
-          <button @click="addElement('headline')" class="tool-btn">
-            <!-- Icono T (Titular) -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
-            <span>Titular</span>
-          </button>
-          <button @click="addElement('subhead')" class="tool-btn">
-             <!-- Icono T pequeña -->
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
-            <span>Subtítulo</span>
-          </button>
-          <button @click="addElement('body')" class="tool-btn">
-            <!-- Icono Párrafo -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
-            <span>Párrafo</span>
-          </button>
-          <button @click="addElement('image')" class="tool-btn">
-            <!-- Icono Imagen -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            <span>Imagen</span>
-          </button>
-          <button @click="addElement('divider')" class="tool-btn">
-            <!-- Icono Separador -->
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>Separador</span>
-          </button>
-        </div>
-
-        <!-- FILTROS DE UBICACIÓN (Integrados en la sidebar para no estorbar) -->
-        <div class="location-section">
-          <h3>Publicar en:</h3>
-          <select v-model="form.regionId" class="mini-select">
-            <option value="">Todas las Regiones</option>
-            <option v-for="r in regiones" :key="r._id" :value="r._id">{{ r.nombre }}</option>
-          </select>
-          <select v-model="form.comunaId" class="mini-select" :disabled="!form.regionId">
-            <option value="">Todas las Comunas</option>
-            <option v-for="c in comunasFiltradas" :key="c._id" :value="c._id">{{ c.nombre }}</option>
-          </select>
-          <select v-model="form.instalacionId" class="mini-select" :disabled="!form.comunaId">
-            <option value="">Todas las Instalaciones</option>
-            <option v-for="i in instalacionesFiltradas" :key="i._id" :value="i._id">{{ i.nombre }}</option>
-          </select>
-        </div>
-
-        <button @click="handleSubmit" class="publish-btn" :disabled="isLoading">
-          {{ isLoading ? 'Publicando...' : 'Publicar Noticia' }}
-        </button>
-        <p v-if="error" class="error-msg">{{ error }}</p>
-        <p v-if="success" class="success-msg">{{ success }}</p>
-      </div>
-
-      <!-- CANVAS CENTRAL -->
-      <div class="canvas-area" @click="selectedId = null">
-        <div 
-          ref="canvasRef"
-          class="canvas-paper"
-          :style="{ 
-            width: canvasSizes[deviceMode].width + 'px', 
-            height: canvasSizes[deviceMode].height + 'px' 
-          }"
-        >
-          <!-- Renderizado de Elementos -->
-          <div 
-            v-for="element in elements" 
-            :key="element.id"
-            class="canvas-element"
-            :class="{ selected: selectedId === element.id }"
-            :style="getElementStyle(element)"
-            @mousedown.stop="handleMouseDown($event, element.id)"
-            @click.stop
+        
+        <div class="device-toggle">
+          <button 
+            @click="deviceMode = 'desktop'"
+            :class="{ active: deviceMode === 'desktop' }"
+            title="Editar vista Escritorio"
           >
-            <!-- Contenido Texto -->
-            <div v-if="element.type === 'text'" class="element-content text">
-              {{ element.content }}
-            </div>
-            
-            <!-- Contenido Imagen -->
-            <img v-if="element.type === 'image'" :src="element.src" class="element-content image" />
-            
-            <!-- Contenido Box/Divider -->
-            <div v-if="element.type === 'box'" class="element-content box"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </button>
+          <button 
+            @click="deviceMode = 'mobile'"
+            :class="{ active: deviceMode === 'mobile' }"
+            title="Editar vista Móvil"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          </button>
+        </div>
 
-            <!-- Botón Eliminar -->
-            <button v-if="selectedId === element.id" class="delete-element-btn" @click.stop="deleteElement(element.id)">
-              <!-- Icono Basura -->
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        <button class="preview-btn" @click="togglePreview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <span>{{ viewMode === 'editor' ? 'Previsualizar' : 'Editar' }}</span>
+        </button>
+      </div>
+
+      <!-- VISTA PREVIA (FEED) -->
+      <div v-if="viewMode === 'feed_preview'" class="preview-container">
+        <div class="preview-card">
+          <h3>Así se verá en el Feed de Noticias</h3>
+          <div class="news-card-simulation">
+            <div v-if="getNewsMetadata().image" class="card-img">
+              <img :src="getNewsMetadata().image || ''" alt="Portada" />
+            </div>
+            <div class="card-content">
+              <h4>{{ getNewsMetadata().title }}</h4>
+              <p>{{ getNewsMetadata().excerpt }}</p>
+              <span class="read-more">Leer más -></span>
+            </div>
+          </div>
+          <p class="note">La imagen y textos se extraen automáticamente de tu diseño.</p>
+          <button @click="viewMode = 'editor'" class="back-btn">Volver al Editor</button>
+        </div>
+      </div>
+
+      <!-- VISTA EDITOR -->
+      <div v-else class="editor-workspace">
+        
+        <!-- BARRA LATERAL (HERRAMIENTAS) -->
+        <div class="sidebar-tools">
+          <h3>Componentes</h3>
+          <div class="tools-grid">
+            <button @click="addElement('headline')" class="tool-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+              <span>Titular</span>
             </button>
-
-             <!-- Etiqueta de modo -->
-            <div v-if="selectedId === element.id" class="mode-tag" :class="deviceMode">
-              {{ deviceMode === 'desktop' ? 'PC' : 'Móvil' }}
-            </div>
+            <button @click="addElement('subhead')" class="tool-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+              <span>Subtítulo</span>
+            </button>
+            <button @click="addElement('body')" class="tool-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+              <span>Párrafo</span>
+            </button>
+            <button @click="addElement('image')" class="tool-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span>Imagen</span>
+            </button>
+            <button @click="addElement('divider')" class="tool-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Separador</span>
+            </button>
           </div>
 
-          <div v-if="elements.length === 0" class="empty-state">
-            Arrastra elementos aquí
+          <!-- FILTROS DE UBICACIÓN -->
+          <div class="location-section">
+            <h3>Publicar en:</h3>
+            <select v-model="form.regionId" class="mini-select">
+              <option value="">Todas las Regiones</option>
+              <option v-for="r in regiones" :key="r._id" :value="r._id">{{ r.nombre }}</option>
+            </select>
+            <select v-model="form.comunaId" class="mini-select" :disabled="!form.regionId">
+              <option value="">Todas las Comunas</option>
+              <option v-for="c in comunasFiltradas" :key="c._id" :value="c._id">{{ c.nombre }}</option>
+            </select>
+            <select v-model="form.instalacionId" class="mini-select" :disabled="!form.comunaId">
+              <option value="">Todas las Instalaciones</option>
+              <option v-for="i in instalacionesFiltradas" :key="i._id" :value="i._id">{{ i.nombre }}</option>
+            </select>
           </div>
+
+          <button @click="handleSubmit" class="publish-btn" :disabled="isLoading">
+            {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+          <p v-if="error" class="error-msg">{{ error }}</p>
+          <p v-if="success" class="success-msg">{{ success }}</p>
         </div>
-      </div>
 
-      <!-- PANEL DE PROPIEDADES (DERECHA) -->
-      <div class="properties-panel" :class="{ open: selectedId }">
-        <div v-if="selectedElement" class="props-content">
-          <div class="props-header">
-            <h4>Propiedades</h4>
-            <button @click="selectedId = null">×</button>
-          </div>
-
-          <!-- Editor de Texto -->
-          <div v-if="selectedElement.type === 'text'" class="form-group">
-            <label>Texto (Compartido)</label>
-            <textarea v-model="selectedElement.content" rows="4"></textarea>
-          </div>
-
-          <!-- Editor de Layout -->
-          <div class="form-group">
-            <label>Ancho ({{ deviceMode }})</label>
-            <input 
-              type="range" 
-              min="50" 
-              :max="canvasSizes[deviceMode].width" 
-              step="10" 
-              v-model.number="selectedElement.layout[deviceMode].width"
+        <!-- CANVAS CENTRAL -->
+        <div class="canvas-area" @click="selectedId = null">
+          <div 
+            ref="canvasRef"
+            class="canvas-paper"
+            :style="{ 
+              width: canvasSizes[deviceMode].width + 'px', 
+              height: canvasSizes[deviceMode].height + 'px' 
+            }"
+          >
+            <!-- Renderizado de Elementos -->
+            <div 
+              v-for="element in elements" 
+              :key="element.id"
+              class="canvas-element"
+              :class="{ selected: selectedId === element.id }"
+              :style="getElementStyle(element)"
+              @mousedown.stop="handleMouseDown($event, element.id)"
+              @click.stop
             >
-            <span>{{ selectedElement.layout[deviceMode].width }}px</span>
-          </div>
+              <!-- Contenido Texto -->
+              <div v-if="element.type === 'text'" class="element-content text">
+                {{ element.content }}
+              </div>
+              
+              <!-- Contenido Imagen -->
+              <img v-if="element.type === 'image'" :src="element.src" class="element-content image" />
+              
+              <!-- Contenido Box/Divider -->
+              <div v-if="element.type === 'box'" class="element-content box"></div>
 
-          <!-- Estilos (Texto) -->
-          <div v-if="selectedElement.type === 'text'" class="style-grid">
-            <div class="form-group">
-              <label>Tamaño</label>
-              <input type="text" v-model="selectedElement.style.fontSize">
+              <!-- Botón Eliminar -->
+              <button v-if="selectedId === element.id" class="delete-element-btn" @click.stop="deleteElement(element.id)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+
+              <!-- Etiqueta de modo -->
+              <div v-if="selectedId === element.id" class="mode-tag" :class="deviceMode">
+                {{ deviceMode === 'desktop' ? 'PC' : 'Móvil' }}
+              </div>
             </div>
-            <div class="form-group">
-              <label>Color</label>
-              <input type="color" v-model="selectedElement.style.color">
+
+            <div v-if="elements.length === 0" class="empty-state">
+              Arrastra elementos aquí
             </div>
-            <div class="form-group full">
-               <label>Alineación</label>
-               <div class="align-buttons">
-                 <button @click="selectedElement.style.textAlign = 'left'">
-                    <!-- Align Left -->
+          </div>
+        </div>
+
+        <!-- PANEL DE PROPIEDADES (DERECHA) -->
+        <div class="properties-panel" :class="{ open: selectedId }">
+          <div v-if="selectedElement" class="props-content">
+            <div class="props-header">
+              <h4>Propiedades</h4>
+              <button @click="selectedId = null">×</button>
+            </div>
+
+            <!-- Editor de Texto -->
+            <div v-if="selectedElement.type === 'text'" class="form-group">
+              <label>Texto (Compartido)</label>
+              <textarea v-model="selectedElement.content" rows="4"></textarea>
+            </div>
+
+            <!-- Editor de Layout -->
+            <div class="form-group">
+              <label>Ancho ({{ deviceMode }})</label>
+              <input 
+                type="range" 
+                min="50" 
+                :max="canvasSizes[deviceMode].width" 
+                step="10" 
+                v-model.number="selectedElement.layout[deviceMode].width"
+              >
+              <span>{{ selectedElement.layout[deviceMode].width }}px</span>
+            </div>
+
+            <!-- Estilos (Texto) -->
+            <div v-if="selectedElement.type === 'text'" class="style-grid">
+              <div class="form-group">
+                <label>Tamaño</label>
+                <input type="text" v-model="selectedElement.style.fontSize">
+              </div>
+              <div class="form-group">
+                <label>Color</label>
+                <input type="color" v-model="selectedElement.style.color">
+              </div>
+              <div class="form-group full">
+                <label>Alineación</label>
+                <div class="align-buttons">
+                  <button @click="selectedElement.style.textAlign = 'left'">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
-                 </button>
-                 <button @click="selectedElement.style.textAlign = 'center'">
-                    <!-- Align Center -->
+                  </button>
+                  <button @click="selectedElement.style.textAlign = 'center'">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
-                 </button>
-                 <button @click="selectedElement.style.textAlign = 'right'">
-                    <!-- Align Right -->
+                  </button>
+                  <button @click="selectedElement.style.textAlign = 'right'">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
-                 </button>
-                 <button @click="selectedElement.style.textAlign = 'justify'">
-                    <!-- Align Justify -->
+                  </button>
+                  <button @click="selectedElement.style.textAlign = 'justify'">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
-                 </button>
-               </div>
+                  </button>
+                </div>
+              </div>
             </div>
+
           </div>
+          <div v-else class="no-selection">
+            Selecciona un elemento para editar
+          </div>
+        </div>
 
-        </div>
-        <div v-else class="no-selection">
-          Selecciona un elemento para editar
-        </div>
       </div>
-
-    </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue';
-import { useAuth } from '../../../composables/useAuth';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useAuth } from '../../../../composables/useAuth';
+import { useRouter, useRoute } from 'vue-router';
 
 definePageMeta({
   layout: 'admin'
 });
 
-// --- Tipos (Si los tienes en un archivo aparte, impórtalos) ---
+// --- Tipos ---
 interface Layout {
   x: number; y: number; width: number | string; height: number | string;
 }
@@ -251,12 +256,15 @@ interface Element {
 // --- Setup Base ---
 const { accessToken, user } = useAuth();
 const router = useRouter();
+const route = useRoute();
+const noticiaId = route.params.id as string;
 
 // --- Estado del Editor ---
 const elements = ref<Element[]>([]);
 const selectedId = ref<string | null>(null);
 const viewMode = ref<'editor' | 'feed_preview'>('editor');
 const deviceMode = ref<'desktop' | 'mobile'>('desktop');
+const cargandoNoticia = ref(true);
 
 const canvasSizes = {
   desktop: { width: 800, height: 1200 },
@@ -298,8 +306,8 @@ watch(() => form.value.comunaId, () => { form.value.instalacionId = ''; });
 onMounted(async () => {
   if (!user.value || user.value.rol !== 'admin') router.replace('/');
   
-  // Cargar datos de regiones (Mock o Real)
   try {
+    // Cargar datos de regiones
     const [reg, com, inst] = await Promise.all([
        $fetch<any[]>('http://localhost:5000/regiones'),
        $fetch<any[]>('http://localhost:5000/comunas'),
@@ -308,8 +316,25 @@ onMounted(async () => {
     regiones.value = reg; 
     comunas.value = com; 
     instalaciones.value = inst;
+
+    // Cargar la noticia existente
+    const noticia = await $fetch<any>(`http://localhost:5000/noticia/${noticiaId}`);
+    
+    // Cargar el contentJson en el editor
+    if (noticia.contentJson && Array.isArray(noticia.contentJson)) {
+      elements.value = noticia.contentJson;
+    }
+
+    // Cargar filtros
+    form.value.regionId = noticia.regionId || '';
+    form.value.comunaId = noticia.comunaId || '';
+    form.value.instalacionId = noticia.instalacionId || '';
+
   } catch (e) { 
-    console.error('Error cargando datos:', e); 
+    console.error('Error cargando datos:', e);
+    error.value = 'Error al cargar la noticia';
+  } finally {
+    cargandoNoticia.value = false;
   }
 
   // Event Listeners Globales para Drag & Drop
@@ -322,9 +347,8 @@ onUnmounted(() => {
   window.removeEventListener('mouseup', handleMouseUp);
 });
 
-// --- LÓGICA DEL EDITOR ---
+// --- LÓGICA DEL EDITOR (Igual que crear-noticia.vue) ---
 
-// 1. Plantillas de Elementos
 const elementTypes = {
     headline: {
       type: 'text', role: 'title', content: 'TITULAR',
@@ -353,7 +377,6 @@ const elementTypes = {
     }
 };
 
-// 2. Agregar Elemento
 const addElement = (typeKey: string) => {
   const tmpl = elementTypes[typeKey as keyof typeof elementTypes];
   const dWidth = canvasSizes.desktop.width;
@@ -361,16 +384,13 @@ const addElement = (typeKey: string) => {
   const dHeight = canvasSizes.desktop.height;
   const mHeight = canvasSizes.mobile.height;
   
-  // Posición Y (apilado simple)
   let yPos = elements.value.length > 0 ? (elements.value.length * 80) + 50 : 50;
   
-  // Asegurar que no se salga del canvas en desktop
   const elementHeight = (tmpl as any).height || 50;
   if (yPos + elementHeight > dHeight) {
-    yPos = dHeight - elementHeight - 20; // 20px de margen
+    yPos = dHeight - elementHeight - 20;
   }
   
-  // Lo mismo para mobile
   let yPosMobile = yPos;
   if (yPosMobile + elementHeight > mHeight) {
     yPosMobile = mHeight - elementHeight - 20;
@@ -402,14 +422,11 @@ const addElement = (typeKey: string) => {
   selectedId.value = newEl.id;
 };
 
-// 3. Drag & Drop Handlers
 const handleMouseDown = (e: MouseEvent, id: string) => {
   if (viewMode.value !== 'editor') return;
   
-  // Solo seleccionar el elemento
   selectedId.value = id;
   
-  // Iniciar drag solo si se mueve el mouse
   const el = elements.value.find(x => x.id === id);
   if (!el || !canvasRef.value) return;
 
@@ -421,7 +438,6 @@ const handleMouseDown = (e: MouseEvent, id: string) => {
     y: e.clientY - canvasRect.top - currentLayout.y
   };
   
-  // Marcar como arrastrando
   draggingId.value = id;
 };
 
@@ -435,20 +451,16 @@ const handleMouseMove = (e: MouseEvent) => {
   let newX = e.clientX - canvasRect.left - dragOffset.value.x;
   let newY = e.clientY - canvasRect.top - dragOffset.value.y;
 
-  // Obtener dimensiones del elemento
   const layout = el.layout[deviceMode.value];
   const elementWidth = typeof layout.width === 'number' ? layout.width : 100;
   const elementHeight = typeof layout.height === 'number' ? layout.height : 50;
   
-  // Límites del canvas
   const maxX = canvasSizes[deviceMode.value].width - elementWidth;
   const maxY = canvasSizes[deviceMode.value].height - elementHeight;
   
-  // Aplicar límites
   newX = Math.max(0, Math.min(newX, maxX));
   newY = Math.max(0, Math.min(newY, maxY));
 
-  // Snap to grid 10px
   newX = Math.round(newX / 10) * 10;
   newY = Math.round(newY / 10) * 10;
 
@@ -460,7 +472,6 @@ const handleMouseUp = () => {
   draggingId.value = null;
 };
 
-// 4. Helpers de Renderizado
 const getElementStyle = (element: Element) => {
   const l = element.layout[deviceMode.value];
   return {
@@ -481,7 +492,6 @@ const togglePreview = () => {
   viewMode.value = viewMode.value === 'editor' ? 'feed_preview' : 'editor';
 };
 
-// 5. Extracción de Datos (Metadata)
 const getNewsMetadata = () => {
   const titleEl = elements.value.find(e => e.role === 'title') || elements.value.find(e => e.type === 'text');
   const imageEl = elements.value.find(e => e.type === 'image');
@@ -494,16 +504,14 @@ const getNewsMetadata = () => {
   };
 };
 
-// --- SUBMIT ---
+// --- SUBMIT (Actualizar) ---
 const handleSubmit = async () => {
   error.value = '';
   success.value = '';
   isLoading.value = true;
 
-  // 1. Extraemos info básica para el feed
   const meta = getNewsMetadata();
 
-  // 2. Validamos
   if (elements.value.length === 0) {
     error.value = "El lienzo está vacío.";
     isLoading.value = false;
@@ -513,17 +521,17 @@ const handleSubmit = async () => {
   try {
     const body: any = {
       tipo: 'noticia',
-      titulo: meta.title,           // Se usa el título del diseño para el feed
-      texto: meta.excerpt,          // Se usa el extracto para el feed
-      contentJson: elements.value, // GUARDAMOS EL DISEÑO COMPLETO como array
+      titulo: meta.title,
+      texto: meta.excerpt,
+      contentJson: elements.value,
     };
 
     if (form.value.regionId) body.regionId = form.value.regionId;
     if (form.value.comunaId) body.comunaId = form.value.comunaId;
     if (form.value.instalacionId) body.instalacionId = form.value.instalacionId;
 
-    await $fetch('http://localhost:5000/noticia', {
-      method: 'POST',
+    await $fetch(`http://localhost:5000/noticia/${noticiaId}`, {
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`,
         'Content-Type': 'application/json'
@@ -531,11 +539,11 @@ const handleSubmit = async () => {
       body,
     });
 
-    success.value = '¡Noticia publicada! Redirigiendo...';
+    success.value = '¡Cambios guardados! Redirigiendo...';
     setTimeout(() => router.push('/admin/noticiasAdmin'), 2000);
 
   } catch (err: any) {
-    error.value = err.data?.error || 'Error al publicar.';
+    error.value = err.data?.error || 'Error al actualizar.';
   } finally {
     isLoading.value = false;
   }
@@ -543,18 +551,43 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* Reset básico */
+/* Reutilizamos los mismos estilos de crear-noticia.vue */
 * { box-sizing: border-box; }
+
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 .news-editor-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 84px); /* Ajuste para el header del admin layout */
+  height: calc(100vh - 84px);
   background-color: #f3f4f6;
   overflow: hidden;
 }
 
-/* CONTROLES SUPERIORES */
 .editor-controls {
   height: 60px;
   background: white;
@@ -566,6 +599,12 @@ const handleSubmit = async () => {
   z-index: 10;
 }
 .controls-left { display: flex; align-items: center; gap: 10px; }
+.btn-back {
+  display: flex; align-items: center; gap: 6px;
+  background: white; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  font-weight: 500; color: #374151; transition: all 0.2s;
+}
+.btn-back:hover { background: #f9fafb; }
 .badge { font-size: 0.75rem; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: 600; }
 
 .device-toggle {
@@ -603,14 +642,12 @@ const handleSubmit = async () => {
   cursor: pointer;
 }
 
-/* WORKSPACE LAYOUT */
 .editor-workspace {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* SIDEBAR IZQUIERDA */
 .sidebar-tools {
   width: 260px;
   background: white;
@@ -644,7 +681,6 @@ const handleSubmit = async () => {
 }
 .tool-btn:hover { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
 
-/* Location Section dentro de sidebar */
 .location-section {
   margin-top: auto;
   border-top: 1px solid #e5e7eb;
@@ -674,8 +710,6 @@ const handleSubmit = async () => {
 .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 10px; }
 .success-msg { color: #16a34a; font-size: 0.85rem; margin-top: 10px; }
 
-
-/* CANVAS AREA */
 .canvas-area {
   flex: 1;
   background: #e5e7eb;
@@ -693,7 +727,6 @@ const handleSubmit = async () => {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   position: relative;
   transition: width 0.3s ease;
-  /* Importante para que los absolute children funcionen */
 }
 
 .empty-state {
@@ -706,10 +739,8 @@ const handleSubmit = async () => {
   pointer-events: none;
 }
 
-/* Elementos en el Canvas */
 .canvas-element {
   position: absolute;
-  /* border: 1px dashed transparent; */
   transition: box-shadow 0.2s;
 }
 .canvas-element:hover { box-shadow: 0 0 0 1px #60a5fa; cursor: grab; }
@@ -720,7 +751,6 @@ const handleSubmit = async () => {
 .element-content.image { object-fit: cover; border-radius: inherit; }
 .element-content.box { width: 100%; height: 100%; }
 
-/* Botones flotantes del elemento */
 .delete-element-btn {
   position: absolute;
   top: -10px; right: -10px;
@@ -745,7 +775,6 @@ const handleSubmit = async () => {
 }
 .mode-tag.mobile { background: #9333ea; }
 
-/* PROPIEDADES (DERECHA) */
 .properties-panel {
   width: 280px;
   background: white;
@@ -798,7 +827,6 @@ const handleSubmit = async () => {
   font-size: 0.9rem;
 }
 
-/* VISTA PREVIA FEED */
 .preview-container {
   flex: 1;
   background: #f9fafb;
@@ -832,5 +860,4 @@ const handleSubmit = async () => {
 .read-more { font-size: 0.8rem; color: #2563eb; font-weight: 600; }
 .note { font-size: 0.8rem; color: #9ca3af; margin-bottom: 20px; }
 .back-btn { background: white; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-
 </style>

@@ -32,8 +32,15 @@ const pageTitle = computed(() => {
     '/admin/usuariosAdmin': 'Gestión de Usuarios',
     '/admin/publicacionesAdmin': 'Gestión de Publicaciones',
     '/admin/instalacionesAdmin': 'Gestión de Instalaciones',
+    '/admin/noticiasAdmin': 'Gestión de Noticias',
     '/admin/crear-noticia': 'Crear Noticia'
   }
+  
+  // Para rutas dinámicas como editar-noticia/[id]
+  if (route.path.startsWith('/admin/editar-noticia/')) {
+    return 'Editar Noticia'
+  }
+  
   return titles[route.path] || 'Administración'
 })
 
@@ -43,8 +50,14 @@ const pageSubtitle = computed(() => {
     '/admin/usuariosAdmin': 'Administra los usuarios del sistema',
     '/admin/publicacionesAdmin': 'Gestiona las publicaciones del foro',
     '/admin/instalacionesAdmin': 'Administra las zonas e instalaciones',
+    '/admin/noticiasAdmin': 'Administra las noticias oficiales del sistema',
     '/admin/crear-noticia': 'Publica noticias oficiales del sistema'
   }
+  
+  if (route.path.startsWith('/admin/editar-noticia/')) {
+    return 'Modifica el diseño y ubicación de la noticia'
+  }
+  
   return subtitles[route.path] || ''
 })
 
