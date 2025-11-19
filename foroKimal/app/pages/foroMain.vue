@@ -1,11 +1,6 @@
 <template>
   <div class="forum-layout">
     
-    <!-- ========================================= -->
-    <!--       FONDO DECORATIVO (FIXED)            -->
-    <!-- ========================================= -->
-    
-    <!-- 1. Esquina Superior Derecha (Arcos) -->
     <div class="decoration-fixed top-right">
       <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
         <g transform="translate(300, 0)">
