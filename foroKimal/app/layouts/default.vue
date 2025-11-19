@@ -247,6 +247,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-right: 3rem; /* Mueve los botones más a la izquierda */
 }
 
 /* Botón Crear (+) */
