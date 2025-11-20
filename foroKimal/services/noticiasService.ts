@@ -1,3 +1,5 @@
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
+
 export interface Noticia {
     _id: string;
     titulo: string;
@@ -13,7 +15,7 @@ export interface Noticia {
 }
 
 export async function fetchNoticias(): Promise<Noticia[]> {
-    const res = await fetch('http://localhost:5000/noticias');
+    const res = await fetch(`${API_URL}/noticias`);
     if (!res.ok) throw new Error('Error al obtener noticias');
     return await res.json();
 }

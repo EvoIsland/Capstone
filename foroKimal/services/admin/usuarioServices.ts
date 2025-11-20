@@ -14,7 +14,7 @@ export interface Usuario {
   updatedAt: string
 }
 
-const API_URL = 'http://localhost:5000'
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export async function fetchUsuarios(token: string): Promise<Usuario[]> {
   const res = await fetch(`${API_URL}/admin/usuarios`, {
