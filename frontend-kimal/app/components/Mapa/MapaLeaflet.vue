@@ -8,7 +8,7 @@
     <div class="ui-layer">
         
       <!-- Header Flotante -->
-      <header class="top-bar">
+      <!-- <header class="top-bar">
         <div class="glass-panel brand-pill">
           <div class="logo-box">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -26,10 +26,10 @@
           </div>
           <div class="user-avatar">
             <!-- Placeholder o imagen de usuario real -->
-            <div class="avatar-placeholder">B</div>
+            <!-- <div class="avatar-placeholder">B</div>
           </div>
         </div>
-      </header>
+      </header> --> 
 
       <!-- Panel Izquierdo (Stack de Tarjetas: Filtros y Detalles) -->
       <div class="left-panel-container">

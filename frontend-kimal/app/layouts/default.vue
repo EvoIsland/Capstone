@@ -2,7 +2,7 @@
   <div class="header-wrapper">
     
     <!-- Barra de Navegación Flotante -->
-    <div :class="['navbar-overlay', { 'is-scrolled': isScrolled }]">
+    <div :class="['navbar-overlay', { 'is-scrolled': navbarScrolled }]">
       <nav class="navbar-container">
         
         <!-- 1. Marca / Logo -->
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Espaciador para compensar el header fixed -->
-    <div class="header-spacer"></div>
+    <div v-if="!isMapRoute" class="header-spacer"></div>
 
     <!-- Contenido inyectado (Slots) -->
     <div class="content-slot">
@@ -43,11 +43,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from '#app'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from '#app'
 
 const router = useRouter()
+const route = useRoute()
 const isScrolled = ref(false)
+
+// Detectar si estamos en la ruta del mapa
+const isMapRoute = computed(() => route.path === '/mapa' || route.path === '/')
+
+// El navbar debe verse como scrolleado si estamos en el mapa O si realmente se hizo scroll
+const navbarScrolled = computed(() => isMapRoute.value || isScrolled.value)
 
 // Configuración de Navegación con SVGs modernos (Estilo Lucide/Heroicons)
 const navItems = [
