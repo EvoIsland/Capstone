@@ -138,7 +138,9 @@ interface Publicacion {
 }
 
 const props = defineProps<{ instalacion: Instalacion | null }>()
+
 const publicaciones = ref<Publicacion[]>([])
+const noticias = ref<Publicacion[]>([])
 
 const tabs = ['Preguntas', 'Reporte', 'Información']
 const activeTab = ref('Preguntas')
@@ -165,22 +167,24 @@ const reportes = computed(() => {
   const id = props.instalacion?._id
   return publicaciones.value.filter(p => p.tipo === 'reporte' && matchInstalacionId(p, id))
 })
-const noticias = computed(() => {
-  const id = props.instalacion?._id
-  return publicaciones.value.filter(p => p.tipo === 'noticia' && matchInstalacionId(p, id))
-})
 
 // Data Fetching
 watch(() => props.instalacion, async (inst) => {
   if (inst && inst._id) {
     try {
+      // Preguntas y reportes
       const { data } = await axios.get(`http://localhost:5000/publicaciones?instalacionId=${inst._id}`)
       publicaciones.value = Array.isArray(data) ? data : []
+      // Noticias
+      const noticiasRes = await axios.get(`http://localhost:5000/noticias?instalacionId=${inst._id}`)
+      noticias.value = Array.isArray(noticiasRes.data) ? noticiasRes.data : []
     } catch (error) {
       publicaciones.value = []
+      noticias.value = []
     }
   } else {
     publicaciones.value = []
+    noticias.value = []
   }
 }, { immediate: true })
 
