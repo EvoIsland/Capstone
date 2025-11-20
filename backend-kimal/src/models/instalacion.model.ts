@@ -18,7 +18,7 @@ export interface IInstalacion extends Document {
 
 const InstalacionSchema: Schema = new Schema({
   nombre: { type: String, required: true },
-  direccion: { type: String, required: true },
+  direccion: { type: String, }, //required: false },
   comunaId: { type: Schema.Types.ObjectId, ref: 'Comuna', required: true },
   regionId: { type: Schema.Types.ObjectId, ref: 'Region', required: true },
   location: {
