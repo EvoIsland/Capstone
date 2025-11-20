@@ -1,91 +1,140 @@
 <template>
-    <div class="tarjeta-instalacion" v-if="instalacion">
-        <div class="header-tarjeta">
-            <div>
-                <h2 class="nombre-instalacion">{{ instalacion.nombre }}</h2>
-                <div v-if="instalacion.estado" class="estado-instalacion">
-                    <span :class="`estado-${instalacion.estado}`">{{ instalacion.estado }}</span>
-                </div>
-            </div>
-            <button class="btn-cerrar" @click="$emit('cerrar')">✕</button>
+  <div class="tarjeta-wrapper" v-if="instalacion">
+    
+    <!-- HEADER -->
+    <div class="detail-header">
+      <div class="header-content">
+        <h2 class="location-title">{{ instalacion.nombre }}</h2>
+        <div class="status-badge" v-if="instalacion.estado">
+          <span class="status-dot" :class="instalacion.estado.toLowerCase()"></span>
+          {{ instalacion.estado }}
         </div>
-        <div class="tabs-tarjeta">
-            <button v-for="tab in tabs" :key="tab" :class="['tab-btn', { activo: activeTab === tab }]" @click="activeTab = tab">
-                {{ tab }}
-            </button>
-        </div>
-        <div class="contenido-tarjeta">
-            <div v-if="activeTab === 'Preguntas'">
-                <div class="lista-items">
-                    <div v-for="pregunta in preguntas" :key="pregunta._id" class="card-publicacion">
-                        <div class="card-header">
-                            <span class="autor" v-if="pregunta.publicadorId">{{ pregunta.publicadorId.nombre }}</span>
-                            <span class="card-fecha">{{ formatFecha(pregunta.fecha) }}</span>
-                        </div>
-                        <div class="card-contenido">{{ pregunta.texto }}</div>
-                        <div v-if="pregunta.imagenes && pregunta.imagenes.length" class="card-imagenes">
-                            <img v-for="img in pregunta.imagenes" :src="img" :key="img" class="card-img" />
-                        </div>
-                    </div>
-                    <div v-if="preguntas.length === 0" class="no-items">No hay preguntas disponibles</div>
-                </div>
-            </div>
-            <div v-else-if="activeTab === 'Reporte'">
-                <div class="lista-items">
-                    <div v-for="reporte in reportes" :key="reporte._id" class="card-publicacion">
-                        <div class="card-header">
-                            <span class="autor" v-if="reporte.publicadorId">{{ reporte.publicadorId.nombre }}</span>
-                            <span class="card-fecha">{{ formatFecha(reporte.fecha) }}</span>
-                        </div>
-                        <div class="card-contenido">{{ reporte.texto }}</div>
-                        <div v-if="reporte.imagenes && reporte.imagenes.length" class="card-imagenes">
-                            <img v-for="img in reporte.imagenes" :src="img" :key="img" class="card-img" />
-                        </div>
-                    </div>
-                    <div v-if="reportes.length === 0" class="no-items">No hay reportes disponibles</div>
-                </div>
-            </div>
-            <div v-else-if="activeTab === 'Información'">
-                <div class="lista-items">
-                    <div v-for="noticia in noticias" :key="noticia._id" class="card-publicacion">
-                        <div class="card-header">
-                            <span class="autor" v-if="noticia.publicadorId">{{ noticia.publicadorId.nombre }}</span>
-                            <span class="card-fecha">{{ formatFecha(noticia.fecha) }}</span>
-                        </div>
-                        <div class="card-contenido">{{ noticia.texto }}</div>
-                        <div v-if="noticia.imagenes && noticia.imagenes.length" class="card-imagenes">
-                            <img v-for="img in noticia.imagenes" :src="img" :key="img" class="card-img" />
-                        </div>
-                    </div>
-                    <div v-if="noticias.length === 0" class="no-items">No hay información disponible</div>
-                </div>
-            </div>
-        </div>
+      </div>
+      <button class="close-btn" @click="$emit('cerrar')">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
     </div>
-</template>
 
+    <!-- TABS -->
+    <div class="tabs">
+      <button 
+        v-for="tab in tabs" 
+        :key="tab" 
+        :class="['tab-btn', { active: activeTab === tab }]" 
+        @click="activeTab = tab"
+      >
+        {{ tab }}
+      </button>
+    </div>
+
+    <!-- BODY (Scrollable) -->
+    <div class="detail-body">
+      
+      <!-- TAB: PREGUNTAS -->
+      <div v-if="activeTab === 'Preguntas'" class="tab-content">
+        <div v-if="preguntas.length === 0" class="empty-state">
+          <p>No hay preguntas recientes.</p>
+          <span class="sub-text">Sé el primero en preguntar.</span>
+        </div>
+        
+        <div v-for="pregunta in preguntas" :key="pregunta._id" class="chat-item">
+          <div class="chat-meta">
+            <div class="chat-user">
+              <span class="user-icon">{{ getInitial(pregunta.publicadorId?.nombre) }}</span>
+              {{ pregunta.publicadorId?.nombre || 'Anónimo' }}
+            </div>
+            <span class="chat-date">{{ formatFecha(pregunta.fecha) }}</span>
+          </div>
+          <p class="chat-text">{{ pregunta.texto }}</p>
+          <!-- Imágenes si existen -->
+          <div v-if="pregunta.imagenes?.length" class="chat-images">
+            <img v-for="img in pregunta.imagenes" :src="img" :key="img" class="chat-img" />
+          </div>
+          <button class="chat-action">Responder</button>
+        </div>
+      </div>
+
+      <!-- TAB: REPORTE -->
+      <div v-else-if="activeTab === 'Reporte'" class="tab-content">
+        <div v-if="reportes.length === 0" class="empty-state">
+          <p>Todo opera con normalidad.</p>
+          <button class="action-btn-small">Crear Reporte</button>
+        </div>
+
+        <div v-for="reporte in reportes" :key="reporte._id" class="chat-item report-item">
+          <div class="chat-meta">
+            <div class="chat-user">
+              <span class="user-icon warning">!</span>
+              {{ reporte.publicadorId?.nombre || 'Usuario' }}
+            </div>
+            <span class="chat-date">{{ formatFecha(reporte.fecha) }}</span>
+          </div>
+          <p class="chat-text">{{ reporte.texto }}</p>
+           <div v-if="reporte.imagenes?.length" class="chat-images">
+            <img v-for="img in reporte.imagenes" :src="img" :key="img" class="chat-img" />
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: INFORMACIÓN (Noticias) -->
+      <div v-else-if="activeTab === 'Información'" class="tab-content">
+        <!-- Metadatos Fijos (Ejemplo) -->
+        <div class="info-grid">
+          <div class="info-box">
+             <span class="label">LATITUD</span>
+             <span class="value">{{ instalacion.location?.coordinates[1]?.toFixed(4) }}</span>
+          </div>
+          <div class="info-box">
+             <span class="label">LONGITUD</span>
+             <span class="value">{{ instalacion.location?.coordinates[0]?.toFixed(4) }}</span>
+          </div>
+        </div>
+
+        <div class="divider"><span>Noticias</span></div>
+
+        <div v-if="noticias.length === 0" class="empty-state">
+          <p>No hay noticias disponibles.</p>
+        </div>
+
+        <div v-for="noticia in noticias" :key="noticia._id" class="news-card">
+           <div class="news-header">
+             <span class="news-badge">Noticia</span>
+             <span class="news-date">{{ formatFecha(noticia.fecha) }}</span>
+           </div>
+           <p class="news-text">{{ noticia.texto }}</p>
+           <div v-if="noticia.imagenes?.length" class="chat-images">
+            <img v-for="img in noticia.imagenes" :src="img" :key="img" class="chat-img" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 
 interface Instalacion {
-    _id: string
-    nombre: string
-    estado?: string
-    location: { type: string, coordinates: number[] }
-    regionId: string
-    comunaId: string
+  _id: string
+  nombre: string
+  estado?: string
+  location: { type: string, coordinates: number[] }
+  regionId: string
+  comunaId: string
 }
 
 interface Publicacion {
-    _id: string
-    texto: string
-    tipo: 'pregunta' | 'reporte' | 'noticia'
-    fecha: string
-    imagenes?: string[]
-    publicadorId?: { nombre: string }
-    instalacionId?: string | { $oid?: string, _id?: string, nombre?: string }
+  _id: string
+  texto: string
+  tipo: 'pregunta' | 'reporte' | 'noticia'
+  fecha: string
+  imagenes?: string[]
+  publicadorId?: { nombre: string }
+  instalacionId?: string | { $oid?: string, _id?: string, nombre?: string }
 }
 
 const props = defineProps<{ instalacion: Instalacion | null }>()
@@ -94,212 +143,421 @@ const publicaciones = ref<Publicacion[]>([])
 const tabs = ['Preguntas', 'Reporte', 'Información']
 const activeTab = ref('Preguntas')
 
+// Helpers
+const getInitial = (name?: string) => name ? name.charAt(0).toUpperCase() : 'U'
+
 function matchInstalacionId(pub: Publicacion, id?: string) {
-    if (!pub.instalacionId || !id) return false
-    if (typeof pub.instalacionId === 'string') return pub.instalacionId === id
-    if (typeof pub.instalacionId === 'object') {
-        if (typeof (pub.instalacionId as any).$oid === 'string') return (pub.instalacionId as any).$oid === id
-        if (typeof (pub.instalacionId as any)._id === 'string') return (pub.instalacionId as any)._id === id
-    }
-    return false
+  if (!pub.instalacionId || !id) return false
+  if (typeof pub.instalacionId === 'string') return pub.instalacionId === id
+  if (typeof pub.instalacionId === 'object') {
+    if (typeof (pub.instalacionId as any).$oid === 'string') return (pub.instalacionId as any).$oid === id
+    if (typeof (pub.instalacionId as any)._id === 'string') return (pub.instalacionId as any)._id === id
+  }
+  return false
 }
 
+// Computed Filters
 const preguntas = computed(() => {
-    const id = props.instalacion?._id
-    publicaciones.value.forEach(p => {
-        if (p.tipo === 'pregunta') {
-            console.log('[DEBUG] instalacionId in pub:', p.instalacionId, 'selected _id:', id, 'match:', matchInstalacionId(p, id))
-        }
-    })
-    return publicaciones.value.filter(p => p.tipo === 'pregunta' && matchInstalacionId(p, id))
+  const id = props.instalacion?._id
+  return publicaciones.value.filter(p => p.tipo === 'pregunta' && matchInstalacionId(p, id))
 })
 const reportes = computed(() => {
-    const id = props.instalacion?._id
-    return publicaciones.value.filter(p => p.tipo === 'reporte' && matchInstalacionId(p, id))
+  const id = props.instalacion?._id
+  return publicaciones.value.filter(p => p.tipo === 'reporte' && matchInstalacionId(p, id))
 })
 const noticias = computed(() => {
-    const id = props.instalacion?._id
-    return publicaciones.value.filter(p => p.tipo === 'noticia' && matchInstalacionId(p, id))
+  const id = props.instalacion?._id
+  return publicaciones.value.filter(p => p.tipo === 'noticia' && matchInstalacionId(p, id))
 })
 
+// Data Fetching
 watch(() => props.instalacion, async (inst) => {
-    if (inst && inst._id) {
-        try {
-            const { data } = await axios.get(`http://localhost:5000/publicaciones?instalacionId=${inst._id}`)
-            console.log('[tarjetaInstalacion] publicaciones response:', data)
-            publicaciones.value = Array.isArray(data) ? data : []
-        } catch (error) {
-            publicaciones.value = []
-        }
-    } else {
-        publicaciones.value = []
+  if (inst && inst._id) {
+    try {
+      const { data } = await axios.get(`http://localhost:5000/publicaciones?instalacionId=${inst._id}`)
+      publicaciones.value = Array.isArray(data) ? data : []
+    } catch (error) {
+      publicaciones.value = []
     }
+  } else {
+    publicaciones.value = []
+  }
 }, { immediate: true })
 
 function formatFecha(fecha: string) {
-    if (!fecha) return ''
-    const d = new Date(fecha)
-    return d.toLocaleDateString()
+  if (!fecha) return ''
+  const d = new Date(fecha)
+  const now = new Date()
+  const diff = now.getTime() - d.getTime()
+  
+  // Formato "Hace X tiempo" simple
+  if (diff < 3600000) return 'Hace ' + Math.floor(diff/60000) + ' min'
+  if (diff < 86400000) return 'Hace ' + Math.floor(diff/3600000) + ' h'
+  
+  return d.toLocaleDateString()
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
+// Variables alineadas con el diseño general
+$primary: #7c3aed;
+$primary-soft: #f3e8ff;
+$success: #10b981;
+$success-soft: #d1fae5;
+$text-main: #1f2937;
+$text-light: #6b7280;
+$border: #f3f4f6;
+$bg-glass: rgba(255, 255, 255, 0.6);
 
-.tarjeta-instalacion
-    position: absolute
-    top: 100px
-    left: 16px
-    width: 400px
-    max-height: calc(85vh - 120px)
-    background: white
-    border-radius: 2rem
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15)
-    z-index: 2000
-    display: flex
-    flex-direction: column
-    overflow: hidden
+.tarjeta-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  // No background here, parent handles glass effect
+}
 
-.header-tarjeta
-    background: linear-gradient(135deg, #111827 0%, #374151 100%)
-    color: white
-    padding: 2rem 1.5rem 1.5rem 1.5rem
-    display: flex
-    justify-content: space-between
-    align-items: center
+/* --- HEADER --- */
+.detail-header {
+  padding: 16px 20px;
+  background: white; // Header sólido para legibilidad
+  border-bottom: 1px solid $border;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
 
-.nombre-instalacion
-    font-size: 1.8rem
-    font-weight: bold
-    margin: 0
+.location-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: $text-main;
+  line-height: 1.2;
+}
 
-.estado-instalacion
-    margin-top: 0.5rem
-    .estado-operativo
-        background: #d1fae5
-        color: #065f46
-        padding: 0.2rem 0.7rem
-        border-radius: 1rem
-        font-size: 1rem
-        font-weight: 600
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: $success-soft;
+  color: darken($success, 10%);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
 
-.btn-cerrar
-    background: transparent
-    border: 2px solid white
-    color: white
-    width: 40px
-    height: 40px
-    border-radius: 50%
-    cursor: pointer
-    font-size: 1.2rem
-    display: flex
-    align-items: center
-    justify-content: center
-    transition: all 0.3s ease
-    &:hover
-        background: white
-        color: #374151
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $success;
+  
+  &.mantenimiento { background-color: #f59e0b; }
+  &.inactivo { background-color: #ef4444; }
+}
 
-.tabs-tarjeta
-    display: flex
-    background: #f3f4f6
-    padding: 0.5rem 1.5rem 0.5rem 1.5rem
-    gap: 1rem
+.close-btn {
+  background: #f3f4f6;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  color: $text-light;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: #e5e7eb;
+    color: $text-main;
+  }
+}
 
-.tab-btn
-    background: none
-    border: none
-    font-size: 1.1rem
-    font-weight: 600
-    color: #374151
-    padding: 0.7rem 1.2rem
-    border-radius: 1.2rem 1.2rem 0 0
-    cursor: pointer
-    transition: background 0.2s, color 0.2s
-    &.activo
-        background: white
-        color: #059669
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.07)
+/* --- TABS --- */
+.tabs {
+  display: flex;
+  background: rgba(255,255,255,0.8);
+  padding: 0 20px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
 
-.contenido-tarjeta
-    padding: 1.5rem
-    overflow-y: auto
-    flex: 1
+.tab-btn {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  color: $text-light;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover:not(.active) {
+    color: $text-main;
+  }
+  
+  &.active {
+    color: $primary;
+    border-bottom-color: $primary;
+  }
+}
 
-.lista-items
-    display: flex
-    flex-direction: column
-    gap: 1.2rem
+/* --- BODY --- */
+.detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: $bg-glass;
+  
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+}
 
-.card-publicacion
-    background: #f8f9fa
-    border-radius: 1.2rem
-    padding: 1.2rem 1rem
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07)
-    display: flex
-    flex-direction: column
-    gap: 0.5rem
-    cursor: default
-    border-left: 4px solid #059669
-    transition: box-shadow 0.2s
-    &:hover
-        box-shadow: 0 4px 16px rgba(0,0,0,0.12)
-        background: #eef2f7
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-.card-header
-    display: flex
-    justify-content: space-between
-    align-items: center
-    margin-bottom: 0.3rem
+/* --- CHAT ITEMS (Preguntas) --- */
+.chat-item {
+  background: white;
+  padding: 14px;
+  border-radius: 16px;
+  border-top-left-radius: 4px; // Estilo burbuja
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid transparent;
+  transition: border 0.2s;
+  
+  &:hover {
+    border-color: $primary-soft;
+  }
+}
 
-.autor
-    font-weight: 600
-    color: #059669
+.report-item {
+    border-left: 3px solid #f59e0b; // Naranja para reportes
+}
 
-.card-fecha
-    font-size: 0.95rem
-    color: #666
+.chat-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
 
-.card-contenido
-    font-size: 1.1rem
-    color: #222
+.chat-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  color: $text-main;
+}
 
-.card-imagenes
-    display: flex
-    gap: 0.5rem
-    margin-top: 0.5rem
+.user-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary, #ec4899);
+  color: white;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  
+  &.warning { background: #f59e0b; }
+}
 
-.card-img
-    max-width: 100px
-    max-height: 80px
-    border-radius: 0.5rem
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08)
+.chat-date {
+  font-size: 11px;
+  color: $text-light;
+}
 
-.no-items
-    text-align: center
-    color: #666
-    font-style: italic
-    padding: 2rem 1rem
+.chat-text {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+}
 
-// Responsive
-@media screen and (max-width: 768px)
-    .tarjeta-instalacion
-        left: 8px
-        right: 8px
-        width: auto
-        max-width: calc(100vw - 16px)
-        top: 90px
-        max-height: calc(85vh - 110px)
-    .header-tarjeta
-        padding: 1.5rem 1rem
-    .nombre-instalacion
-        font-size: 1.5rem
-    .contenido-tarjeta
-        padding: 1rem
+.chat-action {
+  background: none;
+  border: none;
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: $primary;
+  cursor: pointer;
+  padding: 0;
+  
+  &:hover { text-decoration: underline; }
+}
 
-@media screen and (max-width: 480px)
-    .tarjeta-instalacion
-        top: 80px
-        left: 8px
-        right: 8px
-        max-height: calc(100vh - 100px)
+.chat-images {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    overflow-x: auto;
+}
+
+.chat-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid $border;
+}
+
+/* --- INFO TAB --- */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.info-box {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid $border;
+}
+
+.info-box .label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: $text-light;
+    margin-bottom: 4px;
+}
+.info-box .value {
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-main;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: $text-light;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 10px 0;
+    
+    &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e5e7eb;
+    }
+    span { padding: 0 10px; }
+}
+
+.news-card {
+    background: white;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid $border;
+}
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.news-badge {
+    background: $primary-soft;
+    color: $primary;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+.news-date { font-size: 10px; color: $text-light; }
+.news-text { font-size: 13px; line-height: 1.4; }
+
+/* --- EMPTY STATE --- */
+.empty-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: $text-light;
+  
+  p { font-size: 14px; margin: 0 0 4px 0; }
+  .sub-text { font-size: 12px; opacity: 0.7; }
+  
+  .action-btn-small {
+      margin-top: 10px;
+      background: $primary;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+  }
+}
+
+/* --- FOOTER --- */
+.detail-footer {
+  padding: 16px 20px;
+  background: white;
+  border-top: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.input-container {
+  position: relative;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 12px 44px 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: $primary;
+    background: white;
+    box-shadow: 0 0 0 3px $primary-soft;
+  }
+}
+
+.send-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: $primary;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: $primary-soft;
+  }
+}
 </style>

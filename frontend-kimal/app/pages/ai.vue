@@ -6,5 +6,5 @@
 
 <script setup lang="ts">
 import ChatUI from '~/components/IA/ChatUI.vue'
-definePageMeta({ layout: false })
+// Removido definePageMeta({ layout: false }) para que use el layout default con navbar
 </script>

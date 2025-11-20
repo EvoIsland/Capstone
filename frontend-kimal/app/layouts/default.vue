@@ -1,269 +1,270 @@
 <template>
-  <div class="layout-wrapper">
-    <!-- Navbar -->
-    <nav class="navbar">
-      <div class="anchoMaximo navbar-content">
-        <div class="navbar-brand">
-          <div class="logo-container">
-            <img src="/images/logokimal.svg" alt="Logo Kimal" class="logo-kimal">
-            <p class="brand-subtitle">Línea Kimal - Lo Aguirre</p>
-          </div>
+  <div class="header-wrapper">
+    
+    <!-- Barra de Navegación Flotante -->
+    <div :class="['navbar-overlay', { 'is-scrolled': isScrolled }]">
+      <nav class="navbar-container">
+        
+        <!-- 1. Marca / Logo -->
+        <div class="brand">
+          <span class="brand-text">MiConexion<span class="brand-highlight">Kimal</span></span>
         </div>
-      </div>
-    </nav>
 
-    <!-- Contenido principal -->
-    <main class="main-content">
+        <!-- 2. Navegación Central -->
+        <div class="nav-links">
+          <NuxtLink
+            v-for="item in navItems" 
+            :key="item.id"
+            :to="item.route"
+            :class="['nav-item']"
+            active-class="active"
+          >
+            <!-- Renderizado de SVG directo -->
+            <span class="nav-icon-wrapper" v-html="item.icon"></span>
+            <span class="nav-label">{{ item.label }}</span>
+            
+            <!-- Indicador de activo (punto sutil) -->
+            <div class="active-dot"></div>
+          </NuxtLink>
+        </div>
+
+      </nav>
+    </div>
+
+    <!-- Espaciador para compensar el header fixed -->
+    <div class="header-spacer"></div>
+
+    <!-- Contenido inyectado (Slots) -->
+    <div class="content-slot">
       <slot />
-    </main>
+    </div>
 
-    <!-- Chatbot flotante (oculto SOLO en /ai) -->
-    <ChatbotFloating v-if="showFloating" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from '#app'
-import ChatbotFloating from '~/components/ui/chatbotFloating.vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from '#app'
 
-// Oculta el botón flotante sólo en /ai
-const route = useRoute()
-const showFloating = computed(() => !route.path.startsWith('/ai'))
+const router = useRouter()
+const isScrolled = ref(false)
+
+// Configuración de Navegación con SVGs modernos (Estilo Lucide/Heroicons)
+const navItems = [
+  { 
+    id: 'intro', 
+    label: 'Intro',
+    route: '/intro',
+    // Icono Home
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`
+  },
+  { 
+    id: 'mapa', 
+    label: 'Mapa',
+    route: '/',
+    // Icono Mapa/Pin
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>`
+  },
+  { 
+    id: 'ia', 
+    label: 'Agente IA',
+    route: '/ai',
+    // Icono Bot/Sparkles
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>`
+  }
+]
+
+// Métodos
+function handleScroll() {
+  isScrolled.value = window.scrollY > 20
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
-<style lang="sass">
-@use '@sass/base' as *
+<style scoped>
+/* --- LAYOUT GENERAL --- */
+.header-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
 
-// Reset específico para el layout sin interferir con otros componentes
-.layout-wrapper
-  min-height: 100vh
-  display: flex
-  flex-direction: column
-  margin: 0
-  padding: 0
-  position: relative
+.header-spacer {
+  height: 100px;
+}
 
-.navbar
-  background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #A855F7 100%)
-  position: fixed
-  top: 0
-  left: 0
-  right: 0
-  z-index: 1000
-  padding: 1.5rem 0
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3)
-  width: 100%
+/* --- NAVBAR FLOTANTE (Overlay) --- */
+.navbar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events: none;
+}
 
-.navbar-content
-  display: flex
-  align-items: center
-  justify-content: space-between
-  gap: 2rem
+/* --- CONTENEDOR PÍLDORA --- */
+.navbar-container {
+  pointer-events: auto;
+  max-width: 700px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: 100px;
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+    0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0,0,0,0.02);
+    
+  transition: all 0.4s ease;
+}
 
-.navbar-brand
-  flex: 1
+/* --- ESTADO SCROLLED --- */
+.navbar-overlay.is-scrolled {
+  padding: 0.5rem;
+}
 
-.logo-container
-  display: flex
-  flex-direction: column
-  gap: 0.4rem
-  align-items: flex-start
+.navbar-overlay.is-scrolled .navbar-container {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
 
-.logo-kimal
-  height: 3.2rem
-  width: auto
-  object-fit: contain
+/* --- BRAND / LOGO --- */
+.brand {
+  display: flex;
+  align-items: center;
+  padding-right: 1.5rem;
+  border-right: 1px solid #f3f4f6;
+}
 
-.brand-title
-  font-size: 2.4rem
-  font-weight: 300
-  color: white
-  margin: 0
-  letter-spacing: 0.1rem
+.brand-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.03em;
+  user-select: none;
+}
 
-.brand-equals
-  color: #10B981
-  font-weight: 500
+.brand-highlight {
+  color: #7C3AED; /* Morado Kimal */
+}
 
-.brand-subtitle
-  font-size: 1rem
-  color: rgba(255, 255, 255, 0.8)
-  margin: 0
-  font-weight: 300
+/* --- NAVEGACIÓN (LINKS) --- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: flex-end;
+}
 
-.navbar-menu
-  display: flex
-  align-items: center
-  gap: 2rem
-  flex: 1
-  justify-content: center
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 100px;
+  transition: all 0.2s ease;
+}
 
-.menu-icon
-  display: flex
-  flex-direction: column
-  gap: 0.4rem
-  cursor: pointer
-  padding: 0.8rem
+/* Hover */
+.nav-item:hover {
+  color: #111827;
+  background: rgba(0, 0, 0, 0.03);
+}
 
-.menu-line
-  width: 2.4rem
-  height: 0.2rem
-  background: #10B981
-  border-radius: 0.1rem
-  transition: all 0.3s ease
+/* Estado Activo */
+.nav-item.active {
+  color: #7C3AED;
+  background: rgba(124, 58, 237, 0.05);
+  font-weight: 600;
+}
 
-.menu-plus
-  background: #10B981
-  width: 4rem
-  height: 4rem
-  border-radius: 50%
-  display: flex
-  align-items: center
-  justify-content: center
-  cursor: pointer
-  transition: all 0.3s ease
+/* Iconos SVG */
+.nav-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s;
+}
 
-  &:hover
-    transform: scale(1.1)
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4)
+/* Hacemos que el SVG herede el color del texto */
+.nav-icon-wrapper :deep(svg) {
+  width: 100%;
+  height: 100%;
+  stroke-width: 2;
+}
 
-.plus-icon
-  font-size: 2.4rem
-  color: white
-  font-weight: 300
-  line-height: 1
+.nav-item:hover .nav-icon-wrapper {
+  transform: scale(1.1);
+}
 
-.navbar-right
-  display: flex
-  align-items: center
-  gap: 2rem
-  flex: 1
-  justify-content: flex-end
+/* Punto indicador activo */
+.active-dot {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: #7C3AED;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(124, 58, 237, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
 
-.flag-chile
-  display: flex
-  flex-direction: column
-  width: 4rem
-  height: 2.8rem
-  border-radius: 0.4rem
-  overflow: hidden
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2)
-  cursor: pointer
-  transition: transform 0.3s ease
-  position: relative
+.nav-item.active .active-dot {
+  opacity: 1;
+}
 
-  &:hover
-    transform: scale(1.05)
-
-.flag-blue
-  background: #0F4C94
-  height: 50%
-  width: 50%
-  display: flex
-  align-items: center
-  justify-content: center
-
-.flag-star
-  color: white
-  font-size: 1rem
-
-.flag-white
-  background: white
-  height: 50%
-  width: 50%
-  position: absolute
-  top: 0
-  right: 0
-
-.flag-red
-  background: #D52B1E
-  height: 50%
-  width: 100%
-
-.user-avatar
-  cursor: pointer
-
-.avatar-circle
-  width: 4.8rem
-  height: 4.8rem
-  border-radius: 50%
-  background: rgba(255, 255, 255, 0.2)
-  display: flex
-  align-items: center
-  justify-content: center
-  border: 2px solid rgba(255, 255, 255, 0.3)
-  transition: all 0.3s ease
-
-  &:hover
-    background: rgba(255, 255, 255, 0.3)
-    transform: scale(1.05)
-
-.avatar-icon
-  font-size: 2rem
-  color: white
-
-.main-content
-  flex: 1
-  background-color: var(--fondo-claro)
-  min-height: 0
-  padding-top: 8rem  // Espacio para compensar el navbar fijo
-
-// Responsive siguiendo los patrones del sistema
-@media screen and (max-width: 1000px)
-  .navbar
-    padding: 1rem 0
-
-  .main-content
-    padding-top: 6.5rem  // Menos espacio en tablet
-
-  .navbar-content
-    gap: 1rem
-
-  .logo-kimal
-    height: 2.8rem
-
-  .brand-subtitle
-    font-size: 0.9rem
-
-  .navbar-menu
-    gap: 1rem
-
-  .menu-plus
-    width: 3.2rem
-    height: 3.2rem
-
-  .plus-icon
-    font-size: 2rem
-
-  .flag-chile
-    width: 3.2rem
-    height: 2.2rem
-
-  .avatar-circle
-    width: 4rem
-    height: 4rem
-
-  .avatar-icon
-    font-size: 1.6rem
-
-@media screen and (max-width: 600px)
-  .logo-kimal
-    height: 2.4rem
-
-  .main-content
-    padding-top: 5.5rem  // Menos espacio en móvil
-
-  .navbar-content
-    flex-wrap: wrap
-    gap: 1rem
-
-  .navbar-brand, .navbar-right
-    flex: none
-
-  .navbar-menu
-    order: 3
-    width: 100%
-    justify-content: center
-    margin-top: 1rem
+/* --- RESPONSIVE --- */
+@media (max-width: 640px) {
+  .navbar-container {
+    padding: 0.5rem 1rem;
+    max-width: 95%;
+  }
+  
+  .brand {
+    border-right: none;
+    padding-right: 0.5rem;
+  }
+  
+  .brand-text {
+    font-size: 1.1rem;
+  }
+  
+  .nav-label {
+    display: none; /* Solo iconos en móvil para ahorrar espacio */
+  }
+  
+  .nav-item {
+    padding: 0.6rem;
+  }
+  
+  .active-dot {
+    bottom: 2px;
+  }
+}
 </style>

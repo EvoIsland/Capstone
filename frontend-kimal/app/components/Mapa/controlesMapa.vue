@@ -1,128 +1,165 @@
 <template>
-    <div class="controles-mapa">
-        <button 
-            class="btn-control btn-linea"
-            @click="toggleLinea"
-            :class="{ 'activo': mostrarLinea }"
-        >
-            <span class="icono">⚡</span>
-            <span class="texto">{{ mostrarLinea ? 'Ocultar' : 'Mostrar' }} Línea</span>
-        </button>
-        
-        <button 
-            class="btn-control btn-ubicacion"
-            @click="centrarEnMiUbicacion"
-        >
-            <span class="icono">📍</span>
-            <span class="texto">Mi Ubicación</span>
-        </button>
-    </div>
+  <div class="map-actions">
+    <!-- Botón Toggle Línea -->
+    <button 
+      class="action-btn btn-purple" 
+      :class="{ 'inactivo': !mostrarLinea }"
+      @click="toggleLinea"
+    >
+      <div class="btn-icon">
+        <!-- Icono Rayo -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+      <span class="btn-text">{{ mostrarLinea ? 'Ocultar' : 'Mostrar' }} Línea</span>
+    </button>
+    
+    <!-- Botón Mi Ubicación -->
+    <button 
+      class="action-btn btn-green" 
+      @click="centrarEnMiUbicacion"
+    >
+      <div class="btn-icon">
+        <!-- Icono Pin/Ubicación -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+      <span class="btn-text">Mi Ubicación</span>
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
 const emit = defineEmits<{
-    toggleLinea: [mostrar: boolean]
-    centrarUbicacion: []
+  (e: 'toggle-linea', mostrar: boolean): void
+  (e: 'centrar-ubicacion'): void
 }>()
 
 const mostrarLinea = ref(true)
 
 function toggleLinea() {
-    mostrarLinea.value = !mostrarLinea.value
-    emit('toggleLinea', mostrarLinea.value)
+  mostrarLinea.value = !mostrarLinea.value
+  emit('toggle-linea', mostrarLinea.value)
 }
 
 function centrarEnMiUbicacion() {
-    emit('centrarUbicacion')
+  emit('centrar-ubicacion')
 }
 </script>
 
-<style lang="sass" scoped>
-.controles-mapa
-    position: absolute
-    top: 100px
-    right: 20px
-    z-index: 1000
-    display: flex
-    flex-direction: column
-    gap: 1rem
+<style lang="scss" scoped>
+// Variables locales para mantener el diseño consistente
+$primary: #7c3aed;       // Morado
+$primary-soft: #f3e8ff;
+$success: #10b981;       // Verde
+$success-soft: #d1fae5;
+$text-main: #1f2937;
 
-.btn-control
-    background: white
-    border: none
-    border-radius: 1rem
-    padding: 1rem 1.5rem
-    cursor: pointer
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15)
-    font-weight: 600
-    font-size: 1rem
-    transition: all 0.3s ease
-    display: flex
-    align-items: center
-    gap: 0.8rem
-    min-width: 140px
+.map-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Eliminamos position absolute para que fluya dentro de .right-controls del padre */
+}
 
-    &:hover
-        transform: translateY(-2px)
-        box-shadow: 0 6px 20px rgba(0,0,0,0.2)
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  // min-width: 160px; // Opcional: Ancho fijo si quieres uniformidad
+  background: white;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events: auto; // Importante: reactivar clics
+  text-align: left;
 
-.btn-linea
-    &.activo
-        background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%)
-        color: white
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
 
-    &:not(.activo)
-        background: #f3f4f6
-        color: #374151
+  &:active {
+    transform: translateY(0);
+  }
+}
 
-.btn-ubicacion
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%)
-    color: white
+.btn-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-main;
+  font-family: 'Inter', sans-serif;
+}
 
-    &:hover
-        background: linear-gradient(135deg, #059669 0%, #047857 100%)
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
 
-.icono
-    font-size: 1.2rem
+// --- Variantes de Color ---
 
-.texto
-    font-size: 0.9rem
+// Botón Morado (Línea)
+.btn-purple {
+  .btn-icon {
+    background: $primary-soft;
+    color: $primary;
+  }
 
-// Responsive
-@media screen and (max-width: 768px)
-    .controles-mapa
-        top: 90px
-        right: 15px
-        gap: 0.8rem
+  &:hover .btn-icon {
+    background: $primary;
+    color: white;
+  }
 
-    .btn-control
-        padding: 0.8rem 1.2rem
-        min-width: 120px
-        font-size: 0.9rem
+  // Estado inactivo (cuando la línea está oculta)
+  &.inactivo {
+    opacity: 0.7;
+    background: #f9fafb; // Gris muy claro
+    
+    .btn-icon {
+      background: #e5e7eb; // Gris
+      color: #6b7280;
+    }
+    
+    &:hover {
+        opacity: 1;
+    }
+  }
+}
 
-    .icono
-        font-size: 1.1rem
+// Botón Verde (Ubicación)
+.btn-green {
+  .btn-icon {
+    background: $success-soft;
+    color: darken($success, 10%);
+  }
 
-    .texto
-        font-size: 0.8rem
+  &:hover .btn-icon {
+    background: $success;
+    color: white;
+  }
+}
 
-@media screen and (max-width: 480px)
-    .controles-mapa
-        top: 80px
-        right: 10px
-        flex-direction: row
-        gap: 0.5rem
-
-    .btn-control
-        padding: 0.6rem 1rem
-        min-width: auto
-        flex: 1
-
-    .texto
-        display: none
-
-    .icono
-        font-size: 1.3rem
+// --- Responsive ---
+@media screen and (max-width: 480px) {
+  .action-btn {
+      padding: 10px 12px;
+  }
+  .btn-text {
+      font-size: 12px;
+  }
+}
 </style>
