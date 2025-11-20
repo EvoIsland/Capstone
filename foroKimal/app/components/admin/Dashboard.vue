@@ -137,7 +137,7 @@ onMounted(async () => {
       return
     }
 
-    const API_URL = 'http://localhost:5000'
+    const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
 
     const [usuarios, publicaciones, instalaciones] = await Promise.all([
       fetch(`${API_URL}/admin/usuarios`, {

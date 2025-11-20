@@ -92,8 +92,9 @@ onMounted(async () => {
 async function cargarNoticia() {
   cargando.value = true
   error.value = ''
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
-    const res = await fetch(`http://localhost:5000/noticia/${props.noticiaId}`)
+    const res = await fetch(`${API_URL}/noticia/${props.noticiaId}`)
     if (!res.ok) throw new Error('Error al cargar la noticia')
     noticia.value = await res.json()
   } catch (err) {

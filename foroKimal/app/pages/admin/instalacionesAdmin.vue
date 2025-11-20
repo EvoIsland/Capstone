@@ -307,11 +307,13 @@ const onRegionChange = () => {
   formData.value.comunaId = ''
 }
 
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 const loadInstalaciones = async () => {
   loading.value = true
   error.value = ''
   try {
-    const response = await fetch('http://localhost:5000/admin/instalaciones', {
+    const response = await fetch(`${API_URL}/admin/instalaciones`, {
       headers: {
         'Authorization': `Bearer ${accessToken.value}`
       }
@@ -328,7 +330,7 @@ const loadInstalaciones = async () => {
 
 const loadRegiones = async () => {
   try {
-    const response = await fetch('http://localhost:5000/regiones')
+    const response = await fetch(`${API_URL}/regiones`)
     if (!response.ok) throw new Error('Error al cargar regiones')
     regiones.value = await response.json()
   } catch (err) {
@@ -338,7 +340,7 @@ const loadRegiones = async () => {
 
 const loadComunas = async () => {
   try {
-    const response = await fetch('http://localhost:5000/comunas')
+    const response = await fetch(`${API_URL}/comunas`)
     if (!response.ok) throw new Error('Error al cargar comunas')
     comunas.value = await response.json()
   } catch (err) {
@@ -493,8 +495,8 @@ const closeModal = () => {
 const handleSubmit = async () => {
   try {
     const url = modalMode.value === 'create'
-      ? 'http://localhost:5000/admin/instalaciones'
-      : `http://localhost:5000/admin/instalaciones/${formData.value._id}`
+      ? `${API_URL}/admin/instalaciones`
+      : `${API_URL}/admin/instalaciones/${formData.value._id}`
     
     const method = modalMode.value === 'create' ? 'POST' : 'PUT'
 
@@ -521,7 +523,7 @@ const confirmDelete = async (inst: any) => {
   if (!confirm(`¿Estás seguro de eliminar la instalación "${inst.nombre}"?`)) return
 
   try {
-    const response = await fetch(`http://localhost:5000/admin/instalaciones/${inst._id}`, {
+    const response = await fetch(`${API_URL}/admin/instalaciones/${inst._id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`

@@ -299,11 +299,12 @@ onMounted(async () => {
   if (!user.value || user.value.rol !== 'admin') router.replace('/');
   
   // Cargar datos de regiones (Mock o Real)
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
     const [reg, com, inst] = await Promise.all([
-       $fetch<any[]>('http://localhost:5000/regiones'),
-       $fetch<any[]>('http://localhost:5000/comunas'),
-       $fetch<any[]>('http://localhost:5000/instalaciones'),
+       $fetch<any[]>(`${API_URL}/regiones`),
+       $fetch<any[]>(`${API_URL}/comunas`),
+       $fetch<any[]>(`${API_URL}/instalaciones`),
     ]);
     regiones.value = reg; 
     comunas.value = com; 
@@ -522,7 +523,7 @@ const handleSubmit = async () => {
     if (form.value.comunaId) body.comunaId = form.value.comunaId;
     if (form.value.instalacionId) body.instalacionId = form.value.instalacionId;
 
-    await $fetch('http://localhost:5000/noticia', {
+    await $fetch(`${API_URL}/noticia`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`,

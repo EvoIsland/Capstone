@@ -195,12 +195,13 @@ watch(() => filtros.value.comunaId, () => {
 async function cargarDatos() {
   cargando.value = true
   error.value = ''
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
     const [noticiasRes, regionesRes, comunasRes, instalacionesRes] = await Promise.all([
-      $fetch<Noticia[]>('http://localhost:5000/noticias'),
-      $fetch<any[]>('http://localhost:5000/regiones'),
-      $fetch<any[]>('http://localhost:5000/comunas'),
-      $fetch<any[]>('http://localhost:5000/instalaciones')
+      $fetch<Noticia[]>(`${API_URL}/noticias`),
+      $fetch<any[]>(`${API_URL}/regiones`),
+      $fetch<any[]>(`${API_URL}/comunas`),
+      $fetch<any[]>(`${API_URL}/instalaciones`)
     ])
     noticias.value = noticiasRes
     regiones.value = regionesRes
@@ -235,8 +236,9 @@ function confirmarEliminar(noticia: Noticia) {
 async function eliminarNoticia() {
   if (!noticiaAEliminar.value) return
   eliminando.value = true
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
-    await $fetch(`http://localhost:5000/noticia/${noticiaAEliminar.value._id}`, {
+    await $fetch(`${API_URL}/noticia/${noticiaAEliminar.value._id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`

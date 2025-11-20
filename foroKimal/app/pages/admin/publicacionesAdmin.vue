@@ -309,10 +309,12 @@ const filteredPublicaciones = computed(() => {
 })
 
 // Métodos
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 const cargarInstalaciones = async () => {
   loadingInstalaciones.value = true
   try {
-    const res = await fetch('http://localhost:5000/admin/instalaciones', {
+    const res = await fetch(`${API_URL}/admin/instalaciones`, {
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
     if (!res.ok) throw new Error('Error al cargar instalaciones')
@@ -330,7 +332,7 @@ const cargarInstalaciones = async () => {
 const cargarPublicaciones = async () => {
   loadingPublicaciones.value = true
   try {
-    const res = await fetch('http://localhost:5000/admin/publicaciones', {
+    const res = await fetch(`${API_URL}/admin/publicaciones`, {
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
     if (!res.ok) throw new Error('Error al cargar publicaciones')
@@ -345,7 +347,7 @@ const cargarPublicaciones = async () => {
 const cargarComentarios = async (publicacionId: string) => {
   loadingComentarios.value = true
   try {
-    const res = await fetch(`http://localhost:5000/publicacion/${publicacionId}/comentarios`, {
+    const res = await fetch(`${API_URL}/publicacion/${publicacionId}/comentarios`, {
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
     if (!res.ok) throw new Error('Error al cargar comentarios')
@@ -387,7 +389,7 @@ const deleteComment = async (commentId: string) => {
   if (!confirm('¿Eliminar este comentario?')) return
   
   try {
-    const res = await fetch(`http://localhost:5000/comentarios/${commentId}`, {
+    const res = await fetch(`${API_URL}/comentarios/${commentId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
@@ -407,7 +409,7 @@ const confirmDeletePublicacion = async () => {
   if (!confirm('¿Eliminar esta publicación?')) return
   
   try {
-    const res = await fetch(`http://localhost:5000/admin/publicaciones/${selectedPublicacion.value._id}`, {
+    const res = await fetch(`${API_URL}/admin/publicaciones/${selectedPublicacion.value._id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })

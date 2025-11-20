@@ -152,16 +152,18 @@ const autoResize = (e: Event) => {
   target.style.height = target.scrollHeight + 'px'
 }
 
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 const fetchPublicacion = async () => {
   try {
-    publicacion.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}`)
+    publicacion.value = await $fetch(`${API_URL}/publicacion/${props.publicacionId}`)
   } catch (e) { console.error(e) }
 }
 
 const fetchLikes = async () => {
   try {
     const res = await $fetch<{ total: number; usuarios: { _id: string; nombre: string }[] }>(
-      `http://localhost:5000/publicacion/${props.publicacionId}/likes`
+      `${API_URL}/publicacion/${props.publicacionId}/likes`
     )
     likesTotal.value = res.total
     likesUsuarios.value = res.usuarios
@@ -172,14 +174,14 @@ const fetchLikes = async () => {
 const fetchComentarios = async () => {
   cargandoComentarios.value = true
   try {
-    comentarios.value = await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentarios`)
+    comentarios.value = await $fetch(`${API_URL}/publicacion/${props.publicacionId}/comentarios`)
   } catch (e) { console.error(e) }
   cargandoComentarios.value = false
 }
 
 const toggleLike = async () => {
   try {
-    await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/like`, {
+    await $fetch(`${API_URL}/publicacion/${props.publicacionId}/like`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
@@ -190,7 +192,7 @@ const toggleLike = async () => {
 const enviarComentario = async () => {
   if (!nuevoComentario.value.trim()) return
   try {
-    await $fetch(`http://localhost:5000/publicacion/${props.publicacionId}/comentario`, {
+    await $fetch(`${API_URL}/publicacion/${props.publicacionId}/comentario`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${accessToken.value}` },
       body: {

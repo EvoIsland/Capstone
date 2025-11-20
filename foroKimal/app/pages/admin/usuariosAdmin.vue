@@ -238,11 +238,13 @@ const filteredUsuarios = computed(() => {
 })
 
 // Métodos
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 const cargarUsuarios = async () => {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch('http://localhost:5000/admin/usuarios', {
+    const res = await fetch(`${API_URL}/admin/usuarios`, {
       headers: { Authorization: `Bearer ${accessToken.value}` }
     })
     if (!res.ok) throw new Error('Error al cargar usuarios')
@@ -279,7 +281,7 @@ const saveUsuario = async () => {
   try {
     if (isEditing.value) {
       // Actualizar
-      const res = await fetch(`http://localhost:5000/admin/usuarios/${currentUsuario.value._id}`, {
+      const res = await fetch(`${API_URL}/admin/usuarios/${currentUsuario.value._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -290,7 +292,7 @@ const saveUsuario = async () => {
       if (!res.ok) throw new Error('Error al actualizar usuario')
     } else {
       // Crear
-      const res = await fetch('http://localhost:5000/admin/usuarios', {
+      const res = await fetch(`${API_URL}/admin/usuarios`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -311,7 +313,7 @@ const saveUsuario = async () => {
 const confirmDelete = async (usuario: any) => {
   if (confirm(`¿Estás seguro de eliminar a ${usuario.nombre} ${usuario.apellido}?`)) {
     try {
-      const res = await fetch(`http://localhost:5000/admin/usuarios/${usuario._id}`, {
+      const res = await fetch(`${API_URL}/admin/usuarios/${usuario._id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${accessToken.value}` }
       })

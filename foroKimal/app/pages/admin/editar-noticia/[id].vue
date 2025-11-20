@@ -306,19 +306,20 @@ watch(() => form.value.comunaId, () => { form.value.instalacionId = ''; });
 onMounted(async () => {
   if (!user.value || user.value.rol !== 'admin') router.replace('/');
   
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
     // Cargar datos de regiones
     const [reg, com, inst] = await Promise.all([
-       $fetch<any[]>('http://localhost:5000/regiones'),
-       $fetch<any[]>('http://localhost:5000/comunas'),
-       $fetch<any[]>('http://localhost:5000/instalaciones'),
+       $fetch<any[]>(`${API_URL}/regiones`),
+       $fetch<any[]>(`${API_URL}/comunas`),
+       $fetch<any[]>(`${API_URL}/instalaciones`),
     ]);
     regiones.value = reg; 
     comunas.value = com; 
     instalaciones.value = inst;
 
     // Cargar la noticia existente
-    const noticia = await $fetch<any>(`http://localhost:5000/noticia/${noticiaId}`);
+    const noticia = await $fetch<any>(`${API_URL}/noticia/${noticiaId}`);
     
     // Cargar el contentJson en el editor
     if (noticia.contentJson && Array.isArray(noticia.contentJson)) {
@@ -530,7 +531,7 @@ const handleSubmit = async () => {
     if (form.value.comunaId) body.comunaId = form.value.comunaId;
     if (form.value.instalacionId) body.instalacionId = form.value.instalacionId;
 
-    await $fetch(`http://localhost:5000/noticia/${noticiaId}`, {
+    await $fetch(`${API_URL}/noticia/${noticiaId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`,

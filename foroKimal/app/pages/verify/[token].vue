@@ -24,8 +24,9 @@ const goLogin = () => {
 
 onMounted(async () => {
   const token = route.params.token;
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
   try {
-    const res = await fetch(`http://localhost:5000/verify/${token}`);
+    const res = await fetch(`${API_URL}/verify/${token}`);
     const data = await res.json();
     if (res.ok) {
       success.value = true;
