@@ -22,7 +22,7 @@ export const useAuth = () => {
   const error = useState<string | null>('auth-error', () => null)
   const isInitialized = useState('auth-initialized', () => false)
 
-  const API_URL = 'http://localhost:5000'
+  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
   const router = useRouter()
 
   const register = async (userData: {
