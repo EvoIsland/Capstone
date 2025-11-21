@@ -10,18 +10,16 @@ export interface Publicacion {
     publicadorId?: string
 }
 
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
-
-export async function fetchPublicaciones(token: string): Promise<Publicacion[]> {
-  const res = await fetch(`${API_URL}/admin/publicaciones`, {
+export async function fetchPublicaciones(apiUrl: string, token: string): Promise<Publicacion[]> {
+  const res = await fetch(`${apiUrl}/admin/publicaciones`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   if (!res.ok) throw new Error('No se pudieron obtener publicaciones')
   return await res.json()
 }
 
-export async function eliminarPublicacion(id: string, token: string): Promise<{ success: boolean }> {
-  const res = await fetch(`${API_URL}/admin/publicaciones/${id}`, {
+export async function eliminarPublicacion(apiUrl: string, id: string, token: string): Promise<{ success: boolean }> {
+  const res = await fetch(`${apiUrl}/admin/publicaciones/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
   })
@@ -30,8 +28,8 @@ export async function eliminarPublicacion(id: string, token: string): Promise<{ 
 }
 
 // Opcional: crear y editar publicaciones
-export async function crearPublicacion(data: Partial<Publicacion>, token: string): Promise<Publicacion> {
-  const res = await fetch(`${API_URL}/admin/publicaciones`, {
+export async function crearPublicacion(apiUrl: string, data: Partial<Publicacion>, token: string): Promise<Publicacion> {
+  const res = await fetch(`${apiUrl}/admin/publicaciones`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -43,8 +41,8 @@ export async function crearPublicacion(data: Partial<Publicacion>, token: string
   return await res.json()
 }
 
-export async function actualizarPublicacion(id: string, data: Partial<Publicacion>, token: string): Promise<Publicacion> {
-  const res = await fetch(`${API_URL}/admin/publicaciones/${id}`, {
+export async function actualizarPublicacion(apiUrl: string, id: string, data: Partial<Publicacion>, token: string): Promise<Publicacion> {
+  const res = await fetch(`${apiUrl}/admin/publicaciones/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

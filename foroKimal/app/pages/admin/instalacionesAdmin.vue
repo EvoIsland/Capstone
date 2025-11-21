@@ -307,13 +307,14 @@ const onRegionChange = () => {
   formData.value.comunaId = ''
 }
 
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+const runtimeConfig = useRuntimeConfig();
+const apiUrl = runtimeConfig.public.apiUrl;
 
 const loadInstalaciones = async () => {
   loading.value = true
   error.value = ''
   try {
-    const response = await fetch(`${API_URL}/admin/instalaciones`, {
+    const response = await fetch(`${apiUrl}/admin/instalaciones`, {
       headers: {
         'Authorization': `Bearer ${accessToken.value}`
       }
@@ -330,7 +331,7 @@ const loadInstalaciones = async () => {
 
 const loadRegiones = async () => {
   try {
-    const response = await fetch(`${API_URL}/regiones`)
+    const response = await fetch(`${apiUrl}/regiones`)
     if (!response.ok) throw new Error('Error al cargar regiones')
     regiones.value = await response.json()
   } catch (err) {
@@ -340,7 +341,7 @@ const loadRegiones = async () => {
 
 const loadComunas = async () => {
   try {
-    const response = await fetch(`${API_URL}/comunas`)
+    const response = await fetch(`${apiUrl}/comunas`)
     if (!response.ok) throw new Error('Error al cargar comunas')
     comunas.value = await response.json()
   } catch (err) {
@@ -495,8 +496,8 @@ const closeModal = () => {
 const handleSubmit = async () => {
   try {
     const url = modalMode.value === 'create'
-      ? `${API_URL}/admin/instalaciones`
-      : `${API_URL}/admin/instalaciones/${formData.value._id}`
+      ? `${apiUrl}/admin/instalaciones`
+      : `${apiUrl}/admin/instalaciones/${formData.value._id}`
     
     const method = modalMode.value === 'create' ? 'POST' : 'PUT'
 
@@ -523,7 +524,7 @@ const confirmDelete = async (inst: any) => {
   if (!confirm(`¿Estás seguro de eliminar la instalación "${inst.nombre}"?`)) return
 
   try {
-    const response = await fetch(`${API_URL}/admin/instalaciones/${inst._id}`, {
+    const response = await fetch(`${apiUrl}/admin/instalaciones/${inst._id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`

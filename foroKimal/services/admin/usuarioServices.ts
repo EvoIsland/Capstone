@@ -14,18 +14,16 @@ export interface Usuario {
   updatedAt: string
 }
 
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
-
-export async function fetchUsuarios(token: string): Promise<Usuario[]> {
-  const res = await fetch(`${API_URL}/admin/usuarios`, {
+export async function fetchUsuarios(apiUrl: string, token: string): Promise<Usuario[]> {
+  const res = await fetch(`${apiUrl}/admin/usuarios`, {
     headers: { Authorization: `Bearer ${token}` }
   })
   if (!res.ok) throw new Error('No se pudieron obtener usuarios')
   return await res.json()
 }
 
-export async function crearUsuario(data: Partial<Usuario>, token: string): Promise<Usuario> {
-  const res = await fetch(`${API_URL}/admin/usuarios`, {
+export async function crearUsuario(apiUrl: string, data: Partial<Usuario>, token: string): Promise<Usuario> {
+  const res = await fetch(`${apiUrl}/admin/usuarios`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,8 +35,8 @@ export async function crearUsuario(data: Partial<Usuario>, token: string): Promi
   return await res.json()
 }
 
-export async function actualizarUsuario(id: string, data: Partial<Usuario>, token: string): Promise<Usuario> {
-  const res = await fetch(`${API_URL}/admin/usuarios/${id}`, {
+export async function actualizarUsuario(apiUrl: string, id: string, data: Partial<Usuario>, token: string): Promise<Usuario> {
+  const res = await fetch(`${apiUrl}/admin/usuarios/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -50,8 +48,8 @@ export async function actualizarUsuario(id: string, data: Partial<Usuario>, toke
   return await res.json()
 }
 
-export async function eliminarUsuario(id: string, token: string): Promise<{ success: boolean }> {
-  const res = await fetch(`${API_URL}/admin/usuarios/${id}`, {
+export async function eliminarUsuario(apiUrl: string, id: string, token: string): Promise<{ success: boolean }> {
+  const res = await fetch(`${apiUrl}/admin/usuarios/${id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` }
   })

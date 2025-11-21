@@ -8,6 +8,8 @@ import {
 } from '../../services/admin/usuarioServices'
 
 export function useUsuariosAdmin(token: string) {
+  const runtimeConfig = useRuntimeConfig()
+  const apiUrl = runtimeConfig.public.apiUrl
   const usuarios = ref<Usuario[]>([])
   const loading = ref(false)
   const error = ref('')
@@ -16,7 +18,7 @@ export function useUsuariosAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      usuarios.value = await fetchUsuarios(token)
+      usuarios.value = await fetchUsuarios(apiUrl, token)
     } catch (e: any) {
       error.value = e.message || 'Error al cargar usuarios'
     } finally {
@@ -28,7 +30,7 @@ export function useUsuariosAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await crearUsuario(data, token)
+      await crearUsuario(apiUrl, data, token)
       await cargarUsuarios()
     } catch (e: any) {
       error.value = e.message || 'Error al crear usuario'
@@ -41,7 +43,7 @@ export function useUsuariosAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await actualizarUsuario(id, data, token)
+      await actualizarUsuario(apiUrl, id, data, token)
       await cargarUsuarios()
     } catch (e: any) {
       error.value = e.message || 'Error al actualizar usuario'
@@ -54,7 +56,7 @@ export function useUsuariosAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await eliminarUsuario(id, token)
+      await eliminarUsuario(apiUrl, id, token)
       await cargarUsuarios()
     } catch (e: any) {
       error.value = e.message || 'Error al eliminar usuario'

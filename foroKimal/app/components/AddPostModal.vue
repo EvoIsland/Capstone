@@ -199,13 +199,14 @@ watch(() => form.value.regionId, () => {
 
 // --- MOUNTED ---
 onMounted(async () => {
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const runtimeConfig = useRuntimeConfig();
+  const apiUrl = runtimeConfig.public.apiUrl;
   try {
     // Asegúrate que estas URLs sean correctas para tu entorno
     const [regionesData, comunasData, instalacionesData] = await Promise.all([
-      $fetch<Region[]>(`${API_URL}/regiones`),
-      $fetch<Comuna[]>(`${API_URL}/comunas`),
-      $fetch<Instalacion[]>(`${API_URL}/instalaciones`)
+      $fetch<Region[]>(`${apiUrl}/regiones`),
+      $fetch<Comuna[]>(`${apiUrl}/comunas`),
+      $fetch<Instalacion[]>(`${apiUrl}/instalaciones`)
     ]);
     regiones.value = regionesData;
     comunas.value = comunasData;
@@ -221,7 +222,8 @@ const handleSubmit = async () => {
   error.value = '';
   success.value = '';
 
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const runtimeConfig = useRuntimeConfig();
+  const apiUrl = runtimeConfig.public.apiUrl;
   try {
     const body: any = {
       tipo: form.value.tipo === 'pregunta' ? 'Pregunta' : 'Reporte', // Ajuste mayúsculas según backend común
@@ -239,7 +241,7 @@ const handleSubmit = async () => {
       body.instalacionId = form.value.instalacionId;
     }
 
-    await $fetch(`${API_URL}/publicacion`, {
+    await $fetch(`${apiUrl}/publicacion`, {
       method: 'POST',
       body: body,
       headers: { 'Authorization': `Bearer ${accessToken.value}` }

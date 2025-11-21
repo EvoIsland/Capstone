@@ -1,5 +1,3 @@
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
-
 export interface Publicacion {
     _id: string
     tipo: string
@@ -12,8 +10,8 @@ export interface Publicacion {
     publicadorId?: { nombre?:string }
 }
 
-export async function fetchPublicaciones(): Promise<Publicacion[]> {
-    const res = await fetch(`${API_URL}/publicaciones`)
+export async function fetchPublicaciones(apiUrl: string): Promise<Publicacion[]> {
+    const res = await fetch(`${apiUrl}/publicaciones`)
     if (!res.ok) throw new Error('No se pudieron obtener publicaciones')
     return await res.json()
 }

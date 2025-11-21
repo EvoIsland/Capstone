@@ -195,13 +195,14 @@ watch(() => filtros.value.comunaId, () => {
 async function cargarDatos() {
   cargando.value = true
   error.value = ''
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const runtimeConfig = useRuntimeConfig();
+  const apiUrl = runtimeConfig.public.apiUrl;
   try {
     const [noticiasRes, regionesRes, comunasRes, instalacionesRes] = await Promise.all([
-      $fetch<Noticia[]>(`${API_URL}/noticias`),
-      $fetch<any[]>(`${API_URL}/regiones`),
-      $fetch<any[]>(`${API_URL}/comunas`),
-      $fetch<any[]>(`${API_URL}/instalaciones`)
+      $fetch<Noticia[]>(`${apiUrl}/noticias`),
+      $fetch<any[]>(`${apiUrl}/regiones`),
+      $fetch<any[]>(`${apiUrl}/comunas`),
+      $fetch<any[]>(`${apiUrl}/instalaciones`)
     ])
     noticias.value = noticiasRes
     regiones.value = regionesRes
@@ -236,9 +237,10 @@ function confirmarEliminar(noticia: Noticia) {
 async function eliminarNoticia() {
   if (!noticiaAEliminar.value) return
   eliminando.value = true
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const runtimeConfig = useRuntimeConfig();
+  const apiUrl = runtimeConfig.public.apiUrl;
   try {
-    await $fetch(`${API_URL}/noticia/${noticiaAEliminar.value._id}`, {
+    await $fetch(`${apiUrl}/noticia/${noticiaAEliminar.value._id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${accessToken.value}`

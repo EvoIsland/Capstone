@@ -124,6 +124,8 @@ import { ref, onMounted } from 'vue'
 import { useAuth } from '../../../composables/useAuth'
 
 const { accessToken } = useAuth()
+const runtimeConfig = useRuntimeConfig()
+const apiUrl = runtimeConfig.public.apiUrl
 
 const cantidadUsuarios = ref(0)
 const cantidadPublicaciones = ref(0)
@@ -137,16 +139,14 @@ onMounted(async () => {
       return
     }
 
-    const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
-
     const [usuarios, publicaciones, instalaciones] = await Promise.all([
-      fetch(`${API_URL}/admin/usuarios`, {
+      fetch(`${apiUrl}/admin/usuarios`, {
         headers: { Authorization: `Bearer ${accessToken.value}` }
       }).then(res => res.json()),
-      fetch(`${API_URL}/admin/publicaciones`, {
+      fetch(`${apiUrl}/admin/publicaciones`, {
         headers: { Authorization: `Bearer ${accessToken.value}` }
       }).then(res => res.json()),
-      fetch(`${API_URL}/admin/instalaciones`, {
+      fetch(`${apiUrl}/admin/instalaciones`, {
         headers: { Authorization: `Bearer ${accessToken.value}` }
       }).then(res => res.json())
     ])

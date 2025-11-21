@@ -8,6 +8,8 @@ import {
 } from '../../services/admin/instalacionesService'
 
 export function useInstalacionesAdmin(token: string) {
+  const runtimeConfig = useRuntimeConfig()
+  const apiUrl = runtimeConfig.public.apiUrl
   const instalaciones = ref<Instalacion[]>([])
   const loading = ref(false)
   const error = ref('')
@@ -16,7 +18,7 @@ export function useInstalacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      instalaciones.value = await fetchInstalaciones(token)
+      instalaciones.value = await fetchInstalaciones(apiUrl, token)
     } catch (e: any) {
       error.value = e.message || 'Error al cargar instalaciones'
     } finally {
@@ -28,7 +30,7 @@ export function useInstalacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await crearInstalacion(data, token)
+      await crearInstalacion(apiUrl, data, token)
       await cargarInstalaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al crear instalación'
@@ -41,7 +43,7 @@ export function useInstalacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await actualizarInstalacion(id, data, token)
+      await actualizarInstalacion(apiUrl, id, data, token)
       await cargarInstalaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al actualizar instalación'
@@ -54,7 +56,7 @@ export function useInstalacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await eliminarInstalacion(id, token)
+      await eliminarInstalacion(apiUrl, id, token)
       await cargarInstalaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al eliminar instalación'

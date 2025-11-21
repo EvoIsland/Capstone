@@ -8,6 +8,8 @@ import {
 } from '../../services/admin/publicacionesServices'
 
 export function usePublicacionesAdmin(token: string) {
+  const runtimeConfig = useRuntimeConfig()
+  const apiUrl = runtimeConfig.public.apiUrl
   const publicaciones = ref<Publicacion[]>([])
   const loading = ref(false)
   const error = ref('')
@@ -16,7 +18,7 @@ export function usePublicacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      publicaciones.value = await fetchPublicaciones(token)
+      publicaciones.value = await fetchPublicaciones(apiUrl, token)
     } catch (e: any) {
       error.value = e.message || 'Error al cargar publicaciones'
     } finally {
@@ -28,7 +30,7 @@ export function usePublicacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await eliminarPublicacion(id, token)
+      await eliminarPublicacion(apiUrl, id, token)
       await cargarPublicaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al eliminar publicación'
@@ -41,7 +43,7 @@ export function usePublicacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await crearPublicacion(data, token)
+      await crearPublicacion(apiUrl, data, token)
       await cargarPublicaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al crear publicación'
@@ -54,7 +56,7 @@ export function usePublicacionesAdmin(token: string) {
     loading.value = true
     error.value = ''
     try {
-      await actualizarPublicacion(id, data, token)
+      await actualizarPublicacion(apiUrl, id, data, token)
       await cargarPublicaciones()
     } catch (e: any) {
       error.value = e.message || 'Error al actualizar publicación'

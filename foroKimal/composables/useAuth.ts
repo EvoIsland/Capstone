@@ -1,4 +1,5 @@
 import { useLocalStorage } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
 interface User {
   id: string
@@ -14,6 +15,7 @@ interface AuthResponse {
 }
 
 export const useAuth = () => {
+  const router = useRouter()
 
   // Estado global compartido usando useState de Nuxt
   const user = useState<User | null>('auth-user', () => null)
@@ -22,8 +24,8 @@ export const useAuth = () => {
   const error = useState<string | null>('auth-error', () => null)
   const isInitialized = useState('auth-initialized', () => false)
 
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000'
-  const router = useRouter()
+  const runtimeConfig = useRuntimeConfig();
+  const API_URL = runtimeConfig.public.apiUrl; 
 
   const register = async (userData: {
     nombre: string

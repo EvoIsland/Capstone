@@ -121,9 +121,10 @@ const handleSubmit = async () => {
   esError.value = false
   loading.value = true
   
-  const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const runtimeConfig = useRuntimeConfig();
+  const apiUrl = runtimeConfig.public.apiUrl;
   try {
-    const res = await fetch(`${API_URL}/request-password-change`, {
+    const res = await fetch(`${apiUrl}/request-password-change`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ correo: correo.value })
