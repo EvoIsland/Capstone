@@ -224,9 +224,10 @@ const handleSubmit = async () => {
 
   const runtimeConfig = useRuntimeConfig();
   const apiUrl = runtimeConfig.public.apiUrl;
+  
   try {
     const body: any = {
-      tipo: form.value.tipo === 'pregunta' ? 'Pregunta' : 'Reporte', // Ajuste mayúsculas según backend común
+      tipo: form.value.tipo, // Envía 'pregunta' o 'reporte' tal cual
       texto: form.value.texto,
     };
     
@@ -239,7 +240,16 @@ const handleSubmit = async () => {
         return;
       }
       body.instalacionId = form.value.instalacionId;
+      
+      // Agregar comunaId y regionId desde la instalación seleccionada
+      const inst = instalaciones.value.find((i: any) => i._id === form.value.instalacionId);
+      if (inst) {
+        body.comunaId = inst.comunaId;
+        body.regionId = inst.regionId;
+      }
     }
+
+    console.log('📤 Body enviado:', body); // Para debugging
 
     await $fetch(`${apiUrl}/publicacion`, {
       method: 'POST',
@@ -256,11 +266,12 @@ const handleSubmit = async () => {
       form.value.instalacionId = '';
       form.value.regionId = '';
       closeModal();
+      window.location.reload(); // Refresca las publicaciones
     }, 1500);
 
   } catch (err: any) {
-    error.value = err.data?.message || 'Ocurrió un error al intentar publicar.';
-    console.error(err);
+    console.error('❌ Error completo:', err);
+    error.value = err.data?.message || err.message || 'Ocurrió un error al intentar publicar.';
   }
 };
 </script>
