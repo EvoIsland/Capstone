@@ -176,6 +176,11 @@
               <label>Texto (Compartido)</label>
               <textarea v-model="selectedElement.content" rows="4"></textarea>
             </div>
+              <!-- Subir Imagen y optimizar -->
+              <div v-if="selectedElement.type === 'image'" class="form-group">
+                <label>Subir Imagen</label>
+                <input type="file" accept="image/*" @change="handleImageUpload" />
+              </div>
 
             <!-- Editor de Layout -->
             <div class="form-group">
@@ -287,6 +292,35 @@ const isLoading = ref(false);
 
 // --- Computed ---
 const selectedElement = computed(() => elements.value.find(e => e.id === selectedId.value));
+// --- Optimización de imágenes al subir ---
+const handleImageUpload = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const img = new window.Image();
+  img.src = URL.createObjectURL(file);
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxWidth = 800;
+    const maxHeight = 600;
+    let { width, height } = img;
+    if (width > maxWidth || height > maxHeight) {
+      const ratio = Math.min(maxWidth / width, maxHeight / height);
+      width = width * ratio;
+      height = height * ratio;
+    }
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(img, 0, 0, width, height);
+    // Convertir a base64 JPEG (calidad 0.8)
+    const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    // Asignar al elemento seleccionado si es imagen
+    if (selectedElement.value && selectedElement.value.type === 'image') {
+      selectedElement.value.src = optimizedDataUrl;
+    }
+  };
+};
 
 const comunasFiltradas = computed(() => {
   if (!form.value.regionId) return [];

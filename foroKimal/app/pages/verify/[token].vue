@@ -19,7 +19,7 @@ const success = ref(false);
 const error = ref(false);
 
 const goLogin = () => {
-  router.push('/login');
+  router.push('/');
 };
 
 onMounted(async () => {

@@ -133,6 +133,13 @@
             
             <!-- Contenido Imagen -->
             <img v-if="element.type === 'image'" :src="element.src" class="element-content image" />
+            <!-- Handles de redimensionamiento solo para imagen -->
+            <template v-if="selectedId === element.id && element.type === 'image'">
+              <div v-for="corner in ['nw','ne','sw','se']" :key="corner"
+                class="resize-handle" :class="corner"
+                @mousedown.stop="startResize($event, element.id, corner)"
+              ></div>
+            </template>
             
             <!-- Contenido Box/Divider -->
             <div v-if="element.type === 'box'" class="element-content box"></div>
@@ -163,10 +170,21 @@
             <button @click="selectedId = null">×</button>
           </div>
 
+          <!-- DEBUG: Mostrar tipo de elemento seleccionado -->
+          <div class="form-group">
+            <label>Tipo seleccionado:</label>
+            <span style="font-weight:bold; color:#2563eb">{{ selectedElement.type }}</span>
+          </div>
+
           <!-- Editor de Texto -->
           <div v-if="selectedElement.type === 'text'" class="form-group">
             <label>Texto (Compartido)</label>
             <textarea v-model="selectedElement.content" rows="4"></textarea>
+          </div>
+          <!-- Subir Imagen y optimizar -->
+          <div v-if="selectedElement.type === 'image'" class="form-group">
+            <label>Subir Imagen</label>
+            <input type="file" accept="image/*" @change="handleImageUpload" />
           </div>
 
           <!-- Editor de Layout -->
@@ -279,6 +297,35 @@ const isLoading = ref(false);
 
 // --- Computed ---
 const selectedElement = computed(() => elements.value.find(e => e.id === selectedId.value));
+// --- Optimización de imágenes al subir ---
+const handleImageUpload = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const img = new window.Image();
+  img.src = URL.createObjectURL(file);
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxWidth = 800;
+    const maxHeight = 600;
+    let { width, height } = img;
+    if (width > maxWidth || height > maxHeight) {
+      const ratio = Math.min(maxWidth / width, maxHeight / height);
+      width = width * ratio;
+      height = height * ratio;
+    }
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(img, 0, 0, width, height);
+    // Convertir a base64 JPEG (calidad 0.8)
+    const optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    // Asignar al elemento seleccionado si es imagen
+    if (selectedElement.value && selectedElement.value.type === 'image') {
+      selectedElement.value.src = optimizedDataUrl;
+    }
+  };
+};
 
 const comunasFiltradas = computed(() => {
   if (!form.value.regionId) return [];
@@ -322,6 +369,8 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove);
   window.removeEventListener('mouseup', handleMouseUp);
+  window.removeEventListener('mousemove', handleResizeMove);
+  window.removeEventListener('mouseup', stopResize);
 });
 
 // --- LÓGICA DEL EDITOR ---
@@ -496,6 +545,61 @@ const getNewsMetadata = () => {
   };
 };
 
+// --- Estado de redimensionamiento (solo imagen) ---
+const resizing = ref(false);
+const resizeData = ref({ id: '', corner: '', startX: 0, startY: 0, startWidth: 0, startHeight: 0 });
+
+const startResize = (e: MouseEvent, id: string, corner: string) => {
+  const el = elements.value.find(x => x.id === id);
+  if (!el || el.type !== 'image') return;
+  resizing.value = true;
+  resizeData.value = {
+    id,
+    corner,
+    startX: e.clientX,
+    startY: e.clientY,
+    startWidth: Number(el.layout[deviceMode.value].width) || 0,
+    startHeight: Number(el.layout[deviceMode.value].height) || 0
+  };
+  window.addEventListener('mousemove', handleResizeMove);
+  window.addEventListener('mouseup', stopResize);
+};
+
+const handleResizeMove = (e: MouseEvent) => {
+  if (!resizing.value) return;
+  const el = elements.value.find(x => x.id === resizeData.value.id);
+  if (!el || el.type !== 'image') return;
+  const dx = e.clientX - resizeData.value.startX;
+  const dy = e.clientY - resizeData.value.startY;
+  let newWidth = resizeData.value.startWidth;
+  let newHeight = resizeData.value.startHeight;
+  // Esquinas: nw, ne, sw, se
+  if (resizeData.value.corner === 'se') {
+    newWidth += dx;
+    newHeight += dy;
+  } else if (resizeData.value.corner === 'sw') {
+    newWidth -= dx;
+    newHeight += dy;
+  } else if (resizeData.value.corner === 'ne') {
+    newWidth += dx;
+    newHeight -= dy;
+  } else if (resizeData.value.corner === 'nw') {
+    newWidth -= dx;
+    newHeight -= dy;
+  }
+  // Limitar tamaño mínimo
+  newWidth = Math.max(50, newWidth);
+  newHeight = Math.max(30, newHeight);
+  el.layout[deviceMode.value].width = newWidth;
+  el.layout[deviceMode.value].height = newHeight;
+};
+
+const stopResize = () => {
+  resizing.value = false;
+  window.removeEventListener('mousemove', handleResizeMove);
+  window.removeEventListener('mouseup', stopResize);
+};
+
 // --- SUBMIT ---
 const handleSubmit = async () => {
   error.value = '';
@@ -513,6 +617,9 @@ const handleSubmit = async () => {
   }
 
   try {
+    const runtimeConfig = useRuntimeConfig();
+    const apiUrl = runtimeConfig.public.apiUrl;
+    
     const body: any = {
       tipo: 'noticia',
       titulo: meta.title,           // Se usa el título del diseño para el feed
@@ -716,6 +823,21 @@ const handleSubmit = async () => {
 }
 .canvas-element:hover { box-shadow: 0 0 0 1px #60a5fa; cursor: grab; }
 .canvas-element.selected { box-shadow: 0 0 0 2px #2563eb; z-index: 10; }
+
+.resize-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #2563eb;
+  border-radius: 50%;
+  z-index: 10;
+  cursor: pointer;
+}
+.resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+.resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+.resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+.resize-handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
 
 .element-content { width: 100%; height: 100%; pointer-events: none; }
 .element-content.text { white-space: pre-wrap; word-break: break-word; }
