@@ -100,10 +100,13 @@ onMounted(async () => {
 })
 
 async function cargarNoticia() {
+  const config = useRuntimeConfig()
+  const apiUrl = config.public.apiUrl
+  
   cargando.value = true
   error.value = ''
   try {
-    const res = await fetch(`http://localhost:5000/noticia/${props.noticiaId}`)
+    const res = await fetch(`${apiUrl}/noticia/${props.noticiaId}`)
     if (!res.ok) throw new Error('Error al cargar la noticia')
     noticia.value = await res.json()
   } catch (err) {

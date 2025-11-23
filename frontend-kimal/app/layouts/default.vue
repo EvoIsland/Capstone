@@ -50,6 +50,10 @@ const router = useRouter()
 const route = useRoute()
 const isScrolled = ref(false)
 
+// Log de la URL del backend
+const config = useRuntimeConfig()
+console.log('🔗 Backend URL configurada:', config.public.apiUrl)
+
 // Detectar si estamos en la ruta del mapa
 const isMapRoute = computed(() => route.path === '/mapa' || route.path === '/')
 

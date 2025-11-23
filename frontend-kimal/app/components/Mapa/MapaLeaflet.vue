@@ -241,12 +241,15 @@ function aplicarFiltros(instalacionesFiltradas) {
 }
 
 onMounted(async () => {
+  const config = useRuntimeConfig()
+  const apiUrl = config.public.apiUrl
+  
   // Cargar datos
   try {
     const [instRes, regRes, comRes] = await Promise.all([
-      axios.get('http://localhost:5000/instalaciones'),
-      axios.get('http://localhost:5000/regiones'),
-      axios.get('http://localhost:5000/comunas')
+      axios.get(`${apiUrl}/instalaciones`),
+      axios.get(`${apiUrl}/regiones`),
+      axios.get(`${apiUrl}/comunas`)
     ])
     data.value.instalaciones = instRes.data
     data.value.regiones = regRes.data

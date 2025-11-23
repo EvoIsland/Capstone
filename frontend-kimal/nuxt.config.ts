@@ -7,7 +7,7 @@ const alias = {
 
 export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
-	devtools: { enabled: true },
+	devtools: { enabled: process.env.NODE_ENV !== 'production' },
 	alias,
 
 	css: [
@@ -18,29 +18,15 @@ export default defineNuxtConfig({
 
 	runtimeConfig: {
 		// Variables de servidor (privadas)
-		strapiToken: process.env.STRAPI_API_TOKEN,
 		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		
 		// Variables públicas (expuestas al cliente)
 		public: {
-			strapiUrl: process.env.STRAPI_URL || 'http://localhost:1337',
-			strapiApiUrl: process.env.STRAPI_API_URL || 'http://localhost:1337/api'
+			apiUrl: process.env.API_URL || 'http://localhost:5000'
 		}
 	},
 
-	// Configuración de proxy para desarrollo
-	nitro: {
-		devProxy: {
-			'/api/strapi': {
-				target: 'http://localhost:1337/api',
-				changeOrigin: true,
-				prependPath: true,
-				pathRewrite: {
-					'^/api/strapi': ''
-				}
-			}
-		}
-	},
+
 
 	typescript: {
 		tsConfig: {

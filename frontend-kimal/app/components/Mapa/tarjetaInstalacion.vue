@@ -186,13 +186,16 @@ const noticiasFiltered = computed(() => {
 
 // Data Fetching
 watch(() => props.instalacion, async (inst) => {
+  const config = useRuntimeConfig()
+  const apiUrl = config.public.apiUrl
+  
   if (inst && inst._id) {
     try {
       // Preguntas y reportes
-      const { data } = await axios.get(`http://localhost:5000/publicaciones?instalacionId=${inst._id}`)
+      const { data } = await axios.get(`${apiUrl}/publicaciones?instalacionId=${inst._id}`)
       publicaciones.value = Array.isArray(data) ? data : []
       // Noticias
-      const noticiasRes = await axios.get(`http://localhost:5000/noticias?instalacionId=${inst._id}`)
+      const noticiasRes = await axios.get(`${apiUrl}/noticias?instalacionId=${inst._id}`)
       noticias.value = Array.isArray(noticiasRes.data) ? noticiasRes.data : []
     } catch (error) {
       publicaciones.value = []
