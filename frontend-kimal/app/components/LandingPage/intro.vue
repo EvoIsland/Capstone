@@ -4,7 +4,7 @@
 		<div class="anchoMaximo flex flex-responsive jcc gap4rem">
 			<!-- Contenido principal izquierdo -->
 			<div class="contenido-izquierdo">
-				<h1 class="titulo mb3rem">Torres de alta tensión</h1>
+				<h1 class="titulo mb3rem">Plataforma de Comunicación Kimal</h1>
 				<!-- Mapa de Chile con torres -->
 				<div class="mapa-container">
 					<div class="mapa-chile">

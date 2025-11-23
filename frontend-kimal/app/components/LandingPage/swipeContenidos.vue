@@ -25,7 +25,7 @@
                                 
                                 <!-- Contenedor del mapa -->
                                 <div class="mapa-container">
-                                    <img src="#" alt="Mapa Kimal-Lo Aguirre" class="mapa-imagen">
+                                    <img :src="noticia.imagen" :alt="noticia.titulo" class="mapa-imagen">
                                 </div>
                                 
                                 <!-- Contenido del texto a la derecha -->
@@ -81,27 +81,27 @@ interface Noticia {
 
 const swiperRef = ref<any>(null)
 
-// Datos de ejemplo basados en el proyecto KIMAL
+// Datos estáticos sobre la plataforma desarrollada
 const noticiasDestacadas = ref<Noticia[]>([
     {
         id: 1,
-        titulo: "Título",
-        descripcion: "Las comunidades carecen de mecanismos claros y accesibles para monitorear y fiscalizar los avances del proyecto HVDC, lo que puede generar desconfianza o limitar la transparencia.",
-        imagen: "#",
+        titulo: "Foro de Comunicación",
+        descripcion: "Desarrollamos un foro comunitario que permite a los usuarios compartir inquietudes, recibir noticias actualizadas y mantener una comunicación directa con el proyecto Kimal.",
+        imagen: "/images/foro2.png",
         categoria: 'destacada'
     },
     {
         id: 2,
-        titulo: "Conexión entre subestaciones",
-        descripcion: "Se ha establecido exitosamente la conexión principal entre la Subestación Kimal en María Elena y la Subestación Lo Aguirre en Pudahuel, marcando un hito importante en el proyecto.",
-        imagen: "#",
+        titulo: "Mapa Interactivo",
+        descripcion: "Implementamos un mapa interactivo que permite visualizar en tiempo real todas las instalaciones del proyecto, facilitando el acceso a información geográfica y detalles de cada punto.",
+        imagen: "/images/mapa1.png",
         categoria: 'destacada'
     },
     {
         id: 3,
-        titulo: "Beneficios para comunidades",
-        descripcion: "El proyecto HVDC generará empleos locales y mejorará la infraestructura eléctrica de las regiones de Antofagasta y Metropolitana, beneficiando a miles de familias.",
-        imagen: "#",
+        titulo: "Chatbot Inteligente",
+        descripcion: "Creamos un asistente virtual disponible 24/7 que responde consultas frecuentes de forma inmediata, mejorando la experiencia de información para todos los usuarios.",
+        imagen: "/images/chatbot.png",
         categoria: 'destacada'
     }
 ])

@@ -53,10 +53,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 
-// Datos reactivos
-const tarjetas = ref([])
+// Datos estáticos de las tarjetas
+const tarjetas = ref([
+    {
+        id: 1,
+        titulo: 'Foro Comunitario',
+        texto: 'Espacio de comunicación directa entre la comunidad y el proyecto, permitiendo compartir inquietudes, noticias y mantener informados a todos los usuarios.',
+        color: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        imagen: '/images/foro1.png',
+        alt: 'Foro de comunicación comunitaria'
+    },
+    {
+        id: 2,
+        titulo: 'Mapa Interactivo',
+        texto: 'Visualización en tiempo real de las instalaciones del proyecto Kimal, permitiendo a los usuarios conocer ubicaciones y detalles de cada punto de interés.',
+        color: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+        imagen: '/images/mapa1.png',
+        alt: 'Mapa interactivo de instalaciones'
+    },
+    {
+        id: 3,
+        titulo: 'Chatbot Asistente',
+        texto: 'Asistente virtual disponible 24/7 para responder preguntas frecuentes y guiar a los usuarios en la obtención de información sobre el proyecto.',
+        color: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+        imagen: '/images/chatbot.png',
+        alt: 'Chatbot de asistencia'
+    }
+])
+
 const currentIndex = ref(0)
 const translateX = ref(0)
 const swipeContainer = ref(null)
@@ -66,43 +92,6 @@ const isDragging = ref(false)
 const startX = ref(0)
 const currentX = ref(0)
 const initialTranslateX = ref(0)
-
-// Cargar datos desde Strapi
-onMounted(async () => {
-    try {
-        console.log('🔄 Cargando tarjetas desde Strapi...')
-        
-        // Configuración de Strapi
-        const config = useRuntimeConfig()
-        const strapiApiUrl = config.public.strapiApiUrl || 'http://localhost:1337/api'
-        const strapiUrl = config.public.strapiUrl || 'http://localhost:1337'
-        
-        const response = await $fetch(`${strapiApiUrl}/tarjetas-intros?populate=imagen`)
-        
-        console.log('✅ Datos cargados desde Strapi:', response)
-        
-        // Mapear los datos al formato del swiper
-        const tarjetasStrapi = response.data || response
-        
-        tarjetas.value = tarjetasStrapi.map(tarjeta => ({
-            id: tarjeta.id,
-            titulo: tarjeta.titulo,
-            texto: tarjeta.descripcion,
-            color: "linear-gradient(135deg, #10B981 0%, #059669 100%)", // Color por defecto
-            imagen: tarjeta.imagen?.url ? 
-                (tarjeta.imagen.url.startsWith('http') ? 
-                    tarjeta.imagen.url : 
-                    `${strapiUrl}${tarjeta.imagen.url}`) 
-                : '/images/placeholder.jpg',
-            alt: tarjeta.imagen?.alternativeText || 'Imagen del proyecto'
-        }))
-        
-    } catch (error) {
-        console.error('❌ Error al cargar los datos desde Strapi:', error)
-        // NO más fallback a data.json - mostrar error
-        tarjetas.value = []
-    }
-})
 
 // Funciones de navegación
 const nextSlide = () => {

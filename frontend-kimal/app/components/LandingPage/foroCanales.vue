@@ -21,15 +21,15 @@
 </template>
 
 <script setup lang="ts">
-// Funciones para manejar clicks si es necesario
-function verForoComunitario() {
-    // Lógica para navegar al foro comunitario
-    navigateTo('/foro')
+// Funciones para manejar clicks y navegación
+const verForoComunitario = () => {
+    // Navegar al foro comunitario
+    window.open('https://forokimal.vercel.app', '_blank')
 }
 
-function verCanalFormales() {
-    // Lógica para navegar al canal formales
-    console.log('Navegando a Canal Formales')
+const verCanalFormales = () => {
+    // Navegar al canal de conexión energía
+    window.open('https://www.conexionenergia.com', '_blank')
 }
 </script>
 

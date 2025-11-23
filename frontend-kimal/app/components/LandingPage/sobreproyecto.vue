@@ -1,127 +1,49 @@
 <template>
   <section class="sobre-proyecto p4rem">
     <div class="anchoMaximo flex flex-responsive jcc gap4rem">
-      <!-- Estado de carga -->
-      <div v-if="pending" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p>Cargando información del proyecto...</p>
-      </div>
-      
-      <!-- Error -->
-      <div v-else-if="error" class="error-container">
-        <p>Error al cargar la información: {{ error }}</p>
-      </div>
-      
-      <!-- Contenido normal -->
-      <template v-else-if="sobreProyecto">
-        <!-- Contenido principal izquierdo -->
-        <div class="contenido-izquierdo">
-          <h2 class="titulo mb3rem">{{ sobreProyecto.titulo }}</h2>
-          
-          <!-- Comillas decorativas -->
-          <div class="comillas mb3rem">
-            <span class="comilla-izq">"</span>
-            <span class="comilla-der">"</span>
-          </div>
-          
-          <!-- Descripción del proyecto -->
-          <p class="descripcion mb4rem">
-            {{ sobreProyecto.descripcion }}
-          </p>
-          
-          <!-- Botón Leer más -->
-          <button class="btn-leer-mas">
-            Leer más
-          </button>
+      <!-- Contenido principal izquierdo -->
+      <div class="contenido-izquierdo">
+        <h2 class="titulo mb3rem">{{ sobreProyecto.titulo }}</h2>
+        
+        <!-- Comillas decorativas -->
+        <div class="comillas mb3rem">
+          <span class="comilla-izq">"</span>
+          <span class="comilla-der">"</span>
         </div>
         
-        <!-- Contenido derecho - Imagen -->
-        <div class="contenido-derecho">
-          <div class="imagen-container">
-            <img 
-              :src="getImageUrl(sobreProyecto.imagen)" 
-              :alt="sobreProyecto.imagen?.alternativeText || 'Torre eléctrica'" 
-              class="torre-imagen"
-            >
-          </div>
+        <!-- Descripción del proyecto -->
+        <p class="descripcion mb4rem">
+          {{ sobreProyecto.descripcion }}
+        </p>
+        
+        <!-- Botón Leer más -->
+        <button class="btn-leer-mas">
+          Leer más
+        </button>
+      </div>
+      
+      <!-- Contenido derecho - Imagen -->
+      <div class="contenido-derecho">
+        <div class="imagen-container">
+          <img 
+            :src="sobreProyecto.imagen" 
+            :alt="sobreProyecto.imagenAlt" 
+            class="torre-imagen"
+          >
         </div>
-      </template>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup>
-// Importar explícitamente si es necesario
-// import { useStrapi } from '~/composables/useStrapi'
-
-// Configuración directa para evitar problemas de import
-const config = useRuntimeConfig()
-const strapiUrl = config.public.strapiUrl || 'http://localhost:1337'
-const strapiApiUrl = config.public.strapiApiUrl || 'http://localhost:1337/api'
-
-// Estados reactivos
-const sobreProyecto = ref(null)
-const pending = ref(true)
-const error = ref(null)
-
-// Función para obtener la URL completa de la imagen
-const getImageUrl = (imagen) => {
-  if (!imagen?.url) {
-    return '/images/placeholder.jpg' // Imagen por defecto
-  }
-  
-  const imageUrl = imagen.url
-  
-  // Si la URL ya es completa, la retornamos
-  if (imageUrl.startsWith('http')) {
-    return imageUrl
-  }
-  
-  // Si es una URL relativa, la concatenamos con la URL de Strapi
-  return `${strapiUrl}${imageUrl}`
+// Datos estáticos del proyecto
+const sobreProyecto = {
+  titulo: 'Sobre la Plataforma',
+  descripcion: 'Plataforma digital desarrollada para mejorar la comunicación y entrega de información a los usuarios del proyecto Kimal. Integra un foro comunitario para compartir inquietudes y noticias, un mapa interactivo para visualizar las instalaciones en tiempo real, y un chatbot inteligente para responder consultas de forma inmediata.',
+  imagen: '/images/mapa2.png',
+  imagenAlt: 'Plataforma digital de comunicación Kimal'
 }
-
-// Función para cargar los datos usando $fetch directamente
-const loadSobreProyecto = async () => {
-  try {
-    pending.value = true
-    error.value = null
-    
-    console.log('🔄 Cargando datos de sobre-proyecto desde Strapi...')
-    
-    // Usar $fetch directamente - SINGLE TYPE no lleva ID
-    const response = await $fetch(`${strapiApiUrl}/sobre-proyecto?populate=imagen`)
-    
-    console.log('✅ Datos cargados:', response)
-    console.log('✅ Tipo de response:', typeof response)
-    console.log('✅ Keys de response:', Object.keys(response))
-    
-    // Los datos vienen dentro de response.data
-    sobreProyecto.value = response.data
-    
-    console.log('✅ sobreProyecto.value:', sobreProyecto.value)
-    console.log('✅ titulo:', response.data.titulo)
-    console.log('✅ descripcion:', response.data.descripcion)
-    
-  } catch (err) {
-    console.error('❌ Error cargando sobre-proyecto:', err)
-    error.value = err.message
-    
-    // Datos de fallback en caso de error
-    sobreProyecto.value = {
-      titulo: 'Sobre el proyecto',
-      descripcion: 'Consiste en el desarrollo, construcción y operación de la primera línea de transmisión de corriente continua entre la Subestación Limal en la comuna de María Elena, Región de Antofagasta y la Subestación Lo Aguirre en la comuna de Pudahuel, Región Metropolitana.',
-      imagen: null
-    }
-  } finally {
-    pending.value = false
-  }
-}
-
-// Cargar datos al montar el componente
-onMounted(() => {
-  loadSobreProyecto()
-})
 </script>
 
 <style lang="sass" scoped>
