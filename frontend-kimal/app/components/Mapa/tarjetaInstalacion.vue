@@ -94,11 +94,11 @@
 
         <div class="divider"><span>Noticias</span></div>
 
-        <div v-if="noticias.length === 0" class="empty-state">
+        <div v-if="noticiasFiltered.length === 0" class="empty-state">
           <p>No hay noticias disponibles.</p>
         </div>
 
-        <div v-for="noticia in noticias" :key="noticia._id" class="news-card">
+        <div v-for="noticia in noticiasFiltered" :key="noticia._id" class="news-card">
            <div class="news-header">
              <span class="news-badge">Noticia</span>
              <span class="news-date">{{ formatFecha(noticia.fecha) }}</span>
@@ -107,11 +107,21 @@
            <div v-if="noticia.imagenes?.length" class="chat-images">
             <img v-for="img in noticia.imagenes" :src="img" :key="img" class="chat-img" />
           </div>
+          <button class="news-action" @click="abrirDetalleNoticia(noticia._id)">Más información</button>
         </div>
       </div>
 
     </div>
   </div>
+
+  <!-- Modal para ver detalle de noticia (fuera del wrapper) -->
+  <Teleport to="body">
+    <DetailNoticeModal 
+      v-if="noticiaSeleccionada" 
+      :noticia-id="noticiaSeleccionada" 
+      @close="noticiaSeleccionada = null" 
+    />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -141,6 +151,7 @@ const props = defineProps<{ instalacion: Instalacion | null }>()
 
 const publicaciones = ref<Publicacion[]>([])
 const noticias = ref<Publicacion[]>([])
+const noticiaSeleccionada = ref<string | null>(null)
 
 const tabs = ['Preguntas', 'Reporte', 'Información']
 const activeTab = ref('Preguntas')
@@ -166,6 +177,11 @@ const preguntas = computed(() => {
 const reportes = computed(() => {
   const id = props.instalacion?._id
   return publicaciones.value.filter(p => p.tipo === 'reporte' && matchInstalacionId(p, id))
+})
+
+const noticiasFiltered = computed(() => {
+  const id = props.instalacion?._id
+  return noticias.value.filter(n => matchInstalacionId(n, id))
 })
 
 // Data Fetching
@@ -199,6 +215,10 @@ function formatFecha(fecha: string) {
   if (diff < 86400000) return 'Hace ' + Math.floor(diff/3600000) + ' h'
   
   return d.toLocaleDateString()
+}
+
+function abrirDetalleNoticia(id: string) {
+  noticiaSeleccionada.value = id
 }
 </script>
 
@@ -491,7 +511,20 @@ $bg-glass: rgba(255, 255, 255, 0.6);
     font-weight: 700;
 }
 .news-date { font-size: 10px; color: $text-light; }
-.news-text { font-size: 13px; line-height: 1.4; }
+.news-text { font-size: 13px; line-height: 1.4; margin-bottom: 8px; }
+.news-action {
+    background: none;
+    border: none;
+    display: block;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: $primary;
+    cursor: pointer;
+    padding: 0;
+    
+    &:hover { text-decoration: underline; }
+}
 
 /* --- EMPTY STATE --- */
 .empty-state {
