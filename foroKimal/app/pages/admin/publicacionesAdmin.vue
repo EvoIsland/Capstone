@@ -11,7 +11,7 @@
             <div class="column-filters">
               <select v-model="selectedRegion" class="form-select" @change="filterInstalaciones">
                 <option value="">Todas las Regiones</option>
-                <option v-for="region in regiones" :key="region">{{ region }}</option>
+                <option v-for="region in regiones" :key="region._id" :value="region._id">{{ region.nombre }}</option>
               </select>
             </div>
           </div>
@@ -271,7 +271,8 @@ const { accessToken } = useAuth()
 const instalaciones = ref<any[]>([])
 const publicaciones = ref<any[]>([])
 const comentarios = ref<any[]>([])
-const regiones = ref<string[]>([])
+const regiones = ref<any[]>([])
+const regionesMap = ref<Map<string, string>>(new Map())
 
 const selectedRegion = ref('')
 const selectedInstalacion = ref<any>(null)
@@ -286,7 +287,10 @@ const showModal = ref(false)
 // Computed
 const filteredInstalaciones = computed(() => {
   if (!selectedRegion.value) return instalaciones.value
-  return instalaciones.value.filter(i => i.region === selectedRegion.value)
+  return instalaciones.value.filter(i => {
+    // Comparar ObjectId de regionId con el ObjectId seleccionado
+    return String(i.regionId) === selectedRegion.value
+  })
 })
 
 const filteredPublicaciones = computed(() => {
@@ -294,10 +298,14 @@ const filteredPublicaciones = computed(() => {
 
   // Filtrar por instalación
   if (selectedInstalacion.value) {
-    filtered = filtered.filter(p => 
-      p.comunaId?.includes(selectedInstalacion.value.comuna) ||
-      p.regionId?.includes(selectedInstalacion.value.region)
-    )
+    filtered = filtered.filter(p => {
+      // Comparar ObjectIds convertidos a string
+      const matchInstalacion = String(p.instalacionId) === String(selectedInstalacion.value._id)
+      const matchComuna = String(p.comunaId) === String(selectedInstalacion.value.comunaId)
+      const matchRegion = String(p.regionId) === String(selectedInstalacion.value.regionId)
+      
+      return matchInstalacion || matchComuna || matchRegion
+    })
   }
 
   // Filtrar por tipo
@@ -312,6 +320,22 @@ const filteredPublicaciones = computed(() => {
 const runtimeConfig = useRuntimeConfig();
 const apiUrl = runtimeConfig.public.apiUrl;
 
+const cargarRegiones = async () => {
+  try {
+    const res = await fetch(`${apiUrl}/regiones`, {
+      headers: { Authorization: `Bearer ${accessToken.value}` }
+    })
+    if (!res.ok) throw new Error('Error al cargar regiones')
+    const regionesData = await res.json()
+    regiones.value = regionesData
+    
+    // Crear un mapa de ObjectId -> nombre para fácil acceso
+    regionesMap.value = new Map(regionesData.map((r: any) => [String(r._id), r.nombre]))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 const cargarInstalaciones = async () => {
   loadingInstalaciones.value = true
   try {
@@ -320,9 +344,6 @@ const cargarInstalaciones = async () => {
     })
     if (!res.ok) throw new Error('Error al cargar instalaciones')
     instalaciones.value = await res.json()
-    
-    // Extraer regiones únicas
-    regiones.value = [...new Set(instalaciones.value.map(i => i.region).filter(Boolean))]
   } catch (err) {
     console.error(err)
   } finally {
@@ -459,6 +480,7 @@ const getBadgeClass = (tipo: string) => {
 }
 
 onMounted(() => {
+  cargarRegiones()
   cargarInstalaciones()
   cargarPublicaciones()
 })
