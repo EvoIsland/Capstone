@@ -60,7 +60,7 @@
       <div v-else class="feed-list">
         
         <!-- Estado Vacío -->
-        <div v-if="publicaciones.length === 0 && noticias.length === 0" class="status-message empty">
+        <div v-if="publicacionesFiltradas.length === 0 && noticiasFiltradas.length === 0" class="status-message empty">
           <p>No hay publicaciones ni noticias aún.</p>
         </div>
 
@@ -68,7 +68,7 @@
         <div class="posts-wrapper">
           <!-- Noticias -->
           <PostNoticeFeed
-            v-for="noticia in noticias"
+            v-for="noticia in noticiasFiltradas"
             :key="'noticia-' + noticia._id"
             :noticia="noticia"
             :autor="'Administración'"
@@ -79,7 +79,7 @@
 
           <!-- Publicaciones -->
           <PostBoxFeed
-            v-for="publicacion in publicaciones"
+            v-for="publicacion in publicacionesFiltradas"
             :key="'pub-' + publicacion._id"
             :publicacionId="publicacion._id"
             @abrirDetalle="abrirDetalle(publicacion._id)"
@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, inject } from 'vue'
 import { usePublicaciones } from '../../composables/usePublicaciones'
 import { useAuth } from '../../composables/useAuth'
 import { useNoticias } from '../../composables/useNoticias'
@@ -143,6 +143,24 @@ const {
 
 
 const { isInitialized } = useAuth()
+
+// Obtener el tab activo del layout
+const activeTab = inject<any>('activeTab', ref('general'))
+
+// Computar contenido filtrado según el tab activo
+const publicacionesFiltradas = computed(() => {
+  if (activeTab.value === 'noticias') {
+    return [] // No mostrar publicaciones en la pestaña de noticias
+  }
+  return publicaciones.value // Mostrar todas las publicaciones en General
+})
+
+const noticiasFiltradas = computed(() => {
+  if (activeTab.value === 'general') {
+    return [] // No mostrar noticias en la pestaña General
+  }
+  return noticias.value // Mostrar noticias en la pestaña Noticias
+})
 
 onMounted(() => {
   cargarPublicaciones()

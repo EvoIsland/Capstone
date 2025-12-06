@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, provide } from 'vue'
 import { Icon } from '@iconify/vue'
 import { useAuth } from '../../composables/useAuth'
 import CreatePostModal from '../components/AddPostModal.vue'
@@ -82,9 +82,11 @@ const activeTab = ref('general')
 const showDropdown = ref(false)
 const isScrolled = ref(false)
 
+// Exponer activeTab para que páginas hijas puedan usarlo
+provide('activeTab', activeTab)
+
 // Configuración de Tabs
 const tabs = [
-  { id: 'siguiendo', label: 'Siguiendo', icon: 'mdi:account-group-outline' },
   { id: 'general', label: 'General', icon: 'mdi:earth' },
   { id: 'noticias', label: 'Noticias', icon: 'mdi:newspaper-variant-outline' }
 ]

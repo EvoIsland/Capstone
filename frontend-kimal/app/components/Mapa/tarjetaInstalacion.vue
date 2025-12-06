@@ -35,8 +35,9 @@
       <!-- TAB: PREGUNTAS -->
       <div v-if="activeTab === 'Preguntas'" class="tab-content">
         <div v-if="preguntas.length === 0" class="empty-state">
-          <p>No hay preguntas recientes.</p>
-          <span class="sub-text">Sé el primero en preguntar.</span>
+          <p>No tenemos preguntas en tu zona.</p>
+          <span class="sub-text">Visita nuestro foro para más información.</span>
+          <button class="action-btn-foro" @click="irAlForo">Ir al Foro</button>
         </div>
         
         <div v-for="pregunta in preguntas" :key="pregunta._id" class="chat-item">
@@ -59,8 +60,9 @@
       <!-- TAB: REPORTE -->
       <div v-else-if="activeTab === 'Reporte'" class="tab-content">
         <div v-if="reportes.length === 0" class="empty-state">
-          <p>Todo opera con normalidad.</p>
-          <button class="action-btn-small">Crear Reporte</button>
+          <p>No tenemos reportes en tu zona.</p>
+          <span class="sub-text">Visita nuestro foro para más información.</span>
+          <button class="action-btn-foro" @click="irAlForo">Ir al Foro</button>
         </div>
 
         <div v-for="reporte in reportes" :key="reporte._id" class="chat-item report-item">
@@ -95,7 +97,9 @@
         <div class="divider"><span>Noticias</span></div>
 
         <div v-if="noticiasFiltered.length === 0" class="empty-state">
-          <p>No hay noticias disponibles.</p>
+          <p>No tenemos noticias en tu zona.</p>
+          <span class="sub-text">Visita nuestro foro para más información.</span>
+          <button class="action-btn-foro" @click="irAlForo">Ir al Foro</button>
         </div>
 
         <div v-for="noticia in noticiasFiltered" :key="noticia._id" class="news-card">
@@ -222,6 +226,10 @@ function formatFecha(fecha: string) {
 
 function abrirDetalleNoticia(id: string) {
   noticiaSeleccionada.value = id
+}
+
+function irAlForo() {
+  window.open('https://forokimal.vercel.app', '_blank')
 }
 </script>
 
@@ -536,18 +544,30 @@ $bg-glass: rgba(255, 255, 255, 0.6);
   color: $text-light;
   
   p { font-size: 14px; margin: 0 0 4px 0; }
-  .sub-text { font-size: 12px; opacity: 0.7; }
+  .sub-text { 
+    display: block;
+    font-size: 12px; 
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
   
-  .action-btn-small {
+  .action-btn-foro {
       margin-top: 10px;
       background: $primary;
       color: white;
       border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
+      
+      &:hover {
+        background: darken($primary, 10%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      }
   }
 }
 
