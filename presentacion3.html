@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura del Sistema Kimal</title>
+    <!-- Fuente Google Fonts para que se vea moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .diagram-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            width: 100%;
+            max-width: 1400px; /* Aumentado para dar cabida al espaciado extra */
+            overflow-x: auto; /* Permite scroll si el diagrama es muy ancho */
+        }
+
+        /* Leyenda de colores */
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Arquitectura Kimal</h1>
+    <p>Diagrama de componentes y flujo de datos</p>
+
+    <!-- Leyenda simple -->
+    <div class="legend">
+        <div class="legend-item"><div class="dot" style="background-color: #e3f2fd; border: 1px solid #1565c0;"></div>Frontend</div>
+        <div class="legend-item"><div class="dot" style="background-color: #fff3e0; border: 1px solid #ef6c00;"></div>Backend</div>
+        <div class="legend-item"><div class="dot" style="background-color: #f3e5f5; border: 1px solid #7b1fa2;"></div>Externos</div>
+        <div class="legend-item"><div class="dot" style="background-color: #e8f5e9; border: 1px solid #2e7d32;"></div>Datos</div>
+    </div>
+
+    <div class="diagram-container">
+        <!-- El diagrama Mermaid se renderiza aquí -->
+        <pre class="mermaid">
+            graph TD
+            
+            %% --- DEFINICIÓN DE ESTILOS ---
+            %% Estilo Frontend (Azul)
+            classDef front fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
+            %% Estilo Backend (Naranja)
+            classDef back fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#e65100;
+            %% Estilo Externos (Morado)
+            classDef ext fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c;
+            %% Estilo Datos (Verde)
+            classDef data fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
+            %% Estilo Base de Datos (Cilindro)
+            classDef db fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray: 3 3;
+
+            %% --- FRONTEND LAYER ---
+            subgraph Frontend_Layer [Frontend Layer]
+                direction TB
+                foro(foroKimal<br/>Nuxt.js SPA<br/>Port: 3000):::front
+                front(frontend-kimal<br/>Nuxt.js SPA<br/>Map & Landing Pages):::front
+            end
+
+            %% --- EXTERNAL SERVICES ---
+            subgraph External_Services [External Services]
+                direction TB
+                email(Email Service<br/>Nodemailer<br/>SMTP):::ext
+                extForum(forokimal.vercel.app<br/>External Forum):::ext
+                formal(conexionenergia.com<br/>Formal Channel):::ext
+                
+                %% Relación interna
+                extForum --> email
+            end
+
+            %% --- BACKEND SERVICES ---
+            subgraph Backend_Services [Backend Services]
+                direction TB
+                server(backend-kimal<br/>Fastify Server<br/>Port: 5000<br/>src/app.ts):::back
+
+                subgraph Route_Modules [Route Modules]
+                    direction TB
+                    pubRoutes[Public Routes<br/>src/routes/publicacion<br/>src/routes/noticia]:::back
+                    adminRoutes[Admin Routes<br/>Require authenticateToken<br/>+ authorizeAdmin]:::back
+                    authRoutes[Auth Routes<br/>/login, /register<br/>/refresh-token]:::back
+                end
+
+                subgraph Middleware_Layer [Middleware Layer]
+                    direction TB
+                    authToken[authenticateToken<br/>JWT Verification]:::back
+                    authAdmin[authorizeAdmin<br/>Role Check]:::back
+                    
+                    authToken --> authAdmin
+                end
+            end
+
+            %% --- DATA LAYER ---
+            subgraph Data_Layer [Data Layer]
+                direction TB
+                models[Mongoose Models<br/>RegionModel<br/>ComunaModel<br/>PublicacionModel<br/>NoticiaModel<br/>UsuarioModel<br/>InstalacionModel]:::data
+                mongodb[(MongoDB<br/>conexionesKimal<br/>localhost:27017)]:::db
+            end
+
+            %% --- CONEXIONES PRINCIPALES ---
+            
+            %% Frontend -> Backend
+            foro --> server
+            front --> server
+
+            %% Frontend -> External
+            foro -.-> extForum
+            foro -.-> formal
+
+            %% Backend Server -> Routes
+            server --> pubRoutes
+            server --> adminRoutes
+            server --> authRoutes
+
+            %% Routes -> Middleware (Flujo lógico)
+            adminRoutes -.-> authToken
+
+            %% Routes -> Models
+            pubRoutes --> models
+            adminRoutes --> models
+            authRoutes --> models
+
+            %% Routes -> Middleware interno (Implicit connect based on image)
+            server -.-> Middleware_Layer
+
+            %% Models -> DB
+            models --- mongodb
+
+            %% Link invisible para forzar layout si es necesario
+            %% Frontend_Layer ~~~ External_Services
+        </pre>
+    </div>
+
+    <!-- Script de Mermaid.js -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            flowchart: {
+                curve: 'basis', /* Curva suave en las líneas */
+                nodeSpacing: 100, /* MÁS ESPACIO HORIZONTAL (Antes 50) */
+                rankSpacing: 150, /* MÁS ESPACIO VERTICAL (Antes 50) */
+                padding: 50       /* Relleno interno de los subgráficos */
+            }
+        });
+    </script>
+</body>
+</html>
