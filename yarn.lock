@@ -418,7 +418,7 @@
 "@babel/compat-data@^7.27.2":
   version "7.28.4"
 
-"@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.28.3":
+"@babel/core@^7.28.3":
   version "7.28.4"
   dependencies:
     "@babel/code-frame" "^7.27.1"
@@ -695,7 +695,7 @@
     "@codemirror/view" "^6.0.0"
     "@lezer/highlight" "^1.0.0"
 
-"@codemirror/view@^6.0.0", "@codemirror/view@^6.17.0", "@codemirror/view@^6.23.0", "@codemirror/view@^6.27.0", "@codemirror/view@^6.35.0", "@codemirror/view@>=6.0.0":
+"@codemirror/view@^6.0.0", "@codemirror/view@^6.17.0", "@codemirror/view@^6.23.0", "@codemirror/view@^6.27.0", "@codemirror/view@^6.35.0":
   version "6.38.6"
   dependencies:
     "@codemirror/state" "^6.5.0"
@@ -737,7 +737,7 @@
   dependencies:
     tslib "^2.0.0"
 
-"@dnd-kit/core@^6.3.0", "@dnd-kit/core@6.3.1":
+"@dnd-kit/core@6.3.1":
   version "6.3.1"
   dependencies:
     "@dnd-kit/accessibility" "^3.1.1"
@@ -1203,7 +1203,7 @@
 "@netlify/binary-info@^1.0.0":
   version "1.0.0"
 
-"@netlify/blobs@^6.5.0 || ^7.0.0 || ^8.1.0 || ^9.0.0 || ^10.0.0", "@netlify/blobs@9.1.2":
+"@netlify/blobs@9.1.2":
   version "9.1.2"
   dependencies:
     "@netlify/dev-utils" "2.2.0"
@@ -1478,7 +1478,7 @@
     which "^5.0.0"
     ws "^8.18.3"
 
-"@nuxt/kit@^3.15.4", "@nuxt/kit@^3.19.2", "@nuxt/kit@4.1.2":
+"@nuxt/kit@^3.15.4", "@nuxt/kit@^3.19.2":
   version "3.19.2"
   dependencies:
     c12 "^3.2.0"
@@ -1551,6 +1551,32 @@
     semver "^7.7.2"
     std-env "^3.9.0"
     tinyglobby "^0.2.14"
+    ufo "^1.6.1"
+    unctx "^2.4.1"
+    unimport "^5.2.0"
+    untyped "^2.0.0"
+
+"@nuxt/kit@4.1.2":
+  version "4.1.2"
+  dependencies:
+    c12 "^3.2.0"
+    consola "^3.4.2"
+    defu "^6.1.4"
+    destr "^2.0.5"
+    errx "^0.1.0"
+    exsolve "^1.0.7"
+    ignore "^7.0.5"
+    jiti "^2.5.1"
+    klona "^2.0.6"
+    mlly "^1.8.0"
+    ohash "^2.0.11"
+    pathe "^2.0.3"
+    pkg-types "^2.3.0"
+    rc9 "^2.1.2"
+    scule "^1.3.0"
+    semver "^7.7.2"
+    std-env "^3.9.0"
+    tinyglobby "^0.2.15"
     ufo "^1.6.1"
     unctx "^2.4.1"
     unimport "^5.2.0"
@@ -1698,7 +1724,7 @@
 "@parcel/watcher-win32-x64@2.5.1":
   version "2.5.1"
 
-"@parcel/watcher@^2.1.0", "@parcel/watcher@^2.4.1":
+"@parcel/watcher@^2.4.1":
   version "2.5.1"
   dependencies:
     detect-libc "^1.0.3"
@@ -2644,7 +2670,7 @@
 "@speed-highlight/core@^1.2.7":
   version "1.2.7"
 
-"@strapi/admin@^5.0.0", "@strapi/admin@5.25.0":
+"@strapi/admin@5.25.0":
 
 "@strapi/cloud-cli@5.25.0":
   version "5.25.0"
@@ -2670,7 +2696,7 @@
     xdg-app-paths "8.3.0"
     yup "0.32.9"
 
-"@strapi/content-manager@^5.0.0", "@strapi/content-manager@5.25.0":
+"@strapi/content-manager@5.25.0":
 
 "@strapi/content-releases@5.25.0":
   version "5.25.0"
@@ -2879,7 +2905,7 @@
     yup "0.32.9"
     zod "3.25.67"
 
-"@strapi/icons@^2.0.0 || ^2.0.0-beta || ^2.0.0-alpha", "@strapi/icons@2.0.0-rc.30":
+"@strapi/icons@2.0.0-rc.30":
   version "2.0.0-rc.30"
 
 "@strapi/logger@5.25.0":
@@ -2962,7 +2988,7 @@
     react-redux "8.1.3"
     yup "0.32.9"
 
-"@strapi/strapi@^5.0.0", "@strapi/strapi@5.25.0":
+"@strapi/strapi@5.25.0":
   version "5.25.0"
   dependencies:
     "@pmmmwh/react-refresh-webpack-plugin" "0.5.15"
@@ -3131,7 +3157,7 @@
 "@swc/core-win32-x64-msvc@1.13.20":
   version "1.13.20"
 
-"@swc/core@^1.3.107", "@swc/core@>=1.2.50":
+"@swc/core@^1.3.107":
   version "1.13.20"
   dependencies:
     "@swc/counter" "^0.1.3"
@@ -3151,7 +3177,7 @@
 "@swc/counter@^0.1.3":
   version "0.1.3"
 
-"@swc/helpers@^0.5.0", "@swc/helpers@>=0.5.17":
+"@swc/helpers@^0.5.0":
   version "0.5.17"
   dependencies:
     tslib "^2.8.0"
@@ -3176,18 +3202,6 @@
     dom-accessibility-api "^0.5.9"
     lz-string "^1.5.0"
     picocolors "1.1.1"
-    pretty-format "^27.0.2"
-
-"@testing-library/dom@>=7.21.4":
-  version "10.1.0"
-  dependencies:
-    "@babel/code-frame" "^7.10.4"
-    "@babel/runtime" "^7.12.5"
-    "@types/aria-query" "^5.0.1"
-    aria-query "5.3.0"
-    chalk "^4.1.0"
-    dom-accessibility-api "^0.5.9"
-    lz-string "^1.5.0"
     pretty-format "^27.0.2"
 
 "@tsconfig/node10@^1.0.7":
@@ -3315,7 +3329,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/hoist-non-react-statics@^3.3.1", "@types/hoist-non-react-statics@>= 3.3.1":
+"@types/hoist-non-react-statics@^3.3.1":
   version "3.3.7"
   dependencies:
     hoist-non-react-statics "^3.3.0"
@@ -3411,7 +3425,7 @@
 "@types/ms@*":
   version "2.1.0"
 
-"@types/node@*", "@types/node@^18.0.0 || >=20.0.0", "@types/node@^20.19.0 || >=22.12.0", "@types/node@^24.9.1", "@types/node@>= 12", "@types/node@>=18", "@types/node@>=18.12.0":
+"@types/node@*", "@types/node@^24.9.1":
   version "24.9.1"
   resolved "https://registry.npmjs.org/@types/node/-/node-24.9.1.tgz"
   integrity sha512-QoiaXANRkSXK6p0Duvt56W208du4P9Uye9hWLWgGMDTEoKPhuenzNcC4vGUmrNkiOKTlIrBoyNQYNpSwfEZXSg==
@@ -3465,13 +3479,13 @@
 "@types/range-parser@*":
   version "1.2.7"
 
-"@types/react-dom@*", "@types/react-dom@^16.8 || ^17.0 || ^18.0", "@types/react-dom@^18", "@types/react-dom@^18.0.0":
+"@types/react-dom@^18", "@types/react-dom@^18.0.0":
   version "18.3.7"
 
 "@types/react-transition-group@^4.4.0":
   version "4.4.12"
 
-"@types/react@*", "@types/react@^16.8 || ^17.0 || ^18.0", "@types/react@^16.8.0 || ^17.0.0 || ^18.0.0", "@types/react@^17.0.0 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0", "@types/react@^18", "@types/react@^18.0.0", "@types/react@>= 16", "@types/react@16 || 17 || 18":
+"@types/react@^18", "@types/react@16 || 17 || 18":
   version "18.3.26"
   dependencies:
     "@types/prop-types" "*"
@@ -4050,7 +4064,7 @@ acorn-walk@^8.0.0, acorn-walk@^8.1.1:
   dependencies:
     acorn "^8.11.0"
 
-acorn@^8, acorn@^8.0.4, acorn@^8.11.0, acorn@^8.14.0, acorn@^8.15.0, acorn@^8.4.1, acorn@^8.6.0:
+acorn@^8.0.4, acorn@^8.11.0, acorn@^8.14.0, acorn@^8.15.0, acorn@^8.4.1, acorn@^8.6.0:
   version "8.15.0"
 
 addressparser@1.0.1:
@@ -4091,7 +4105,7 @@ ajv-keywords@^5.1.0:
   dependencies:
     fast-deep-equal "^3.1.3"
 
-ajv@^6.12.5, ajv@^6.9.1:
+ajv@^6.12.5:
   version "6.12.6"
   dependencies:
     fast-deep-equal "^3.1.1"
@@ -4099,7 +4113,7 @@ ajv@^6.12.5, ajv@^6.9.1:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^8.0.0, ajv@^8.12.0, ajv@^8.8.2, ajv@^8.9.0:
+ajv@^8.0.0, ajv@^8.12.0, ajv@^8.9.0:
   version "8.17.1"
   dependencies:
     fast-deep-equal "^3.1.3"
@@ -4107,7 +4121,7 @@ ajv@^8.0.0, ajv@^8.12.0, ajv@^8.8.2, ajv@^8.9.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
 
-ajv@^8.5.0, ajv@~8.13.0:
+ajv@~8.13.0:
   version "8.13.0"
   dependencies:
     fast-deep-equal "^3.1.3"
@@ -4363,7 +4377,7 @@ bcrypt@^6.0.0:
 bcryptjs@2.4.3:
   version "2.4.3"
 
-better-sqlite3@*, better-sqlite3@11.3.0:
+better-sqlite3@11.3.0:
   version "11.3.0"
   dependencies:
     bindings "^1.5.0"
@@ -4458,7 +4472,16 @@ browserslist-to-esbuild@1.2.0:
   dependencies:
     browserslist "^4.17.3"
 
-browserslist@^4.0.0, browserslist@^4.17.3, browserslist@^4.23.0, browserslist@^4.24.0, browserslist@^4.24.4, browserslist@^4.25.1, "browserslist@>= 4.21.0":
+browserslist@^4.0.0, browserslist@^4.24.0, browserslist@^4.24.4, browserslist@^4.25.1:
+  version "4.26.3"
+  dependencies:
+    baseline-browser-mapping "^2.8.9"
+    caniuse-lite "^1.0.30001746"
+    electron-to-chromium "^1.5.227"
+    node-releases "^2.0.21"
+    update-browserslist-db "^1.1.3"
+
+browserslist@^4.17.3, browserslist@^4.23.0:
   version "4.26.3"
   dependencies:
     baseline-browser-mapping "^2.8.9"
@@ -5311,12 +5334,12 @@ data-uri-to-buffer@^4.0.0:
 date-fns-tz@2.0.1:
   version "2.0.1"
 
-date-fns@^2.30.0, date-fns@2.30.0, date-fns@2.x:
+date-fns@^2.30.0, date-fns@2.30.0:
 
 dateformat@^4.6.3:
   version "4.6.3"
 
-db0@^0.3.2, db0@>=0.2.1:
+db0@^0.3.2:
   version "0.3.4"
 
 de-indent@^1.0.2:
@@ -5636,14 +5659,14 @@ dot-prop@^9.0.0, dot-prop@9.0.0:
 dotenv@^16.0.0:
   version "16.6.1"
 
-dotenv@^16.3.1:
+dotenv@^16.3.1, dotenv@^16.4.7:
   version "16.6.1"
-
-dotenv@^16.4.7, dotenv@^17.2.2:
-  version "17.2.3"
 
 dotenv@^17.2.1:
   version "17.2.1"
+
+dotenv@^17.2.2:
+  version "17.2.3"
 
 dotenv@16.4.5:
   version "16.4.5"
@@ -5717,11 +5740,6 @@ encoding-sniffer@^0.2.1:
   dependencies:
     iconv-lite "^0.6.3"
     whatwg-encoding "^3.1.1"
-
-encoding@^0.1.0:
-  version "0.1.13"
-  dependencies:
-    iconv-lite "^0.6.2"
 
 end-of-stream@^1.1.0, end-of-stream@^1.4.1:
   version "1.4.5"
@@ -5826,7 +5844,7 @@ esbuild@^0.21.3:
     "@esbuild/win32-ia32" "0.21.5"
     "@esbuild/win32-x64" "0.21.5"
 
-esbuild@^0.25.0, "esbuild@>=0.12 <1":
+esbuild@^0.25.0, esbuild@~0.25.0:
   version "0.25.11"
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.25.11"
@@ -5995,8 +6013,13 @@ estraverse@^4.1.1:
 estraverse@^5.2.0:
   version "5.3.0"
 
-estree-walker@^2.0.2, estree-walker@^3.0.3, estree-walker@2.0.2:
+estree-walker@^2.0.2, estree-walker@2.0.2:
   version "2.0.2"
+
+estree-walker@^3.0.3:
+  version "3.0.3"
+  dependencies:
+    "@types/estree" "^1.0.0"
 
 esutils@^2.0.2:
   version "2.0.3"
@@ -6522,7 +6545,7 @@ get-stream@^6.0.0:
 get-stream@^8.0.1:
   version "8.0.1"
 
-get-tsconfig@^4.7.0:
+get-tsconfig@^4.7.0, get-tsconfig@^4.7.5:
   version "4.12.0"
   dependencies:
     resolve-pkg-maps "^1.0.0"
@@ -6989,11 +7012,6 @@ iconv-lite@^0.4.24, iconv-lite@0.4.24:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-iconv-lite@^0.6.2:
-  version "0.6.3"
-  dependencies:
-    safer-buffer ">= 2.1.2 < 3.0.0"
-
 iconv-lite@^0.6.3:
   version "0.6.3"
   resolved "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz"
@@ -7046,7 +7064,7 @@ immer@^9.0.21, immer@^9.0.6, immer@9.0.21:
   version "9.0.21"
 
 immutable@^5.0.2:
-  version "5.1.4"
+  version "5.1.3"
 
 import-fresh@^3.2.1:
   version "3.3.1"
@@ -7145,10 +7163,10 @@ intl-messageformat@10.5.11:
     "@formatjs/icu-messageformat-parser" "2.7.6"
     tslib "^2.4.0"
 
-ioredis@^5.4.2, ioredis@^5.7.0:
-  version "5.8.0"
+ioredis@^5.6.1:
+  version "5.7.0"
   dependencies:
-    "@ioredis/commands" "1.4.0"
+    "@ioredis/commands" "^1.3.0"
     cluster-key-slot "^1.1.0"
     debug "^4.3.4"
     denque "^2.1.0"
@@ -7158,10 +7176,10 @@ ioredis@^5.4.2, ioredis@^5.7.0:
     redis-parser "^3.0.0"
     standard-as-callback "^2.1.0"
 
-ioredis@^5.6.1:
-  version "5.7.0"
+ioredis@^5.7.0:
+  version "5.8.0"
   dependencies:
-    "@ioredis/commands" "^1.3.0"
+    "@ioredis/commands" "1.4.0"
     cluster-key-slot "^1.1.0"
     debug "^4.3.4"
     denque "^2.1.0"
@@ -7372,7 +7390,7 @@ isbinaryfile@^4.0.2:
 isbinaryfile@^5.0.6:
   version "5.0.6"
 
-isexe@^2.0.0, isexe@^3.1.1:
+isexe@^2.0.0:
   version "2.0.0"
 
 isexe@^3.1.1:
@@ -7421,7 +7439,7 @@ jest-worker@^27.4.5:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jiti@^2.1.2, jiti@^2.4.2, jiti@^2.5.1, jiti@>=1.21.0:
+jiti@^2.1.2, jiti@^2.4.2, jiti@^2.5.1:
   version "2.6.1"
 
 jju@~1.4.0:
@@ -7687,7 +7705,7 @@ koa-static@5.0.0:
     debug "^3.1.0"
     koa-send "^5.0.0"
 
-koa@^2.15.2, koa@2.16.1:
+koa@2.16.1:
   version "2.16.1"
   dependencies:
     accepts "^1.3.5"
@@ -8287,17 +8305,6 @@ mongoose@^8.19.0:
     ms "2.1.3"
     sift "17.1.3"
 
-"mongoose@>= 5":
-  version "8.19.1"
-  dependencies:
-    bson "^6.10.4"
-    kareem "2.6.3"
-    mongodb "~6.20.0"
-    mpath "0.9.0"
-    mquery "5.0.0"
-    ms "2.1.3"
-    sift "17.1.3"
-
 mpath@0.9.0:
   version "0.9.0"
 
@@ -8352,7 +8359,7 @@ nanoid@^3.3.11, nanoid@^3.3.7:
   version "3.3.11"
 
 nanoid@^5.1.0:
-  version "5.1.6"
+  version "5.1.5"
 
 nanotar@^0.2.0:
   version "0.2.0"
@@ -8361,7 +8368,7 @@ napi-build-utils@^2.0.0:
   version "2.0.0"
 
 napi-wasm@^1.1.0:
-  version "1.1.3"
+  version "1.1.0"
 
 negotiator@0.6.3:
   version "0.6.3"
@@ -8953,13 +8960,20 @@ onetime@^7.0.0:
 only@~0.0.2:
   version "0.0.2"
 
-open@^10.2.0, open@^8.0.0:
+open@^10.2.0:
   version "10.2.0"
   dependencies:
     default-browser "^5.2.1"
     define-lazy-prop "^3.0.0"
     is-inside-container "^1.0.0"
     wsl-utils "^0.1.0"
+
+open@^8.0.0:
+  version "8.4.2"
+  dependencies:
+    define-lazy-prop "^2.0.0"
+    is-docker "^2.1.1"
+    is-wsl "^2.2.0"
 
 open@8.4.0:
   version "8.4.0"
@@ -9075,7 +9089,7 @@ oxc-parser@^0.80.0:
     "@oxc-parser/binding-win32-arm64-msvc" "0.80.0"
     "@oxc-parser/binding-win32-x64-msvc" "0.80.0"
 
-oxc-parser@^0.87.0, oxc-parser@>=0.72.0:
+oxc-parser@^0.87.0:
   version "0.87.0"
   dependencies:
     "@oxc-project/types" "^0.87.0"
@@ -9370,7 +9384,13 @@ path-type@^4.0.0:
 path-type@^6.0.0:
   version "6.0.0"
 
-pathe@^1.1.1, pathe@^1.1.2, pathe@^2.0.1, pathe@^2.0.3:
+pathe@^1.1.1:
+  version "1.1.2"
+
+pathe@^1.1.2:
+  version "1.1.2"
+
+pathe@^2.0.1, pathe@^2.0.3:
   version "2.0.3"
 
 pause@0.0.1:
@@ -9379,7 +9399,10 @@ pause@0.0.1:
 pend@~1.2.0:
   version "1.2.0"
 
-perfect-debounce@^1.0.0, perfect-debounce@^2.0.0:
+perfect-debounce@^1.0.0:
+  version "1.0.0"
+
+perfect-debounce@^2.0.0:
   version "2.0.0"
 
 pg-connection-string@2.6.1:
@@ -9397,7 +9420,7 @@ picomatch@^2.2.1:
 picomatch@^2.3.1:
   version "2.3.1"
 
-"picomatch@^3 || ^4", picomatch@^4.0.2, picomatch@^4.0.3:
+picomatch@^4.0.2, picomatch@^4.0.3:
   version "4.0.3"
 
 pify@^4.0.1:
@@ -9676,7 +9699,14 @@ postcss-values-parser@^6.0.2:
     is-url-superb "^4.0.0"
     quote-unquote "^1.0.0"
 
-postcss@^8.0.9, postcss@^8.1.0, postcss@^8.2.9, postcss@^8.3.11, postcss@^8.4.32, postcss@^8.4.33, postcss@^8.4.38, postcss@^8.4.43, postcss@^8.4.47, postcss@^8.5.1, postcss@^8.5.6:
+postcss@^8.3.11, postcss@^8.4.33, postcss@^8.4.43:
+  version "8.5.6"
+  dependencies:
+    nanoid "^3.3.11"
+    picocolors "^1.1.1"
+    source-map-js "^1.2.1"
+
+postcss@^8.5.1, postcss@^8.5.6:
   version "8.5.6"
   dependencies:
     nanoid "^3.3.11"
@@ -9905,7 +9935,7 @@ react-dnd@16.0.1:
     fast-deep-equal "^3.1.3"
     hoist-non-react-statics "^3.3.2"
 
-react-dom@*, "react-dom@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.8 || ^17.0 || ^18.0", "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0", "react-dom@^17.0.0 || ^18.0.0", "react-dom@^17.0.2 || ^17.0.2-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0", react-dom@^18.0.0, "react-dom@>= 16.8.0", react-dom@>=16.6.0, react-dom@>=16.8, react-dom@>=16.8.0:
+react-dom@^18.0.0:
   version "18.3.1"
   dependencies:
     loose-envify "^1.1.0"
@@ -9955,7 +9985,7 @@ react-query@3.39.3:
     broadcast-channel "^3.4.1"
     match-sorter "^6.0.2"
 
-"react-redux@^7.2.1 || ^8.0.2", react-redux@8.1.3:
+react-redux@8.1.3:
   version "8.1.3"
   dependencies:
     "@babel/runtime" "^7.12.1"
@@ -9965,7 +9995,7 @@ react-query@3.39.3:
     react-is "^18.0.0"
     use-sync-external-store "^1.0.0"
 
-"react-refresh@>=0.10.0 <1.0.0", react-refresh@0.14.0:
+react-refresh@0.14.0:
   version "0.14.0"
 
 react-remove-scroll-bar@^2.3.3, react-remove-scroll-bar@^2.3.6:
@@ -10033,7 +10063,7 @@ react-transition-group@^4.3.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-"react@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.3.0 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || 17 || 18", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.9.0 || ^17.0.0 || ^18", "react@^17.0.0 || ^18.0.0", "react@^17.0.2 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0", react@^18.0.0, react@^18.3.1, "react@>= 16.14", "react@>= 16.8.0", react@>=16.3.0, react@>=16.6.0, react@>=16.8, react@>=16.8.0, react@>=17.0.0:
+react@^18.0.0:
   version "18.3.1"
   dependencies:
     loose-envify "^1.1.0"
@@ -10154,7 +10184,7 @@ redis-parser@^3.0.0:
 redux-thunk@^2.4.2:
   version "2.4.2"
 
-redux@^4, "redux@^4 || ^5.0.0-beta.0", redux@^4.2.0, redux@^4.2.1:
+redux@^4.2.0, redux@^4.2.1:
   version "4.2.1"
   dependencies:
     "@babel/runtime" "^7.9.2"
@@ -10334,7 +10364,7 @@ rollup-plugin-visualizer@^6.0.3:
     source-map "^0.7.4"
     yargs "^17.5.1"
 
-rollup@^1.20.0||^2.0.0||^3.0.0||^4.0.0, rollup@^2.0.0||^3.0.0||^4.0.0, rollup@^2.68.0||^3.0.0||^4.0.0, rollup@^2.78.0||^3.0.0||^4.0.0, rollup@^4.43.0, rollup@^4.50.1, "rollup@2.x || 3.x || 4.x":
+rollup@^4.20.0:
   version "4.52.4"
   dependencies:
     "@types/estree" "1.0.8"
@@ -10363,7 +10393,7 @@ rollup@^1.20.0||^2.0.0||^3.0.0||^4.0.0, rollup@^2.0.0||^3.0.0||^4.0.0, rollup@^2
     "@rollup/rollup-win32-x64-msvc" "4.52.4"
     fsevents "~2.3.2"
 
-rollup@^4.20.0:
+rollup@^4.43.0, rollup@^4.50.1:
   version "4.52.4"
   dependencies:
     "@types/estree" "1.0.8"
@@ -10433,7 +10463,12 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rxjs@^7.2.0, rxjs@^7.4.0, rxjs@^7.5.5, rxjs@^7.8.1:
+rxjs@^7.2.0, rxjs@^7.5.5, rxjs@^7.8.1:
+  version "7.8.2"
+  dependencies:
+    tslib "^2.1.0"
+
+rxjs@^7.4.0:
   version "7.8.2"
   dependencies:
     tslib "^2.1.0"
@@ -10467,93 +10502,11 @@ safe-stable-stringify@^2.3.1:
 safer-buffer@^2.1.0, "safer-buffer@>= 2.1.2 < 3", "safer-buffer@>= 2.1.2 < 3.0.0":
   version "2.1.2"
 
-sass-embedded-all-unknown@1.92.1:
-  version "1.92.1"
-  dependencies:
-    sass "1.92.1"
-
-sass-embedded-all-unknown@1.93.2:
-  version "1.93.2"
-  dependencies:
-    sass "1.93.2"
-
-sass-embedded-unknown-all@1.92.1:
-  version "1.92.1"
-  dependencies:
-    sass "1.92.1"
-
-sass-embedded-unknown-all@1.93.2:
-  version "1.93.2"
-  dependencies:
-    sass "1.93.2"
-
 sass-embedded-win32-x64@1.92.1:
   version "1.92.1"
 
 sass-embedded-win32-x64@1.93.2:
   version "1.93.2"
-
-sass-embedded@*:
-  version "1.93.2"
-  dependencies:
-    "@bufbuild/protobuf" "^2.5.0"
-    buffer-builder "^0.2.0"
-    colorjs.io "^0.5.0"
-    immutable "^5.0.2"
-    rxjs "^7.4.0"
-    supports-color "^8.1.1"
-    sync-child-process "^1.0.2"
-    varint "^6.0.0"
-  optionalDependencies:
-    sass-embedded-all-unknown "1.93.2"
-    sass-embedded-android-arm "1.93.2"
-    sass-embedded-android-arm64 "1.93.2"
-    sass-embedded-android-riscv64 "1.93.2"
-    sass-embedded-android-x64 "1.93.2"
-    sass-embedded-darwin-arm64 "1.93.2"
-    sass-embedded-darwin-x64 "1.93.2"
-    sass-embedded-linux-arm "1.93.2"
-    sass-embedded-linux-arm64 "1.93.2"
-    sass-embedded-linux-musl-arm "1.93.2"
-    sass-embedded-linux-musl-arm64 "1.93.2"
-    sass-embedded-linux-musl-riscv64 "1.93.2"
-    sass-embedded-linux-musl-x64 "1.93.2"
-    sass-embedded-linux-riscv64 "1.93.2"
-    sass-embedded-linux-x64 "1.93.2"
-    sass-embedded-unknown-all "1.93.2"
-    sass-embedded-win32-arm64 "1.93.2"
-    sass-embedded-win32-x64 "1.93.2"
-
-sass-embedded@^1.70.0, sass-embedded@^1.93.2:
-  version "1.93.2"
-  dependencies:
-    "@bufbuild/protobuf" "^2.5.0"
-    buffer-builder "^0.2.0"
-    colorjs.io "^0.5.0"
-    immutable "^5.0.2"
-    rxjs "^7.4.0"
-    supports-color "^8.1.1"
-    sync-child-process "^1.0.2"
-    varint "^6.0.0"
-  optionalDependencies:
-    sass-embedded-all-unknown "1.93.2"
-    sass-embedded-android-arm "1.93.2"
-    sass-embedded-android-arm64 "1.93.2"
-    sass-embedded-android-riscv64 "1.93.2"
-    sass-embedded-android-x64 "1.93.2"
-    sass-embedded-darwin-arm64 "1.93.2"
-    sass-embedded-darwin-x64 "1.93.2"
-    sass-embedded-linux-arm "1.93.2"
-    sass-embedded-linux-arm64 "1.93.2"
-    sass-embedded-linux-musl-arm "1.93.2"
-    sass-embedded-linux-musl-arm64 "1.93.2"
-    sass-embedded-linux-musl-riscv64 "1.93.2"
-    sass-embedded-linux-musl-x64 "1.93.2"
-    sass-embedded-linux-riscv64 "1.93.2"
-    sass-embedded-linux-x64 "1.93.2"
-    sass-embedded-unknown-all "1.93.2"
-    sass-embedded-win32-arm64 "1.93.2"
-    sass-embedded-win32-x64 "1.93.2"
 
 sass-embedded@^1.92.1:
   version "1.92.1"
@@ -10586,34 +10539,42 @@ sass-embedded@^1.92.1:
     sass-embedded-win32-arm64 "1.92.1"
     sass-embedded-win32-x64 "1.92.1"
 
-sass@*, sass@^1.70.0, sass@1.93.2:
+sass-embedded@^1.93.2:
   version "1.93.2"
   dependencies:
-    chokidar "^4.0.0"
+    "@bufbuild/protobuf" "^2.5.0"
+    buffer-builder "^0.2.0"
+    colorjs.io "^0.5.0"
     immutable "^5.0.2"
-    source-map-js ">=0.6.2 <2.0.0"
+    rxjs "^7.4.0"
+    supports-color "^8.1.1"
+    sync-child-process "^1.0.2"
+    varint "^6.0.0"
   optionalDependencies:
-    "@parcel/watcher" "^2.4.1"
-
-sass@1.92.1:
-  version "1.92.1"
-  dependencies:
-    chokidar "^4.0.0"
-    immutable "^5.0.2"
-    source-map-js ">=0.6.2 <2.0.0"
-  optionalDependencies:
-    "@parcel/watcher" "^2.4.1"
+    sass-embedded-all-unknown "1.93.2"
+    sass-embedded-android-arm "1.93.2"
+    sass-embedded-android-arm64 "1.93.2"
+    sass-embedded-android-riscv64 "1.93.2"
+    sass-embedded-android-x64 "1.93.2"
+    sass-embedded-darwin-arm64 "1.93.2"
+    sass-embedded-darwin-x64 "1.93.2"
+    sass-embedded-linux-arm "1.93.2"
+    sass-embedded-linux-arm64 "1.93.2"
+    sass-embedded-linux-musl-arm "1.93.2"
+    sass-embedded-linux-musl-arm64 "1.93.2"
+    sass-embedded-linux-musl-riscv64 "1.93.2"
+    sass-embedded-linux-musl-x64 "1.93.2"
+    sass-embedded-linux-riscv64 "1.93.2"
+    sass-embedded-linux-x64 "1.93.2"
+    sass-embedded-unknown-all "1.93.2"
+    sass-embedded-win32-arm64 "1.93.2"
+    sass-embedded-win32-x64 "1.93.2"
 
 sax@^1.4.1:
   version "1.4.1"
 
 scheduler@^0.23.2:
   version "0.23.2"
-  dependencies:
-    loose-envify "^1.1.0"
-
-scheduler@>=0.19.0:
-  version "0.23.0"
   dependencies:
     loose-envify "^1.1.0"
 
@@ -10871,13 +10832,6 @@ sisteransi@^1.0.5:
 slash@^5.1.0:
   version "5.1.0"
 
-slate@>=0.65.3:
-  version "0.94.1"
-  dependencies:
-    immer "^9.0.6"
-    is-plain-object "^5.0.0"
-    tiny-warning "^1.0.3"
-
 slow-redact@^0.3.0:
   version "0.3.1"
 
@@ -10886,12 +10840,6 @@ smart-buffer@^4.2.0:
 
 smob@^1.0.0:
   version "1.5.0"
-
-socks@^2.7.1:
-  version "2.8.7"
-  dependencies:
-    ip-address "^10.0.1"
-    smart-buffer "^4.2.0"
 
 sonic-boom@^4.0.1:
   version "4.2.0"
@@ -11015,11 +10963,6 @@ string_decoder@^1.1.1, string_decoder@^1.3.0:
   dependencies:
     safe-buffer "~5.2.0"
 
-string_decoder@^1.3.0:
-  version "1.3.0"
-  dependencies:
-    safe-buffer "~5.2.0"
-
 string_decoder@~0.10.x:
   version "0.10.31"
 
@@ -11069,7 +11012,7 @@ strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   dependencies:
     ansi-regex "^5.0.1"
 
-strip-ansi@^7.0.1, strip-ansi@^7.1.0:
+strip-ansi@^7.0.1:
   version "7.1.2"
   dependencies:
     ansi-regex "^6.0.1"
@@ -11147,7 +11090,7 @@ superjson@^2.2.2:
     copy-anything "^3.0.2"
 
 supports-color@^10.0.0:
-  version "10.2.2"
+  version "10.2.0"
 
 supports-color@^5.5.0:
   version "5.5.0"
@@ -11246,7 +11189,7 @@ tar@6.2.1:
 tarn@^3.0.2:
   version "3.0.2"
 
-terser@^5.10.0, terser@^5.31.1, terser@^5.4.0:
+terser@^5.10.0, terser@^5.31.1:
   version "5.44.0"
   dependencies:
     "@jridgewell/source-map" "^0.3.3"
@@ -11254,7 +11197,7 @@ terser@^5.10.0, terser@^5.31.1, terser@^5.4.0:
     commander "^2.20.0"
     source-map-support "~0.5.20"
 
-terser@^5.16.0, terser@^5.17.4:
+terser@^5.17.4:
   version "5.44.0"
   dependencies:
     "@jridgewell/source-map" "^0.3.3"
@@ -11443,7 +11386,7 @@ type-fest@^0.6.0:
 type-fest@^0.8.1:
   version "0.8.1"
 
-type-fest@^4.0.0, "type-fest@>=0.17.0 <5.0.0":
+type-fest@^4.0.0:
   version "4.41.0"
 
 type-fest@^4.18.2, type-fest@^4.39.1, type-fest@^4.6.0:
@@ -11464,9 +11407,6 @@ type-is@^1.6.18:
 type-level-regexp@~0.1.17:
   version "0.1.17"
 
-typebox@^1.0.13:
-  version "1.0.26"
-
 typedarray-to-buffer@^3.1.5:
   version "3.1.5"
   dependencies:
@@ -11475,12 +11415,12 @@ typedarray-to-buffer@^3.1.5:
 typedoc-github-wiki-theme@1.1.0:
   version "1.1.0"
 
-typedoc-plugin-markdown@>=3.15.0, typedoc-plugin-markdown@3.17.1:
+typedoc-plugin-markdown@3.17.1:
   version "3.17.1"
   dependencies:
     handlebars "^4.7.7"
 
-typedoc@>=0.24.0, typedoc@0.25.10:
+typedoc@0.25.10:
   version "0.25.10"
   dependencies:
     lunr "^2.3.9"
@@ -11488,21 +11428,16 @@ typedoc@>=0.24.0, typedoc@0.25.10:
     minimatch "^9.0.3"
     shiki "^0.14.7"
 
-typescript@*, "typescript@^4.7 || 5", typescript@>=2.7, "typescript@4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x || 5.3.x":
-  version "5.3.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-5.3.3.tgz"
-  integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
-
 typescript@^5:
   version "5.9.3"
 
-typescript@^5.4.4, typescript@^5.7.3, typescript@>=4.8.4, "typescript@>=4.8.4 <6.0.0":
+typescript@^5.7.3:
   version "5.9.2"
-
-typescript@>3.6.0, typescript@5.4.4:
 
 typescript@~5.8.2:
   version "5.8.3"
+
+typescript@5.4.4:
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
@@ -11544,6 +11479,9 @@ undefsafe@^2.0.5:
 
 undici-types@~6.21.0:
   version "6.21.0"
+
+undici-types@~7.14.0:
+  version "7.14.0"
 
 undici-types@~7.16.0:
   version "7.16.0"
@@ -11920,7 +11858,7 @@ vite-plugin-vue-tracer@^1.0.0:
     pathe "^2.0.3"
     source-map-js "^1.2.1"
 
-"vite@^2.6.0 || ^3.0.0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0 || ^7.0.0-0", "vite@^2.9.0 || ^3.0.0-0 || ^4.0.0-0 || ^5.0.0-0 || ^6.0.1 || ^7.0.0-0", "vite@^5.0.0 || ^6.0.0 || ^7.0.0", "vite@^5.0.0 || ^6.0.0 || ^7.0.0-0", "vite@^6.0.0 || ^7.0.0", "vite@^6.0.0 || ^7.0.0-0", vite@^7.1.5, vite@>=2.0.0, vite@>=6.0:
+"vite@^5.0.0 || ^6.0.0 || ^7.0.0-0", vite@^7.1.5:
   version "7.1.9"
   dependencies:
     esbuild "^0.25.0"
@@ -11929,15 +11867,6 @@ vite-plugin-vue-tracer@^1.0.0:
     postcss "^8.5.6"
     rollup "^4.43.0"
     tinyglobby "^0.2.15"
-  optionalDependencies:
-    fsevents "~2.3.3"
-
-"vite@^4 || ^5", vite@5.4.19:
-  version "5.4.19"
-  dependencies:
-    esbuild "^0.21.3"
-    postcss "^8.4.43"
-    rollup "^4.20.0"
   optionalDependencies:
     fsevents "~2.3.3"
 
@@ -11950,6 +11879,15 @@ vite@^7.0.6:
     postcss "^8.5.6"
     rollup "^4.43.0"
     tinyglobby "^0.2.14"
+  optionalDependencies:
+    fsevents "~2.3.3"
+
+vite@5.4.19:
+  version "5.4.19"
+  dependencies:
+    esbuild "^0.21.3"
+    postcss "^8.4.43"
+    rollup "^4.20.0"
   optionalDependencies:
     fsevents "~2.3.3"
 
@@ -11975,16 +11913,7 @@ vue-router@^4.5.1:
   dependencies:
     "@vue/devtools-api" "^6.6.4"
 
-"vue@^2.7.0 || ^3.2.25", vue@^3.0.0, vue@^3.2.0, vue@^3.2.25, vue@^3.3.4, vue@^3.5.0, vue@^3.5.21, vue@^3.5.22, vue@>=3, vue@>=3.5.18, vue@3.5.22:
-  version "3.5.22"
-  dependencies:
-    "@vue/compiler-dom" "3.5.22"
-    "@vue/compiler-sfc" "3.5.22"
-    "@vue/runtime-dom" "3.5.22"
-    "@vue/server-renderer" "3.5.22"
-    "@vue/shared" "3.5.22"
-
-vue@^3.5.18, vue@^3.5.20, vue@3.5.20:
+vue@^3.5.18, vue@^3.5.20:
   version "3.5.20"
   dependencies:
     "@vue/compiler-dom" "3.5.20"
@@ -11992,6 +11921,15 @@ vue@^3.5.18, vue@^3.5.20, vue@3.5.20:
     "@vue/runtime-dom" "3.5.20"
     "@vue/server-renderer" "3.5.20"
     "@vue/shared" "3.5.20"
+
+vue@^3.5.21, vue@^3.5.22:
+  version "3.5.22"
+  dependencies:
+    "@vue/compiler-dom" "3.5.22"
+    "@vue/compiler-sfc" "3.5.22"
+    "@vue/runtime-dom" "3.5.22"
+    "@vue/server-renderer" "3.5.22"
+    "@vue/shared" "3.5.22"
 
 w3c-keyname@^2.2.4:
   version "2.2.8"
@@ -12040,7 +11978,7 @@ webpack-dev-middleware@6.1.2:
     range-parser "^1.2.1"
     schema-utils "^4.0.0"
 
-webpack-hot-middleware@2.26.1, webpack-hot-middleware@2.x:
+webpack-hot-middleware@2.26.1:
   version "2.26.1"
   dependencies:
     ansi-html-community "0.0.8"
@@ -12056,7 +11994,7 @@ webpack-sources@^1.4.3:
 webpack-virtual-modules@^0.6.2:
   version "0.6.2"
 
-"webpack@^4.40.0 || ^5.0.0", webpack@^5.0.0, webpack@^5.1.0, webpack@^5.11.0, webpack@^5.20.0, webpack@^5.90.3, "webpack@>=4.43.0 <6.0.0":
+webpack@^5.90.3:
 
 whatwg-encoding@^3.1.1:
   version "3.1.1"
@@ -12203,7 +12141,7 @@ write-file-atomic@^6.0.0:
 ws@^7.3.1, ws@8.17.1:
   version "8.17.1"
 
-ws@^8.18.0, ws@^8.18.3:
+ws@^8.18.3:
   version "8.18.3"
 
 wsl-utils@^0.1.0:
@@ -12258,7 +12196,7 @@ yallist@^5.0.0:
 yaml@^1.10.0:
   version "1.10.2"
 
-yaml@^2.4.2, yaml@^2.8.0:
+yaml@^2.8.0:
   version "2.8.1"
 
 yargs-parser@^20.2.2:
@@ -12368,7 +12306,7 @@ zip-stream@^6.0.1:
 zod@^3.19.1:
   version "3.25.76"
 
-zod@^3.23.8, "zod@^3.25 || ^4.0":
+zod@^3.23.8:
   version "3.25.76"
 
 zod@^4.1.11:
